@@ -1,32 +1,22 @@
-import { NativeType, top, type } from "./type.js"
+import { Native, top, type } from "./type.js"
 
-export type EnumVariantTypes = Record<keyof any, top>
+export type Variants = Record<keyof any, top>
 
-export type EnumNativeType<M extends EnumVariantTypes, K extends keyof M = keyof M> = {
+export type EnumNative<M extends Variants, K extends keyof M = keyof M> = {
   [K in keyof M]:
-    & {
-      tag: K
-    }
-    & ([M[K]] extends [never] ? {} : {
-      value: NativeType<M[K]>
-    })
+    & { tag: K }
+    & ([M[K]] extends [never] ? {} : { value: Native<M[K]> })
 }[K]
 
-export { enum_ as enum }
-function enum_<M extends EnumVariantTypes>(variantTypes: M) {
-  return class extends type("enum")<EnumNativeType<M>> {
+export function enum_<M extends Variants>(variantTypes: M) {
+  return class extends type("enum")<EnumNative<M>> {
     readonly variantTypes = variantTypes
 
-    static from<K extends keyof M>(
-      tag: K,
-      ...[value]: [M[K]] extends [never] ? [] : [value: NativeType<M[K]>]
-    ) {
-      return new this({ tag, ...value ? { value } : {} } as never)
-    }
-
-    constructor(value: EnumNativeType<M>) {
-      super(value)
-    }
+    declare match: <O extends InstanceType<top>>(arms: MatchArms<M, O>) => O
   }
 }
 enum_.name = "enum"
+
+export type MatchArms<M extends Variants, O extends InstanceType<top>> = {
+  [K in keyof M]: (...rest: M[K] extends top ? [InstanceType<M[K]>] : []) => O
+}

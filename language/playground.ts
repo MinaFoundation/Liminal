@@ -15,11 +15,6 @@
 //     throw 0
 //   }
 
-//   pipe = <R>(f: (x: this) => R): R => f(this)
-
-//   // TODO
-//   declare map: <R>(f: (x: T) => R) => R
-
 //   apply<K extends X extends Dep<infer K_, any> ? K_ : never>(
 //     this: [X] extends [never] ? never : Node<T, X>,
 //     key: K,

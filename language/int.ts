@@ -12,9 +12,5 @@ export class i64 extends int(true, 64) {}
 function int<S extends boolean, B extends 8 | 16 | 32 | 64>(signed: S, bytes: B) {
   return class
     extends type(`${(signed ? "i" : "u") as S extends true ? "i" : "u"}${bytes}`)<number>
-  {
-    add(value: this) {
-      return { op: "Add", left: this, right: value }
-    }
-  }
+  {}
 }

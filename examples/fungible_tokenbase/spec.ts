@@ -7,11 +7,18 @@ export class CreateProps extends L.struct({
   metadata: L.vec(L.u8),
 }) {}
 
-export class CreateError extends L.enum({
-  InsufficientFunds: null!,
-  Another: L.pk,
-}) {}
-
-export class CreateSuccess extends L.struct({
+export class CreateValue extends L.struct({
   id: L.u64,
 }) {}
+
+export class CreateError extends L.enum({
+  InsufficientFunds: null!,
+  AnotherProblem: null!,
+}) {}
+
+export class CreateResult extends L.result(
+  CreateValue,
+  CreateError,
+) {}
+
+export const create = L.method(CreateProps, CreateResult)
