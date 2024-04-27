@@ -1,0 +1,14 @@
+{
+  "recommendations": [
+    "DavidAnson.vscode-markdownlint",
+    "EditorConfig.EditorConfig",
+    "GitHub.vscode-github-actions",
+    "austenc.tailwind-docs",
+    "bradlc.vscode-tailwindcss",
+    "dprint.dprint",
+    "esbenp.prettier-vscode",
+    "streetsidesoftware.code-spell-checker",
+    "tamasfe.even-better-toml",
+    "yzhang.markdown-all-in-one"
+  ]
+}

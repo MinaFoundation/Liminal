@@ -1,0 +1,67 @@
+{
+  "name": "liminal",
+  "version": "0.0.0-local",
+  "description": "",
+  "repository": "github:MinaFoundation/Liminal",
+  "license": "Apache-2.0",
+  "type": "module",
+  "bin": {
+    "liminal": "./target/main.js"
+  },
+  "exports": {
+    "liminal": {
+      "default": "./target/mod.js",
+      "types": "./target/mod.d.ts"
+    }
+  },
+  "scripts": {
+    "task": "node --enable-source-maps --no-warnings --loader ts-node/esm",
+    "liminal": "npm run task main.ts",
+    "test": "npm run liminal -- npm run task -- --test **.test.ts",
+    "build": "tsc",
+    "check": "tsc --no-emit",
+    "codegen": "graphql-codegen --config ./graphql.config.ts",
+    "postinstall": "npm run task _tasks/codegen.ts"
+  },
+  "dependencies": {
+    "@graphql-tools/schema": "^10.0.3",
+    "@graphql-tools/utils": "^10.1.2",
+    "@std/assert": "npm:@jsr/std__assert@^0.221.0",
+    "@std/async": "npm:@jsr/std__async@^0.221.0",
+    "@std/cli": "npm:@jsr/std__cli@^0.221.0",
+    "@std/fmt": "npm:@jsr/std__fmt@^0.221.0",
+    "@std/fs": "npm:@jsr/std__fs@^0.221.0",
+    "@std/http": "npm:@jsr/std__http@^0.221.0",
+    "@std/path": "npm:@jsr/std__path@^0.221.0",
+    "@std/yaml": "npm:@jsr/std__yaml@^0.221.0",
+    "cids": "^1.1.9",
+    "fs-extra": "^11.2.0",
+    "glob": "^10.3.12",
+    "graphql": "^16.8.1",
+    "graphql-playground-html": "^1.6.30",
+    "libp2p": "^1.4.3",
+    "libp2p-gossipsub": "^0.13.0",
+    "libp2p-mplex": "^0.10.7",
+    "libp2p-noise": "^4.0.0",
+    "libp2p-tcp": "^0.17.2",
+    "o1js": "^1.0.1",
+    "open": "^10.1.0"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "^5.0.2",
+    "@graphql-codegen/core": "^4.0.2",
+    "@graphql-codegen/import-types-preset": "^3.0.0",
+    "@graphql-codegen/typed-document-node": "^5.0.6",
+    "@graphql-codegen/typescript": "^4.0.6",
+    "@graphql-codegen/typescript-operations": "^4.2.0",
+    "@graphql-codegen/typescript-resolvers": "^4.0.6",
+    "@graphql-typed-document-node/core": "^3.2.0",
+    "@types/fs-extra": "^11.0.4",
+    "@types/node": "^20.12.4",
+    "graphql-config": "^5.0.3",
+    "graphql-request": "^6.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.3",
+    "urql": "^4.0.7"
+  }
+}
