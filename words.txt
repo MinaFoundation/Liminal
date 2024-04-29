@@ -67,6 +67,8 @@ minaexplorer
 minafoundation
 minaserve
 mrmr1993
+multiaddress
+multiaddresses
 mybranch
 neovim
 nodenext

@@ -16,9 +16,11 @@ export class CreateError extends L.enum({
   AnotherProblem: null!,
 }) {}
 
-export class CreateResult extends L.result(
+export class CreateResult extends L.Result(
   CreateValue,
   CreateError,
 ) {}
 
-export const create = L.method(CreateProps, CreateResult)
+export const create = new L.Method(CreateProps, null!, CreateResult)
+
+export const someState = L.item(L.vec(L.u8))

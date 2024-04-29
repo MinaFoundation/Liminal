@@ -1,6 +1,6 @@
-import { Native, top, type } from "./type.js"
+import { Native, top, Type } from "./type.js"
 
-export type Variants = Record<keyof any, top>
+export type Variants = Record<any, top>
 
 export type EnumNative<M extends Variants, K extends keyof M = keyof M> = {
   [K in keyof M]:
@@ -9,9 +9,9 @@ export type EnumNative<M extends Variants, K extends keyof M = keyof M> = {
 }[K]
 
 export function enum_<M extends Variants>(variantTypes: M) {
-  return class extends type("enum")<EnumNative<M>> {
-    readonly variantTypes = variantTypes
-
+  return class extends Type("enum", {
+    variantTypes,
+  })<EnumNative<M>> {
     declare match: <O extends InstanceType<top>>(arms: MatchArms<M, O>) => O
   }
 }

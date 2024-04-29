@@ -1,7 +1,8 @@
 import { enum_ } from "./enum.js"
 import { top } from "./type.js"
 
-export function result<T extends top, E extends top>(
+export type Result<T extends top, E extends top> = ReturnType<typeof Result<T, E>>
+export function Result<T extends top, E extends top>(
   Value: T,
   Error: E,
 ) {

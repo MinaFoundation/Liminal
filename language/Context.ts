@@ -1,20 +1,43 @@
+import { Hash } from "./Hash.js"
+import { item } from "./item.js"
 import { Method } from "./method.js"
+import { pk } from "./pk.js"
 import { top } from "./type.js"
 
 export type Spec = Record<string, top | Method>
 export type StateTypes = Record<string, top>
 
-export type Methods<S extends Spec, P extends StateTypes> = {
-  [K in keyof S as S[K] extends Method ? K : never]: S[K] extends Method<infer I, infer O> ? ((
-      this: Context<S, P>,
+export type Methods<S extends Spec> = {
+  [K in keyof S as S[K] extends Method ? K : never]: S[K] extends Method<infer I, infer Y, infer O>
+    ? ((
       input: InstanceType<I>,
-    ) => InstanceType<O>)
+    ) => InstanceType<O> | Generator<[Y] extends [never] ? unknown : Y, InstanceType<O>, unknown>)
     : never
 }
 
-export type Context<S extends Spec, P extends StateTypes> = Methods<S, P> & P
+export type State<S extends Spec, F extends keyof any> = {
+  [K in keyof S as S[K] extends item ? K : never]: S[K] extends item<infer T> ?
+      & {
+        clone(): InstanceType<T>
+        hash(): InstanceType<typeof Hash>
+      }
+      & ([F] extends [never] ? {
+          set(value: InstanceType<T>): InstanceType<T>
+        }
+        : {})
+    : never
+}
 
-export declare function impl<S extends Spec, P extends StateTypes>(
-  spec: S,
-  storage: P,
-): new(methods: Methods<S, P>) => Context<S, P>
+export interface Intrinsics {
+  ref<S extends Spec, K extends keyof any>(spec: S, key: K): Contract<S, K>
+  sender: pk
+}
+
+export declare function impl<S extends Spec>(spec: S): ContractCtor<S>
+
+export type ContractCtor<S extends Spec> = new(methods: Methods<S>) => Contract<S, never>
+
+export type Contract<S extends Spec, K extends keyof any> =
+  & Methods<S>
+  & State<S, K>
+  & ([K] extends [never] ? Intrinsics : {})

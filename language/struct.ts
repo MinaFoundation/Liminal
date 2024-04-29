@@ -1,4 +1,4 @@
-import { Native, top, type } from "./type.js"
+import { Native, top, Type } from "./type.js"
 
 export type Fields = Record<keyof any, top>
 
@@ -7,7 +7,7 @@ export type StructNative<M extends Fields> = {
 }
 
 export function struct<F extends Fields>(fieldTypes: F) {
-  return class extends type("struct")<StructNative<F>> {
-    readonly fieldTypes = fieldTypes
-  }
+  return Type("struct", {
+    fieldTypes,
+  })<StructNative<F>>
 }

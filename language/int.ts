@@ -1,4 +1,4 @@
-import { type } from "./type.js"
+import { Type } from "./type.js"
 
 export class u8 extends int(false, 8) {}
 export class u16 extends int(false, 16) {}
@@ -11,6 +11,26 @@ export class i64 extends int(true, 64) {}
 
 function int<S extends boolean, B extends 8 | 16 | 32 | 64>(signed: S, bytes: B) {
   return class
-    extends type(`${(signed ? "i" : "u") as S extends true ? "i" : "u"}${bytes}`)<number>
-  {}
+    extends Type(`${(signed ? "i" : "u") as S extends true ? "i" : "u"}${bytes}`, {})<number>
+  {
+    add(value: this) {
+      return this
+    }
+
+    subtract(value: this) {
+      return this
+    }
+
+    divide(value: this) {
+      return this
+    }
+
+    multiply(value: this) {
+      return this
+    }
+
+    square() {
+      return this
+    }
+  }
 }
