@@ -2,10 +2,10 @@ import { Hash } from "./Hash.js"
 import { item } from "./item.js"
 import { Method } from "./method.js"
 import { pk } from "./pk.js"
-import { top } from "./type.js"
+import { Any } from "./type.js"
 
-export type Spec = Record<string, top | Method>
-export type StateTypes = Record<string, top>
+export type Spec = Record<string, Any | Method>
+export type StateTypes = Record<string, Any>
 
 export type Methods<S extends Spec> = {
   [K in keyof S as S[K] extends Method ? K : never]: S[K] extends Method<infer I, infer Y, infer O>

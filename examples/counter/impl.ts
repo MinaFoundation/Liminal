@@ -5,7 +5,11 @@ class Contract extends L.impl(spec) {}
 
 export default new Contract({ act })
 
-const x = L.true.assert(new L.u64(1))
+function* x() {
+  const y = yield* new L.bool(true).assert(new L.u64(1))
+  const z = yield* L.event("HELLO!", y)
+  const g = yield* L.dep("someDep", L.u8)
+}
 
 export function* act(this: Contract, action: spec.Action) {
   const count = this.count.clone()

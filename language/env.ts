@@ -1,6 +1,16 @@
-import { Spec } from "./Context.js"
+import { Effect } from "./Effect.js"
 import { pk } from "./pk.js"
+import { Any } from "./type.js"
 
-export declare const sender: pk
+declare const dep_: unique symbol
+export type Dep<K extends keyof any, T extends InstanceType<Any>> = { [dep_]: [K, T] }
 
-export declare function ref<S extends Spec>(spec: S, key: pk): S
+export declare function dep<K extends keyof any, T extends Any>(
+  name: K,
+  type: T,
+): Effect<InstanceType<T>, Dep<K, InstanceType<T>>>
+
+// builtins ...
+// TODO: make conflict resistant
+
+export const sender = dep("sender", pk)

@@ -1,7 +1,7 @@
-import { Native, top, Type } from "./type.js"
+import { Any, Native, Type } from "./type.js"
 
-export type item<T extends top = top> = ReturnType<typeof item<T>>
-export function item<T extends top>(t: T) {
+export type item<T extends Any = Any> = ReturnType<typeof item<T>>
+export function item<T extends Any>(t: T) {
   return class extends Type("item", { type: t })<Native<T>> {
     static fetch(): Promise<Native<T>> {
       throw 0

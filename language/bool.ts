@@ -1,21 +1,13 @@
-import { Catch, enum_ } from "./enum.js"
-import { top, Type } from "./type.js"
+import { Effect } from "./Effect.js"
+import { Catch } from "./enum.js"
+import { Any, Type } from "./type.js"
 
-export class True extends Type("true", {})<true> {}
-export class False extends Type("false", {})<false> {}
-
-export class bool extends enum_({ True, False }) {
-  static from(value: boolean): bool {
-    return new bool({
-      tag: value ? "True" : "False",
-      value: value as never,
-    })
-  }
-  declare assert: <E extends InstanceType<top>>(error: E) => Generator<Catch<E>, true, unknown>
+export class bool extends Type("bool", {})<boolean> {
+  declare if: <T extends Any>(if_: () => Effect<void, T>) => Effect<void, void>
+  declare ifElse: <T extends Any>(
+    if_: () => InstanceType<T>,
+    else_: () => InstanceType<T>,
+  ) => T
+  declare assert: <E extends Any>(error: InstanceType<E>) => Effect<bool, Catch<E>>
+  declare not: () => bool
 }
-
-export { true_ as true }
-const true_ = new bool({ tag: "True", value: true })
-
-export { false_ as false }
-const false_ = new bool({ tag: "False", value: false })

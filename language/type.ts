@@ -1,11 +1,17 @@
 export interface Type<K extends keyof any, M> {
   tag: K
   metadata: M
-  new<T>(value: T): Instance<K, M>
+  new<T>(value: T): Instance<K, M, T>
+}
+export type Any = {
+  tag: keyof any
+  metadata: any
+  new(value: any): Instance<any, any, any>
 }
 
-export interface Instance<K extends keyof any, M> {
+export interface Instance<K extends keyof any, M, T> {
   type: Type<K, M>
+  native: T
 }
 
 export function Type<K extends keyof any, M>(tag: K, metadata: M): Type<K, M> {
@@ -14,15 +20,10 @@ export function Type<K extends keyof any, M>(tag: K, metadata: M): Type<K, M> {
     static readonly metadata = metadata
 
     readonly type = Instance
+    declare readonly native: T
 
     constructor(readonly value: T) {}
   }
 }
 
-export type top = typeof top
-export const top = Type(null! as any, null! as any)<any>
-
-export type bottom = typeof bottom
-export const bottom = Type(null!, null!)<never>
-
-export type Native<O extends top> = O extends new(value: infer T_) => any ? T_ : never
+export type Native<O extends Any> = O extends new(value: infer T_) => any ? T_ : never

@@ -1,10 +1,10 @@
-import { Native, top, Type } from "./type.js"
+import { Any, Native, Type } from "./type.js"
 
-export type VecNative<E extends top> = Native<E>[]
+export type VecNative<E extends Any> = Native<E>[]
 
-export type vec<E extends top> = ReturnType<typeof vec<E>>
-export function vec<E extends top>(elementType: E) {
+export type vec<E extends Any> = ReturnType<typeof vec<E>>
+export function vec<E extends Any>(elementType: E) {
   return class extends Type("vec", { elementType })<VecNative<E>> {
-    *push<T extends top>(value: T) {}
+    *push<T extends Any>(value: T) {}
   }
 }

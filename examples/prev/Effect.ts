@@ -1,13 +1,13 @@
 import { u8 } from "../../language/int.js"
 import { Result } from "../../language/std/Result.js"
-import { top, Type } from "../../language/type.js"
+import { Type, Type } from "../../language/type.js"
 
 export type T = typeof T
 export declare const T: unique symbol
 
 export declare const X: unique symbol
 
-export declare class Effect<T extends top, X> {
+export declare class Effect<T extends Type, X> {
   [T]: T;
   [X]: X[]
 
@@ -20,19 +20,19 @@ export declare class Effect<T extends top, X> {
   ): Effect<T, Omit<X, K>>
 }
 
-export type NodeGenerator<Y extends top, R extends top, N extends top, X> = Generator<
+export type NodeGenerator<Y extends Type, R extends Type, N extends Type, X> = Generator<
   Effect<Y, X>,
   Effect<R, X>,
   Effect<N, never>
 >
 
-export declare function dep<K extends keyof any, T extends top>(key: K, type: T): Effect<
+export declare function dep<K extends keyof any, T extends Type>(key: K, type: T): Effect<
   T,
   Dep<K, InstanceType<T>>
 >
 
 export declare const D: unique symbol
-export type Dep<K extends keyof any, V extends InstanceType<top>> = { [D]: Record<K, V> }
+export type Dep<K extends keyof any, V extends InstanceType<Type>> = { [D]: Record<K, V> }
 
 export declare const U: unique symbol
 export type Trap<U> = { [U]: U }
