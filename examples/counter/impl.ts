@@ -5,23 +5,33 @@ class Contract extends L.impl(spec) {}
 
 export default new Contract({ act })
 
+const x = L.true.assert(new L.u64(1))
+
 export function* act(this: Contract, action: spec.Action) {
   const count = this.count.clone()
   const next = action.match({
     Add(value) {
-      return count.add(value)
+      return count.add(
+        value.unwrapOr(new L.u64(1)),
+      )
     },
     Divide(value) {
-      return count.divide(value)
+      return count.divide(
+        value.unwrapOr(new L.u64(1)),
+      )
     },
     Multiply(value) {
-      return count.multiply(value)
+      return count.multiply(
+        value.unwrapOr(new L.u64(1)),
+      )
     },
     Square() {
       return count.square()
     },
     Subtract(value) {
-      return count.subtract(value)
+      return count.subtract(
+        value.unwrapOr(new L.u64(1)),
+      )
     },
   })
   return this.count.set(next)

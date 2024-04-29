@@ -1,7 +1,6 @@
-import { all } from "./flow/all.js"
-import { u8 } from "./int.js"
-import { Result } from "./result.js"
-import { top, Type } from "./type.js"
+import { u8 } from "../../language/int.js"
+import { Result } from "../../language/std/Result.js"
+import { top, Type } from "../../language/type.js"
 
 export type T = typeof T
 export declare const T: unique symbol
@@ -55,10 +54,11 @@ function* tx() {
   const name = dep("Hello", u8)
   const a = dep("Another", u8)
   const c = dep("YetAnother!", u8)
-  const x = all(name, a, c)
-  const result = all(all(fooValue, bar), name)
-  yield bar
-  const f = result.apply("fooDep", new u8(1))
-  const applied = f.apply("Hello", new u8(2))
-  return all({ a: name, b: bar, applied })
+  return c
+  // const x = all(name, a, c)
+  // const result = all(all(fooValue, bar), name)
+  // yield bar
+  // const f = result.apply("fooDep", new u8(1))
+  // const applied = f.apply("Hello", new u8(2))
+  // return all({ a: name, b: bar, applied })
 }

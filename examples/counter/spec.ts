@@ -1,10 +1,12 @@
 import * as L from "liminal"
 
+export class MaybeU64 extends L.Option(L.u64) {}
+
 export class Action extends L.enum({
-  Add: L.u64,
-  Subtract: L.u64,
-  Divide: L.u64,
-  Multiply: L.u64,
+  Add: MaybeU64,
+  Subtract: MaybeU64,
+  Divide: MaybeU64,
+  Multiply: MaybeU64,
   Square: null!,
 }) {}
 
