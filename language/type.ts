@@ -15,14 +15,18 @@ export interface Instance<K extends keyof any, M, T> {
 }
 
 export function Type<K extends keyof any, M>(tag: K, metadata: M): Type<K, M> {
-  return class Instance<T> {
+  return class Value<T> {
     static readonly tag = tag
     static readonly metadata = metadata
 
-    readonly type = Instance
+    readonly type = Value
     declare readonly native: T
 
-    constructor(readonly value: T) {}
+    constructor(readonly value: T, readonly parent?: Value<T>) {}
+
+    clone() {
+      return new Value<T>(this.value, this)
+    }
   }
 }
 

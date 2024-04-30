@@ -34,8 +34,8 @@ export interface PrefixesPage<S> {
 }
 
 export interface EntryDiff extends Disposable {
-  old: Entry | undefined
-  new: Entry | undefined
+  old?: Entry
+  new?: Entry
 }
 
 export interface Entry extends Disposable {

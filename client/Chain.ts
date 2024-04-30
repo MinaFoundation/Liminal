@@ -6,7 +6,7 @@ import { Store } from "./Store.js"
 
 export interface ChainConfig {
   multiaddresses: string[]
-  datastore?: Store
+  store?: Store
 }
 export declare function liminal(config: ChainConfig): Mina
 
@@ -42,6 +42,10 @@ export type TxStatus =
 
 // TODO
 export type TxRejectionReason =
-  | "NotGoodLookingEnough"
-  | "LackingCharisma"
-  | "AlreadySeeingAnotherTx"
+  | { type: "SeeingAnotherTx" }
+  | { type: "LackingRizz" }
+  | { type: "Impossible" }
+  | {
+    type: "SystemError"
+    value: "A" | "B" | "C"
+  }

@@ -19,7 +19,7 @@ export type State<S extends Spec, F extends keyof any> = {
   [K in keyof S as S[K] extends item ? K : never]: S[K] extends item<infer T> ?
       & {
         clone(): InstanceType<T>
-        hash(): InstanceType<typeof Hash>
+        hash(): Hash
       }
       & ([F] extends [never] ? {
           set(value: InstanceType<T>): InstanceType<T>
@@ -27,6 +27,8 @@ export type State<S extends Spec, F extends keyof any> = {
         : {})
     : never
 }
+
+// TODO: blend into StateMap
 
 export interface Intrinsics {
   ref<S extends Spec, K extends keyof any>(spec: S, key: K): Contract<S, K>

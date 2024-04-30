@@ -1,5 +1,5 @@
 import { SignalOptions } from "util/AbortController.js"
-import { StateRoot } from "./Chain.js"
+import { StateRoot } from "./State.js"
 
 export interface Block extends Disposable {
   hash: Uint8Array

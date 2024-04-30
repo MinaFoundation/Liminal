@@ -12,6 +12,8 @@ function* x() {
 }
 
 export function* act(this: Contract, action: spec.Action) {
+  const sender = yield* L.sender
+  const x = L.Some(sender)
   const count = this.count.clone()
   const next = action.match({
     Add(value) {
@@ -20,6 +22,7 @@ export function* act(this: Contract, action: spec.Action) {
       )
     },
     Divide(value) {
+      const x = value.expect("None")
       return count.divide(
         value.unwrapOr(new L.u64(1)),
       )

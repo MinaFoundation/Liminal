@@ -1,24 +1,34 @@
-import { enum_ } from "../enum.js"
-import { Any, Type } from "../type.js"
+import { Enum, enum_ } from "../enum.js"
+import { u8 } from "../int.js"
+import { Any, Native } from "../type.js"
 
-export type Option<S extends Any> = ReturnType<typeof Option<S>>
-export function Option<S extends Any>(Some: S) {
+export interface Option<S extends Any> extends
+  Enum<{
+    Some: S
+    None: never
+  }>
+{
+  unwrapOr: UnwrapOr<S>
+}
+export function Option<S extends Any>(Some: S): Option<S> {
   return class extends enum_({
     Some,
     None: null!,
   }) {
-    unwrapOr<This extends this>(this: This, orValue: InstanceType<S>) {
-      return this.match({
-        Some(value) {
-          return value
-        },
-        None() {
-          return orValue
-        },
-      })
-    }
+    unwrapOr: UnwrapOr<S>
   }
 }
 
-export declare function Some<K extends keyof any, M>(value: Type<K, M>): Option<Type<K, M>>
+export type UnwrapOr<S extends Any> = <O>(
+  this: Option<S>,
+  orValue: InstanceType<S>,
+) => O
+
+export declare function Some<T extends Any>(
+  type: T,
+  value: Native<T>,
+): Option<T>
+
 export declare const None: Option<Any>
+
+const x = Some(u8, 1)

@@ -91,6 +91,7 @@ pubkey
 publickey
 qanet
 rampup
+rizz
 rocksdb
 runtimes
 rustup

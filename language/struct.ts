@@ -7,7 +7,5 @@ export type StructNative<M extends Fields> = {
 }
 
 export function struct<F extends Fields>(fieldTypes: F) {
-  return Type("struct", {
-    fieldTypes,
-  })<StructNative<F>>
+  return Type("struct", { fieldTypes })<StructNative<F>>
 }
