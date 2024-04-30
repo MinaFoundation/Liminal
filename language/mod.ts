@@ -1,7 +1,7 @@
 export * from "./bool.js"
 export * from "./Context.js"
 export * from "./Effect.js"
-export { enum_ as enum, EnumNative, Variants } from "./enum.js"
+export { enum_ as enum, EnumNative as EnumNative, Variants } from "./enum.js"
 export * from "./env.js"
 export * from "./event.js"
 export * from "./int.js"

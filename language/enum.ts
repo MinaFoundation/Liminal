@@ -1,10 +1,10 @@
-import { Catch, Effect } from "./Effect.js"
+import { Catch, Effect, keys } from "./Effect.js"
 import { Any, Instance, Native, Type } from "./type.js"
 
-export interface Enum<M extends Variants> extends Type<"enum", { variantTypes: M }> {
-  new(value: EnumNative<M>): EnumValue<M>
+export interface EnumType<M extends Variants> extends Type<"enum", { variantTypes: M }> {
+  new(value: EnumNative<M>): Enum<M>
 }
-export interface EnumValue<M extends Variants>
+export interface Enum<M extends Variants>
   extends Instance<"enum", { variantTypes: M }, EnumNative<M>>
 {
   match: Match<M>
@@ -20,10 +20,8 @@ export type EnumNative<M extends Variants, K extends keyof M = keyof M> = {
 }[K]
 
 enum_.name = "enum"
-export function enum_<M extends Variants>(variantTypes: M): Enum<M> {
-  return class extends Type("enum", {
-    variantTypes,
-  })<EnumNative<M>> {
+export function enum_<M extends Variants>(variantTypes: M): EnumType<M> {
+  return class extends Type("enum", { variantTypes })<EnumNative<M>> {
     declare match: Match<M>
     declare expect: Expect<M>
   }
@@ -33,11 +31,26 @@ export type MatchArms<M extends Variants, O extends InstanceType<Any>> = {
   [K in keyof M]: (value: InstanceType<M[K]>) => O
 }
 
-export type Match<M extends Variants> = <O extends InstanceType<Any>>(arms: MatchArms<M, O>) => O
+export type Match<M extends Variants> = <
+  This extends Enum<M>,
+  O extends InstanceType<Any>,
+>(
+  this: This,
+  arms: MatchArms<M, O>,
+) => O
 
-export type Expect<M extends Variants> = <K extends keyof M>(
+export type Expect<M extends Variants> = <
+  This extends Enum<M>,
+  K extends keyof M,
+  R extends [key?: keyof any],
+>(
+  this: This,
   when: K,
+  ...rest: R
 ) => Effect<
-  InstanceType<M[K]>,
-  Catch<{ [K2 in keyof M]: K2 extends K ? InstanceType<M[K2]> : never }[keyof M]>
+  M[K],
+  Catch<
+    R extends [infer K] ? K : keys["Expect"],
+    { [K2 in keyof M]: K2 extends K ? M[K2] : never }[keyof M]
+  >
 >

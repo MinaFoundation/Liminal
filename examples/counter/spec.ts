@@ -1,6 +1,6 @@
 import * as L from "liminal"
 
-export class MaybeU64 extends L.Option(L.u64) {}
+export class MaybeU64 extends L.OptionType(L.u64) {}
 
 export class Action extends L.enum({
   Add: MaybeU64,

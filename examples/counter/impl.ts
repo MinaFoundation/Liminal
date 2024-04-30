@@ -13,10 +13,11 @@ function* x() {
 
 export function* act(this: Contract, action: spec.Action) {
   const sender = yield* L.sender
-  const x = L.Some(sender)
+  const x = L.Some(L.pk)(new Uint8Array())
   const count = this.count.clone()
   const next = action.match({
     Add(value) {
+      value.unwrapOr
       return count.add(
         value.unwrapOr(new L.u64(1)),
       )

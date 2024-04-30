@@ -1,10 +1,19 @@
 import { Effect } from "./Effect.js"
-import { Any } from "./type.js"
+import { u8 } from "./int.js"
+import { Any, Instance } from "./type.js"
 
-declare const event_: unique symbol
-export type Event<K extends keyof any, T extends Any> = { [event_]: [K, T] }
+export interface Event<K extends keyof any, T extends Instance>
+  extends Effect<never, { event: [K, T] }>
+{}
 
-export declare function event<K extends keyof any, T extends Any>(
+export declare function event<
+  K extends keyof any,
+  T extends Instance,
+>(
   name: K,
-  value: InstanceType<T>,
-): Effect<void, Event<K, T>>
+  value: T,
+): Event<K, T>
+
+function* x() {
+  yield* event("", new u8(1))
+}

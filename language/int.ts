@@ -13,19 +13,19 @@ function int<S extends boolean, B extends 8 | 16 | 32 | 64>(signed: S, bytes: B)
   return class
     extends Type(`${(signed ? "i" : "u") as S extends true ? "i" : "u"}${bytes}`, {})<number>
   {
-    add<This extends this>(this: This, value: This): This {
+    add<This extends this>(this: This, value: This | This["native"]): This {
       throw this
     }
 
-    subtract<This extends this>(this: This, value: This): This {
+    subtract<This extends this>(this: This, value: This | This["native"]): This {
       return this
     }
 
-    divide<This extends this>(this: This, value: This): This {
+    divide<This extends this>(this: This, value: This | This["native"]): This {
       return this
     }
 
-    multiply<This extends this>(this: This, value: This): This {
+    multiply<This extends this>(this: This, value: This | This["native"]): This {
       return this
     }
 
