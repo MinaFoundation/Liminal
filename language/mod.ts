@@ -1,6 +1,16 @@
 export * from "./bool.js"
 export * from "./Context.js"
-export { Catch, catch_ as catch, Caught, Dep, dep, Effect, Event, event } from "./Effect.js"
+export {
+  Catch,
+  catch_ as catch,
+  catchKey,
+  Dep,
+  dep,
+  Effect,
+  effect,
+  Event,
+  event,
+} from "./Effect.js"
 export {
   Enum,
   enum_ as enum,

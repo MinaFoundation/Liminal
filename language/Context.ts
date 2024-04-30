@@ -7,22 +7,23 @@ import { Any } from "./type.js"
 export type Spec = Record<string, Any | Method>
 export type StateTypes = Record<string, Any>
 
-export type Methods<S extends Spec> = {
+export type ContractProps<S extends Spec> = {
   [K in keyof S as S[K] extends Method ? K : never]: S[K] extends Method<infer I, infer Y, infer O>
     ? ((
+      this: Contract<S>,
       input: InstanceType<I>,
-    ) => InstanceType<O> | Generator<[Y] extends [never] ? unknown : Y, InstanceType<O>, unknown>)
+    ) => Generator<[Y] extends [never] ? unknown : Y, InstanceType<O>, unknown>)
     : never
 }
 
-export type State<S extends Spec, F extends keyof any> = {
+export type State<S extends Spec> = {
   [K in keyof S as S[K] extends item ? K : never]: S[K] extends item<infer T> ?
       & {
         value(): InstanceType<T>
         hash(): Hash
       }
-      & ([F] extends [never] ? {
-          set(value: InstanceType<T>): InstanceType<T>
+      & (["TODO"] extends ["TODO"] ? {
+          set(value: InstanceType<T>): Generator<never, InstanceType<T>>
         }
         : {})
     : never
@@ -31,15 +32,18 @@ export type State<S extends Spec, F extends keyof any> = {
 // TODO: blend into StateMap
 
 export interface Intrinsics {
-  ref<S extends Spec, K extends keyof any>(spec: S, key: K): Contract<S, K>
+  ref<S extends Spec, K extends keyof any>(spec: S, key: K): Contract<S>
   sender: pk
+  deploy(): "TODO"
 }
 
 export declare function impl<S extends Spec>(spec: S): ContractCtor<S>
 
-export type ContractCtor<S extends Spec> = new(methods: Methods<S>) => Contract<S, never>
+export type ContractCtor<S extends Spec> = new(
+  methods: ContractProps<S>,
+) => Contract<S>
 
-export type Contract<S extends Spec, K extends keyof any> =
-  & Methods<S>
-  & State<S, K>
-  & ([K] extends [never] ? Intrinsics : {})
+export type Contract<S extends Spec = Spec> =
+  & ContractProps<S>
+  & State<S>
+  & Intrinsics

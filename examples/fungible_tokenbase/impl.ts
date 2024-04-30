@@ -1,35 +1,55 @@
 import * as L from "liminal"
-import * as spec from "./spec.js"
+import { Context } from "./common.js"
+import * as spec from "./spec/mod.js"
 
-class Contract extends L.impl(spec) {}
-
-export default new Contract({ create })
-
-function* create(this: Contract, value: spec.CreateProps) {
-  const condition = new L.bool(false)
-  yield* condition.assert("InsufficientFunds")
-  const y = spec.CreateResult.from("Ok", { id: 1 })
-  const z = new spec.CreateResult({
-    tag: "Ok",
-    value: { id: 1 },
-  })
+export const create = spec.create<Context>(function*(input) {
   return new spec.CreateResult({
     tag: "Ok",
-    value: { id: 1 },
+    value: { id: 0 },
   })
-}
+})
 
-class MaybeU8 extends L.OptionType(L.u8) {}
+export const destroy = spec.destroy<Context>(function*(input) {
+  return new spec.DestroyResult({ tag: "Ok" })
+})
 
-function* another(this: Contract, value: spec.CreateProps) {
-  const maybe = new MaybeU8({
-    tag: "Some",
-    value: 1,
+export const mint = spec.mint<Context>(function*(input) {
+  return new spec.MintResult({ tag: "Ok" })
+})
+
+export const burn = spec.burn<Context>(function*(input) {
+  return new spec.BurnResult({ tag: "Ok" })
+})
+
+export const transfer = spec.transfer<Context>(function*(input) {
+  return new spec.TransferResult({ tag: "Ok" })
+})
+
+export const freeze = spec.freeze<Context>(function*(input) {
+  return new spec.FreezeResult({ tag: "Ok" })
+})
+
+export const thaw = spec.thaw<Context>(function*(input) {
+  return new spec.ThawResult({ tag: "Ok" })
+})
+
+export const setAdmin = spec.setAdmin<Context>(function*(input) {
+  return new spec.SetAdminResult({
+    tag: "Ok",
+    value: null!,
   })
-  const y = maybe.expect("Some", "Kaboom")
-  const x = L.catch(y, {
-    Kaboom() {
-      return new L.u8(1)
-    },
+})
+
+export const setMetadata = spec.setMetadata<Context>(function*(input) {
+  return new spec.SetMetadataResult({
+    tag: "Ok",
+    value: null!,
   })
-}
+})
+
+export const setSupply = spec.setSupply<Context>(function*(input) {
+  return new spec.SetSupplyResult({
+    tag: "Ok",
+    value: null!,
+  })
+})

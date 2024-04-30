@@ -1,9 +1,18 @@
 import { MatchArms, Variants } from "./enum.js"
 import { Any } from "./type.js"
 
-export interface Effect<T, E> extends Generator<E, T, unknown> {}
+export interface Effect<T, E> extends Generator<E, T> {
+  catch<T extends Any, E>(
+    this: Effect<T, E>,
+    caught: MatchArms<
+      E extends { [catchKey]: infer C extends Variants } ? C : never,
+      InstanceType<T>
+    >,
+  ): InstanceType<T>
+}
+export declare function effect<T, E>(generator: Generator<E, T>): Effect<T, E>
 
-const catchKey = Symbol()
+export const catchKey = Symbol()
 
 export interface Catch<
   T extends Any = Any,

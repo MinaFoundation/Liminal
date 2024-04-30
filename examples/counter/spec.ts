@@ -10,6 +10,6 @@ export class Action extends L.enum({
   Square: null!,
 }) {}
 
-export const act = new L.Method(Action, null!, L.u64)
+export const act = L.method(Action, null!, L.u64)
 
 export const count = L.item(L.u64)
