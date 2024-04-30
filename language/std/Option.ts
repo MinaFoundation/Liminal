@@ -1,4 +1,5 @@
-import { Catch, Effect } from "../Effect.js"
+import { bool } from "liminal"
+import { Catch } from "../Effect.js"
 import { enum_ } from "../enum.js"
 import { Any, Value } from "../type.js"
 
@@ -8,10 +9,14 @@ export function OptionType<S extends Any>(Some: S) {
     Some,
     None: null!,
   }) {
+    declare isNone: () => bool
+
+    declare isSome: () => bool
+
     declare unwrap: <E extends Any, K extends keyof any>(
       error: Value<E>,
       handle: K,
-    ) => Effect<S, Catch<K, E>>
+    ) => Catch<S, K, E>
 
     declare unwrapOr: (orValue: Value<S>) => InstanceType<S>
   }

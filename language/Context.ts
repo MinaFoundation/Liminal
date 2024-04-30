@@ -1,7 +1,7 @@
 import { Hash } from "./Hash.js"
-import { item } from "./item.js"
 import { Method } from "./method.js"
 import { pk } from "./pk.js"
+import { item } from "./state.js"
 import { Any } from "./type.js"
 
 export type Spec = Record<string, Any | Method>
@@ -18,7 +18,7 @@ export type Methods<S extends Spec> = {
 export type State<S extends Spec, F extends keyof any> = {
   [K in keyof S as S[K] extends item ? K : never]: S[K] extends item<infer T> ?
       & {
-        clone(): InstanceType<T>
+        value(): InstanceType<T>
         hash(): Hash
       }
       & ([F] extends [never] ? {

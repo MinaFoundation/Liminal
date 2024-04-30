@@ -1,9 +1,17 @@
-import { Catch, Effect } from "./Effect.js"
-import { Any, Native, Type } from "./type.js"
+import { Catch } from "./Effect.js"
+import { Any, Native, Type, Value } from "./type.js"
 
 export interface EnumType<M extends Variants> extends ReturnType<typeof enum_<M>> {}
+enum_.name = "enum"
 export function enum_<M extends Variants>(variantTypes: M) {
   return class extends Type("enum", { variantTypes })<EnumNative<M>> {
+    static from<K extends keyof M>(
+      tag: K,
+      value: Value<M[K]>,
+    ) {
+      return new this({ tag, value } as never)
+    }
+
     match: <O extends InstanceType<Any>>(arms: MatchArms<M, O>) => O
 
     expect: <K extends keyof M, H extends keyof any>(
@@ -12,7 +20,6 @@ export function enum_<M extends Variants>(variantTypes: M) {
     ) => Catch<M[K], H, { [K2 in keyof M]: K2 extends K ? never : M[K2] }[keyof M]>
   }
 }
-enum_.name = "enum"
 
 export interface Enum<M extends Variants> extends InstanceType<EnumType<M>> {}
 

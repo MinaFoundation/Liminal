@@ -9,9 +9,7 @@ export class bool extends Type("bool", {})<boolean> {
     else_: () => InstanceType<T>,
   ) => T
 
-  declare assert: <H extends keyof any>(
-    handle: H,
-  ) => Catch<typeof bool, H, never>
+  declare assert: <H extends keyof any>(handle: H) => Catch<typeof bool, H, never>
 
   declare not: () => bool
 }
