@@ -1,5 +1,5 @@
 import { u8 } from "../../language/int.js"
-import { Result } from "../../language/std/Result.js"
+import { ResultType } from "../../language/std/Result.js"
 import { Type, Type } from "../../language/type.js"
 
 export type T = typeof T
@@ -11,7 +11,7 @@ export declare class Effect<T extends Type, X> {
   [T]: T;
   [X]: X[]
 
-  get ["?"](): T extends Result<infer T_, infer E> ? Effect<T_, Trap<E> | X> : never
+  get ["?"](): T extends ResultType<infer T_, infer E> ? Effect<T_, Trap<E> | X> : never
 
   apply<K extends X extends Dep<infer K_, any> ? K_ : never>(
     this: [X] extends [never] ? never : Effect<T, X>,
@@ -46,7 +46,7 @@ class Foo extends Type("Foo", {})<number> {}
 class FooError extends Type("FooError", {})<number> {}
 class Bar extends Type("Bar", {})<number> {}
 
-declare const foo: Effect<Result<typeof Foo, typeof FooError>, Dep<"fooDep", u8>>
+declare const foo: Effect<ResultType<typeof Foo, typeof FooError>, Dep<"fooDep", u8>>
 declare const bar: Effect<typeof Bar, never>
 
 function* tx() {

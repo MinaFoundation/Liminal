@@ -6,14 +6,14 @@ class Contract extends L.impl(spec) {}
 export default new Contract({ act })
 
 function* x() {
-  const y = yield* new L.bool(true).assert(new L.u64(1))
+  const y = yield* new L.bool(true).assert("Kaboom")
   const z = yield* L.event("HELLO!", y)
   const g = yield* L.dep("someDep", L.u8)
 }
 
 export function* act(this: Contract, action: spec.Action) {
   const sender = yield* L.sender
-  const x = L.Some(L.pk)(new Uint8Array())
+  const x = L.Some(L.pk, new Uint8Array())
   const count = this.count.clone()
   const next = action.match({
     Add(value) {
@@ -23,7 +23,6 @@ export function* act(this: Contract, action: spec.Action) {
       )
     },
     Divide(value) {
-      const x = value.expect("None")
       return count.divide(
         value.unwrapOr(new L.u64(1)),
       )

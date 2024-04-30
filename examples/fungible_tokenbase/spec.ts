@@ -16,7 +16,7 @@ export class CreateError extends L.enum({
   AnotherProblem: null!,
 }) {}
 
-export class CreateResult extends L.Result(
+export class CreateResult extends L.ResultType(
   CreateValue,
   CreateError,
 ) {}
