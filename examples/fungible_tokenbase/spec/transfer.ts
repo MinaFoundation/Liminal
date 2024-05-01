@@ -3,8 +3,8 @@ import { TokenId } from "./common.js"
 
 export class TransferProps extends L.struct({
   token: TokenId,
-  from: L.pk,
-  to: L.pk,
+  from: L.id,
+  to: L.id,
   amount: L.u64,
 }) {}
 
@@ -18,8 +18,17 @@ export class TransferResult extends L.ResultType(
   TransferError,
 ) {}
 
-export const transfer = L.method(
+export class TransferEvent extends L.enum({
+  Initiated: TransferProps,
+  Error: TransferError,
+  Result: TransferResult,
+}) {}
+
+export const Transfer = L.method(
   TransferProps,
-  null!,
+  TransferEvent,
   TransferResult,
+  function*(input) {
+    return new TransferResult({ tag: "Ok" })
+  },
 )

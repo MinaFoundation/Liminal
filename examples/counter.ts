@@ -1,12 +1,10 @@
 import * as L from "liminal"
 
-const state = L.state(L.u64)
-
 class Counter extends L.impl({
   add: L.method(L.u64, null!, L.u64),
   subtract: L.method(L.u64, null!, L.u64),
   square: L.method(null!, null!, L.u64),
-  state,
+  state: L.state(L.u64),
 }) {}
 
 export default new Counter({

@@ -2,7 +2,7 @@ import * as L from "liminal"
 
 export class CreateProps extends L.struct({
   supply: L.u64,
-  admin: L.pk,
+  admin: L.id,
   decimals: L.u8,
   metadata: L.vec(L.u8),
 }) {}
@@ -21,8 +21,15 @@ export class CreateResult extends L.ResultType(
   CreateError,
 ) {}
 
-export const create = L.method(
+export const Create = L.method(
   CreateProps,
   null!,
   CreateResult,
+  function*(input) {
+    const { admin, decimals, metadata, supply } = input.d()
+    return new CreateResult({
+      tag: "Ok",
+      value: { id: 0 },
+    })
+  },
 )

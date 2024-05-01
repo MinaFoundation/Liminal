@@ -3,7 +3,7 @@ import { TokenId } from "./common.js"
 
 export class MintProps extends L.struct({
   token: TokenId,
-  to: L.pk,
+  to: L.id,
   amount: L.u64,
 }) {}
 
@@ -17,8 +17,11 @@ export class MintResult extends L.ResultType(
   MintError,
 ) {}
 
-export const mint = L.method(
+export const Mint = L.method(
   MintProps,
   null!,
   MintResult,
+  function*() {
+    return new MintResult({ tag: "Ok" })
+  },
 )

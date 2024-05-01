@@ -3,7 +3,7 @@ import { TokenId } from "./common.js"
 
 export class BurnProps extends L.struct({
   token: TokenId,
-  from: L.pk,
+  from: L.id,
   amount: L.u64,
 }) {}
 
@@ -21,4 +21,7 @@ export const burn = L.method(
   BurnProps,
   null!,
   BurnResult,
+  function*(input) {
+    return new BurnResult({ tag: "Ok" })
+  },
 )

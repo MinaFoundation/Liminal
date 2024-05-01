@@ -16,8 +16,14 @@ export class SetSupplyResult extends L.ResultType(
   SetSupplyError,
 ) {}
 
-export const setSupply = L.method(
+export const SetSupply = L.method(
   SetSupplyProps,
   null!,
   SetSupplyResult,
+  function*(input) {
+    return new SetSupplyResult({
+      tag: "Ok",
+      value: new L.u64(1),
+    })
+  },
 )

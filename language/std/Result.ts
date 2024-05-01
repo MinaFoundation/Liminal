@@ -8,7 +8,9 @@ export function ResultType<T extends Any, E extends Any>(
   Ok: T,
   Error: E,
 ) {
-  return class extends enum_({ Ok, Error }) {}
+  return class extends enum_({ Ok, Error }) {
+    // TODO: ok, err
+  }
 }
 
 export interface Result<T extends Any, E extends Any> extends InstanceType<ResultType<T, E>> {}

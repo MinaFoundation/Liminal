@@ -1,5 +1,6 @@
 // TODO: setDecimals?
 export * from "./burn.js"
+export * from "./common.js"
 export * from "./create.js"
 export * from "./destroy.js"
 export * from "./freeze.js"

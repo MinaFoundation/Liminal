@@ -1,7 +1,7 @@
-import { Any, Native, Type } from "./type.js"
+import { Any, Type, TypeNative } from "./type.js"
 
 export type TupleNative<M extends Any[]> = {
-  [K in keyof M]: Native<M[K]>
+  [K in keyof M]: TypeNative<M[K]>
 }
 
 export function tuple<M extends Any[]>(...memberTypes: M) {

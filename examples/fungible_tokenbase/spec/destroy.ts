@@ -15,8 +15,11 @@ export class DestroyResult extends L.ResultType(
   DestroyError,
 ) {}
 
-export const destroy = L.method(
+export const Destroy = L.method(
   DestroyProps,
   null!,
   DestroyResult,
+  function*(input) {
+    throw 0
+  },
 )

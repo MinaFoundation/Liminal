@@ -34,10 +34,10 @@ export function catch_<T extends Any, E>(
 export interface Event<K extends keyof any, T> extends Effect<void, { event: { [_ in K]: T } }> {}
 export declare function event<K extends keyof any, T>(name: K, value: T): Event<K, T>
 
-export interface Dep<K extends keyof any, T> extends Effect<T, { dep: { [_ in K]: T } }> {
+export interface Use<K extends keyof any, T> extends Effect<T, { use: { [_ in K]: T } }> {
   key: K
 }
-export declare function dep<K extends keyof any, T extends Any>(
+export declare function use<K extends keyof any, T extends Any>(
   name: K,
   type: T,
-): Dep<K, InstanceType<T>>
+): Use<K, InstanceType<T>>

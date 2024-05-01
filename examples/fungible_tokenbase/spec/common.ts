@@ -7,10 +7,10 @@ export class AccountInfo extends L.struct({
   frozen: L.bool,
 }) {}
 
-export class Accounts extends L.map(L.pk, AccountInfo) {}
+export class Accounts extends L.map(L.id, AccountInfo) {}
 
 export class TokenInfo extends L.struct({
-  admin: L.pk,
+  admin: L.id,
   supply: L.u64,
   accounts: Accounts,
 }) {}

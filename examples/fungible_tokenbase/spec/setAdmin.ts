@@ -3,7 +3,7 @@ import { TokenId } from "./common.js"
 
 export class SetAdminProps extends L.struct({
   token: TokenId,
-  newAdmin: L.pk,
+  admin: L.signer,
 }) {}
 
 export class SetAdminError extends L.enum({
@@ -12,12 +12,19 @@ export class SetAdminError extends L.enum({
 }) {}
 
 export class SetAdminResult extends L.ResultType(
-  L.pk,
+  L.id,
   SetAdminError,
 ) {}
 
-export const setAdmin = L.method(
+export const SetAdmin = L.method(
   SetAdminProps,
   null!,
   SetAdminResult,
+  function*(input) {
+    const { admin, token } = input.fields
+    return new SetAdminResult({
+      tag: "Ok",
+      value: new Uint8Array(),
+    })
+  },
 )

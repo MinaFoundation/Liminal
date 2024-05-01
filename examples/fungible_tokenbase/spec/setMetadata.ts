@@ -16,8 +16,14 @@ export class SetMetadataResult extends L.ResultType(
   SetMetadataError,
 ) {}
 
-export const setMetadata = L.method(
+export const SetMetadata = L.method(
   SetMetadataProps,
   null!,
   SetMetadataResult,
+  function*(input) {
+    return new SetMetadataResult({
+      tag: "Ok",
+      value: [],
+    })
+  },
 )

@@ -9,10 +9,11 @@ export function OptionType<S extends Any>(Some: S) {
     Some,
     None: null!,
   }) {
+    static some: (some: InstanceType<S>) => Option<S>
+    static none: Option<S>
+
     declare isNone: () => bool
-
     declare isSome: () => bool
-
     declare unwrap: <E extends Any, K extends keyof any>(
       error: Value<E>,
       handle: K,

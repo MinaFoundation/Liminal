@@ -3,7 +3,7 @@ import { TokenId } from "./common.js"
 
 export class FreezeProps extends L.struct({
   token: TokenId,
-  who: L.pk,
+  who: L.id,
 }) {}
 
 export class FreezeError extends L.enum({
@@ -16,8 +16,11 @@ export class FreezeResult extends L.ResultType(
   FreezeError,
 ) {}
 
-export const freeze = L.method(
+export const Freeze = L.method(
   FreezeProps,
   null!,
   FreezeResult,
+  function*(input) {
+    return new FreezeResult({ tag: "Ok" })
+  },
 )
