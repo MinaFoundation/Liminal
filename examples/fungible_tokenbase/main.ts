@@ -15,7 +15,6 @@ class TxProps extends L.struct({
 
 const tx = L.tx(TxProps, function*(props) {
   const { deploy, contract, from, to, randomError } = props.fields
-  this.sender
   yield* deploy.if(function*() {
     yield* contract.deploy(spec, true)
   })
@@ -25,7 +24,7 @@ const tx = L.tx(TxProps, function*(props) {
       TransferError.from("AnotherProblem"),
     )
   })
-  const tokenbase = new L.id(new Uint8Array()).bind(spec)
+  const tokenbase = new L.id(new Uint8Array()).as(spec)
   const transferProps = TransferProps.from({
     token: 101,
     from,
@@ -68,3 +67,12 @@ type Signer = (input: Uint8Array) => Uint8Array
 declare const signerA: Signer
 declare const signerB: Signer
 declare const signerC: Signer
+
+class VerifierDnMatchSpec extends L.struct({
+  attempt: L.vec(L.u8),
+  target: L.vec(L.u8),
+}) {}
+
+class ContractError extends L.enum({
+  VerifierDnMatchSpec,
+}) {}
