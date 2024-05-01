@@ -1,23 +1,23 @@
 import * as L from "liminal"
-import runtime from "liminal_runtime"
+// import runtime from "liminal_runtime"
 import * as spec from "./spec/mod.js"
 import { TransferError, TransferEvent, TransferProps } from "./spec/mod.js"
 
 class TxProps extends L.struct({
   deploy: L.bool,
-  contract: L.id.signed(),
-  from: L.id.signed(),
+  contract: L.signer,
+  from: L.signer,
   to: L.id,
   randomError: L.bool,
 }) {}
 
-L.unhandle(effect, TransferEvent, {})
+// L.capture(effect, TransferEvent, {})
 
 const tx = L.tx(TxProps, function*(props) {
-  const { deploy, contract, from, to, randomError } = props.de()
+  const { deploy, contract, from, to, randomError } = props.fields
   this.sender
   yield* deploy.if(function*() {
-    yield contract.deploy(spec)
+    yield* contract.deploy(spec, true)
   })
   yield* randomError.if(function*() {
     yield TransferEvent.from(
@@ -26,39 +26,39 @@ const tx = L.tx(TxProps, function*(props) {
     )
   })
   const tokenbase = new L.id(new Uint8Array()).bind(spec)
-  const props = new TransferProps({
+  const transferProps = TransferProps.from({
     token: 101,
     from,
     to,
     amount: 1e9,
   })
-  yield new L.bool(true).not().assert("")
-  yield TransferEvent.from("Initiated", props)
-  const result = yield* tokenbase.Transfer(props)
+  // yield new L.bool(true).not().assert("")
+  yield TransferEvent.from("Initiated", transferProps)
+  const result = yield* tokenbase.Transfer(transferProps)
   yield TransferEvent.from("Result", result)
   return result
 })
 
-using mina = L.liminal(["A", "B", "C"])
-using l2 = mina.l2(["A", "B", "C"])
+// using mina = L.liminal(["A", "B", "C"])
+// using l2 = mina.l2(["A", "B", "C"])
 
-const result = await tx
-  .apply({
-    deploy: true,
-    contract: new Uint8Array(),
-    from: new Uint8Array(),
-    to: new Uint8Array(),
-    randomError: false,
-  })
-  .opts({ tip: 1e9 })
-  .sign({
-    sender: signerA,
-    contract: signerB,
-    from: signerC,
-  })
-  .run(runtime)
-  .commit(l2)
-  .status()
+// const result = await tx
+//   .apply({
+//     deploy: true,
+//     contract: new Uint8Array(),
+//     from: new Uint8Array(),
+//     to: new Uint8Array(),
+//     randomError: false,
+//   })
+//   .opts({ tip: 1e9 })
+//   .sign({
+//     sender: signerA,
+//     contract: signerB,
+//     from: signerC,
+//   })
+//   .run(runtime)
+//   .commit(l2)
+//   .status()
 
 // await commit.serve()
 

@@ -1,4 +1,4 @@
-import { Any, Type, TypeNative } from "./type.js"
+import { Any, Type, TypeNative, Value } from "./type.js"
 
 export type Fields = Record<keyof any, Any>
 
@@ -10,6 +10,10 @@ export function struct<F extends Fields>(fieldTypes: F) {
   return class Instance extends Type("struct", { fieldTypes })<StructNative<F>> {
     declare fields: {
       [K in keyof F]: InstanceType<F[K]>
+    }
+
+    static from(fields: { [K in keyof F]: Value<F[K]> }) {
+      return new Instance(fields)
     }
   }
 }

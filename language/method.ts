@@ -17,7 +17,10 @@ export function method<
   impl: (
     this: Globals,
     input: InstanceType<I>,
-  ) => Generator<InstanceType<Y>, InstanceType<O>>,
+  ) => Generator<
+    [Y] extends [never] ? unknown : InstanceType<Y>,
+    [O] extends [never] ? void : InstanceType<O>
+  >,
 ) {
   return { input, event, output, impl }
 }
