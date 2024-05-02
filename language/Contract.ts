@@ -17,7 +17,10 @@ export type Contract<S extends Spec> = {
     : never
 }
 
-export interface Globals {
+export interface Context {
   sender: id
-  // contract: id
+}
+
+export interface ContractContext extends Context {
+  contract: id
 }

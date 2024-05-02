@@ -15,5 +15,6 @@ export class TransferResult extends L.union("Ok", TransferError) {}
 export class TransferEvent extends L.union("Initiated", "Error", "Result") {}
 
 export const transfer = L.f(function*({ token, from, to, amount }: TransferProps) {
+  this.contract
   return TransferResult.from("Ok")
 })

@@ -1,4 +1,4 @@
-import { Globals } from "./Contract.js"
+import { ContractContext } from "./Contract.js"
 import { Matcher, VariantValue } from "./union.js"
 
 export interface f<
@@ -12,7 +12,7 @@ export declare function f<
   Y extends VariantValue,
   O,
 >(
-  f: (this: Globals, ...args: A) => Generator<Y, O>,
+  f: (this: ContractContext, ...args: A) => Generator<Y, O>,
 ): (...args: A) => Effect<Y, O>
 
 export class Effect<G extends VariantValue, O> implements Generator<G, O> {

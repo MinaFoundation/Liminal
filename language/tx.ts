@@ -1,17 +1,9 @@
-import { Globals } from "./Globals.js"
-import { Any } from "./type.js"
+import { Context } from "./Contract.js"
 
-export interface tx<
-  I extends Any = Any,
-  Y extends Any = Any,
-  O extends Any = Any,
-> extends ReturnType<typeof tx<I, Y, O>> {}
-export function tx<I extends Any, Y, O>(
-  propsType: I,
-  impl: (
-    this: Globals,
-    input: InstanceType<I>,
-  ) => Generator<Y, O>,
-) {
-  return { propsType, impl }
-}
+export declare function tx<Y, O>(
+  fn: (this: Context) => Generator<Y, O>,
+): void // TODO
+
+tx(function*() {
+  this.sender
+})
