@@ -1,4 +1,5 @@
-import { method } from "./method.js"
+import { f } from "./f.js"
+import { id } from "./id.js"
 import { state } from "./state.js"
 import { Any } from "./type.js"
 
@@ -6,9 +7,16 @@ export type Spec = Record<string, any>
 export type StateTypes = Record<string, Any>
 
 export type Contract<S extends Spec> = {
-  [K in keyof S]: S[K] extends method<infer I, infer Y, infer O> ? (
-      input: InstanceType<I>,
-    ) => Generator<InstanceType<Y>, InstanceType<O>>
-    : S[K] extends state ? InstanceType<S[K]>
+  // TODO: why doesn't `state` work as a constraint
+  [K in keyof S as S[K] extends f ? K : S[K] extends state<infer _> ? K : never]: S[K] extends
+    f<infer A, infer Y, infer O> ? (
+      ...args: A
+    ) => Generator<[Y], O>
+    : S[K] extends state<infer T> ? InstanceType<T>
     : never
+}
+
+export interface Globals {
+  sender: id
+  contract: id
 }

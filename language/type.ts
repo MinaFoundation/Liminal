@@ -11,6 +11,7 @@ export function Type<K extends keyof any, M>(tag: K, metadata: M) {
       native: T
     }
 
+    // TODO: NO!
     constructor(value: T | Instance<T>) {
       this[""] = {
         type: Instance<T>,

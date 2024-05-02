@@ -1,8 +1,7 @@
-import { Catch } from "./Effect.js"
 import { Any, Type } from "./type.js"
 
 export class bool extends Type("bool", {})<boolean> {
-  declare if: <T, O>(if_: () => Generator<T, O>) => Generator<T, O>
+  declare if: <T>(if_: () => Generator<T, void>) => Generator<T, void>
 
   declare ifElse: <T extends Any>(
     if_: () => InstanceType<T>,
