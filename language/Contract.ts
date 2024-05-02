@@ -3,6 +3,7 @@ import { id } from "./id.js"
 import { state } from "./state.js"
 import { Any } from "./type.js"
 
+// TODO: narrow
 export type Spec = Record<string, any>
 export type StateTypes = Record<string, Any>
 
@@ -12,11 +13,11 @@ export type Contract<S extends Spec> = {
     f<infer A, infer Y, infer O> ? (
       ...args: A
     ) => Generator<[Y], O>
-    : S[K] extends state<infer T> ? InstanceType<T>
+    : S[K] extends state<infer _> ? InstanceType<S[K]>
     : never
 }
 
 export interface Globals {
   sender: id
-  contract: id
+  // contract: id
 }

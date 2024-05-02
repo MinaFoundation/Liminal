@@ -1,11 +1,12 @@
 import * as L from "liminal"
+import { TokenMetadata } from "./common.js"
 
-export class CreateInput extends L.struct({
-  supply: L.u64,
-  admin: L.id,
-  decimals: L.u8,
-  metadata: L.vec(L.u8),
-}) {}
+export interface CreateInput {
+  supply: L.u64
+  admin: L.id
+  decimals: L.u8
+  metadata: TokenMetadata
+}
 
 export class CreateOk extends L.struct({
   id: L.u64,
@@ -13,8 +14,8 @@ export class CreateOk extends L.struct({
 
 export class CreateError extends L.union("InsufficientFunds", "AnotherProblem") {}
 
-export class CreateResult extends L.Result(CreateOk, CreateError) {}
+export class CreateResult extends L.union(CreateOk, CreateError) {}
 
-export const Create = L.f(function*(props: CreateInput) {
-  return CreateResult.from("Ok", { id: 0 })
+export const create = L.f(function*({}: CreateInput) {
+  return CreateResult.from(new CreateOk({ id: 0 }))
 })

@@ -1,15 +1,15 @@
 import * as L from "liminal"
 import { TokenId } from "./common.js"
 
-export class FreezeProps extends L.struct({
-  token: TokenId,
-  who: L.id,
-}) {}
+export interface FreezeProps {
+  token: TokenId
+  who: L.id
+}
 
 export class FreezeError extends L.union("NotAnAdmin", "AnotherProblem") {}
 
-export class FreezeResult extends L.Result(null!, FreezeError) {}
+export class FreezeResult extends L.union("Ok", FreezeError) {}
 
-export const Freeze = L.f(function*(input: FreezeProps) {
+export const freeze = L.f(function*(input: FreezeProps) {
   return FreezeResult.from("Ok")
 })

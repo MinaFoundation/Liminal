@@ -6,6 +6,16 @@ const tx = L.f(function*() {
   const [contract, from] = yield* L.signers("contract", "from")
 
   const deploy = new L.bool(true)
+  const g = deploy.ifElse(
+    function*() {
+      return 1
+    },
+    function*() {
+      return 1
+    },
+  )
+  yield deploy.assert("yo")
+  // yield* deploy.assertEquals(new L.bool(true), {})
   const to = new L.id(new Uint8Array())
   const randomError = new L.bool(false)
 
@@ -15,7 +25,7 @@ const tx = L.f(function*() {
   yield* randomError.if(function*() {
     yield TransferEvent.from("Initiated")
   })
-  const tokenbase = new L.id(new Uint8Array()).as(spec)
+  const assets = new L.id(new Uint8Array()).as(spec)
   const transferProps: TransferProps = {
     token: new L.u64(101),
     from,
@@ -23,9 +33,9 @@ const tx = L.f(function*() {
     amount: new L.u64(1e9),
   }
   // yield new L.bool(true).not().assert("")
-  tokenbase.Transfer(transferProps)
-  tokenbase.Accounts
-  const result = yield* tokenbase.Transfer(transferProps)
+  yield* assets.transfer(transferProps)
+  const prev = yield* assets.tokens.set(null!)
+  const result = yield* assets.transfer(transferProps)
   yield TransferEvent.from("Result")
   return result
 })
@@ -35,20 +45,31 @@ declare const signerA: Signer
 declare const signerB: Signer
 declare const signerC: Signer
 
+class Attempt extends L.vec(L.u8) {}
 class VerifierDnMatchSpec extends L.struct({
-  attempt: L.vec(L.u8),
+  attempt: Attempt,
   target: L.vec(L.u8),
 }) {}
 class ContractError extends L.union(VerifierDnMatchSpec, "SomethingElse") {}
 
-class Human {
-  readonly tag = "human"
-}
-class Cat {
-  readonly tag = "cat"
-}
-class Dog {
-  readonly tag = "dog"
-}
+class Human extends L.tagged("human") {}
+class Cat extends L.tagged("cat") {}
+class Dog extends L.tagged("dog") {}
 
 class RuleViolation<T> {}
+class Animal extends L.union(Human, Cat, Dog) {}
+const x = Animal.from(new Human())
+const y = x
+  .match()
+  .when(Cat, function*(v) {
+    yield "sup" as const
+    return 1
+  })
+  .when(Dog, function*(v) {
+    yield "hi" as const
+    return 2
+  })
+  .when(Human, function*(v) {
+    yield "yo" as const
+    return 3
+  })

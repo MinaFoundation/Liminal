@@ -1,15 +1,16 @@
 import * as L from "liminal"
 import { TokenId } from "./common.js"
 
-export class SetAdminProps extends L.struct({
-  token: TokenId,
-  admin: L.signer,
-}) {}
+export interface SetAdminProps {
+  token: TokenId
+  admin: L.signer
+}
 
 export class SetAdminError extends L.union("NotAnAdmin", "AnotherProblem") {}
 
-export class SetAdminResult extends L.Result(L.id, SetAdminError) {}
+export class SetAdminResult extends L.union(L.id, SetAdminError) {}
 
-export const SetAdmin = L.f(function*(input: SetAdminProps) {
-  return SetAdminResult.from("Ok", new Uint8Array())
+/** Testing if docs work */
+export const setAdmin = L.f(function*(input: SetAdminProps) {
+  return SetAdminResult.from(new L.id(new Uint8Array()))
 })

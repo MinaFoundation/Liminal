@@ -1,4 +1,7 @@
 // TODO: some kind of toString/serialize method for Metadata generation
+
+import { AssertionError } from "./asserts.js"
+
 // TODO: hashing?
 export interface Type<K extends keyof any, M> extends ReturnType<typeof Type<K, M>> {}
 export function Type<K extends keyof any, M>(tag: K, metadata: M) {
@@ -19,6 +22,11 @@ export function Type<K extends keyof any, M>(tag: K, metadata: M) {
         native: null! as T,
       }
     }
+
+    // declare assertEquals: (
+    //   expected: this,
+    //   value: string,
+    // ) => Generator<AssertionError<string>, void>
   }
 }
 
@@ -31,5 +39,5 @@ export type Value<T extends Any | InstanceType<Any>> = T extends Any
   : never
 
 export interface Any extends Type<any, any> {
-  new(value: any): any
+  new(value: any): InstanceType<Any>
 }

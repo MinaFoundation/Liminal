@@ -1,14 +1,19 @@
+import { AssertionError } from "./asserts.js"
 import { Any, Type } from "./type.js"
 
 export class bool extends Type("bool", {})<boolean> {
   declare if: <T>(if_: () => Generator<T, void>) => Generator<T, void>
 
-  declare ifElse: <T extends Any>(
-    if_: () => InstanceType<T>,
-    else_: () => InstanceType<T>,
-  ) => T
+  declare ifElse: <YI, YE, O>(
+    if_: () => Generator<YI, O>,
+    else_: () => Generator<YE, O>,
+  ) => Generator<YI | YE, O>
 
-  declare assert: <H extends keyof any>(handle: H) => Catch<typeof bool, H, never>
+  declare assert: <T>(value: T) => Generator<AssertionError<T>, void, never>
+  // TODO: get the following working:
+  // assert<T>(value: T) {
+  //   return this.assertEquals(new bool(true), value)
+  // }
 
   declare not: () => bool
 }

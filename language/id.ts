@@ -3,9 +3,9 @@ import { Type } from "./type.js"
 import { union } from "./union.js"
 
 export class id extends Type("id", { signer: true })<Uint8Array> {
-  as: <S extends Spec>(spec: S) => Contract<S>
+  declare as: <S extends Spec>(spec: S) => Contract<S>
 
-  deploy: <S extends Spec>(
+  declare deploy: <S extends Spec>(
     spec: S,
     override: boolean,
   ) => Generator<DeployError, Contract<S>>

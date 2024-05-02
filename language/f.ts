@@ -1,4 +1,5 @@
 import { Globals } from "./Contract.js"
+import { Matcher, VariantValue } from "./union.js"
 
 export interface f<
   A extends any[] = any,
@@ -6,11 +7,37 @@ export interface f<
   O = any,
 > extends ReturnType<typeof f<A, Y, O>> {}
 
-export declare function f<A extends any[], Y, O>(
+export declare function f<
+  A extends any[],
+  Y extends VariantValue,
+  O,
+>(
   f: (this: Globals, ...args: A) => Generator<Y, O>,
-): (...args: A) => Call<Y, O>
+): (...args: A) => Effect<Y, O>
 
-export interface Call<Y, O> extends Generator<Y, O> {
-  match(): Generator<any, any>
-  ifLet(): Generator<any, any>
+export class Effect<G extends VariantValue, O> implements Generator<G, O> {
+  readonly tag = "Call"
+
+  declare when: <M extends G, Y>(
+    match: M,
+    f: (value: M) => Generator<Y, void>,
+  ) => Generator<Y, void>
+
+  // declare match: () => Matcher<G>
+
+  next(): IteratorResult<G, O> {
+    throw 0
+  }
+
+  return(): IteratorResult<G, O> {
+    throw 0
+  }
+
+  throw(): IteratorResult<G, O> {
+    throw 0
+  }
+
+  [Symbol.iterator](): Generator<G, O, unknown> {
+    throw 0
+  }
 }
