@@ -27,13 +27,16 @@ export class Type<K extends string = any, N = any, M = any, From = any, Into ext
     this[""] = { name, metadata }
   }
 
-  declare into: <O extends Into, A extends unknown[]>(
+  into<O extends Into, A extends unknown[]>(
     type: new(...args: A) => O,
     ...args: A
-  ) => O
+  ): O {
+    throw 0
+  }
 
-  declare assertEquals: <This, E>(this: This, expected: This, error: E) => E
+  assertEquals<This, E>(this: This, expected: This, error: E): E {
+    throw 0
+  }
 }
-export namespace Type {
-  export type Native<T extends Type> = T extends Type<any, infer N> ? N : never
-}
+
+export type Native<T extends Type> = T extends Type<any, infer N> ? N : never
