@@ -5,7 +5,7 @@
 // using l2 = mina.l2(["A", "B", "C"])
 
 // const result = await tx
-//   .apply({
+//   .({
 //     deploy: true,
 //     contract: new Uint8Array(),
 //     from: new Uint8Array(),
@@ -24,4 +24,4 @@
 
 // await commit.serve()
 
-// .serveCommits() / effectively turn this into a web server or archive node
+// // .serveCommits() / effectively turn this into a web server or archive node

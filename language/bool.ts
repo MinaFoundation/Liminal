@@ -1,4 +1,4 @@
-import { AssertionError } from "./asserts.js"
+import { AssertError } from "./asserts.js"
 import { Any, Type } from "./type.js"
 
 export class bool extends Type("bool", {})<boolean> {
@@ -9,7 +9,7 @@ export class bool extends Type("bool", {})<boolean> {
     else_: () => Generator<YE, O>,
   ) => Generator<YI | YE, O>
 
-  declare assert: <T>(value: T) => Generator<AssertionError<T>, void, never>
+  declare assert: <T>(value: T) => Generator<AssertError<T>, void, never>
   // TODO: get the following working:
   // assert<T>(value: T) {
   //   return this.assertEquals(new bool(true), value)

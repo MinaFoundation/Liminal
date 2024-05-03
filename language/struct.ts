@@ -1,6 +1,6 @@
 import { Any, Type, TypeNative, Value } from "./type.js"
 
-export type Fields = Record<keyof any, Any>
+export type Fields = Record<string, Any>
 
 export type StructNative<M extends Fields> = {
   [K in keyof M]: TypeNative<M[K]>

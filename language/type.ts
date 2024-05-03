@@ -1,6 +1,6 @@
 // TODO: some kind of toString/serialize method for Metadata generation
 
-import { AssertionError } from "./asserts.js"
+import { AssertError } from "./asserts.js"
 
 // TODO: hashing?
 export interface Type<K extends keyof any, M> extends ReturnType<typeof Type<K, M>> {}

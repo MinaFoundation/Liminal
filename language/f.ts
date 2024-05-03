@@ -1,5 +1,5 @@
 import { ContractContext } from "./Contract.js"
-import { Matcher, VariantValue } from "./union.js"
+import { VariantValue } from "./union.js"
 
 export interface f<
   A extends any[] = any,

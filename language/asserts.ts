@@ -1,4 +1,4 @@
-export class AssertionError<T> {
-  readonly tag = "AssertionError"
+export class AssertError<T> {
+  readonly tag = "AssertError"
   constructor(readonly value: T) {}
 }
