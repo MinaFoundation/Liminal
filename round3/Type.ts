@@ -4,7 +4,7 @@ export class Type<K extends string = any, N = any, M = any, From = any, Into ext
     value: T extends Type<any, any, any, infer F, any> ? F : never,
     ...args: A
   ): T {
-    throw 0
+    return new this(...args) // TODO: get value in there
   }
 
   static lift<T extends Type, A extends unknown[]>(
@@ -12,7 +12,7 @@ export class Type<K extends string = any, N = any, M = any, From = any, Into ext
     value: T extends Type<any, infer N, any, any, any> ? N : never,
     ...args: A
   ): T {
-    throw 0
+    return new this(...args) // TODO: get value in there
   }
 
   "": {
@@ -33,4 +33,7 @@ export class Type<K extends string = any, N = any, M = any, From = any, Into ext
   ) => O
 
   declare assertEquals: <This, E>(this: This, expected: This, error: E) => E
+}
+export namespace Type {
+  export type Native<T extends Type> = T extends Type<any, infer N> ? N : never
 }
