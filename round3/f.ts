@@ -1,4 +1,4 @@
-import { Predicate } from "./Type.js"
+import { Predicate, Value } from "./Type.js"
 import { Matcher } from "./Union.js"
 
 export interface f<A extends unknown[], Y, O> {
@@ -11,8 +11,8 @@ export interface Call<A extends unknown[], Y, O> extends Generator<Y, O> {
   tag: "Call"
   f: (...args: A) => Generator<Y, O>
   args: A
-  when: <MV extends Y>(
-    match: Predicate<MV>,
-    f: (value: MV) => Generator<Y, O>,
-  ) => Matcher<Predicate<Exclude<Y, MV>>, Y, O>
+  when: <M extends Predicate<Y>>(
+    match: M,
+    f: (value: Value<M>) => Generator<Y, O>,
+  ) => Matcher<Exclude<Y, Value<M>>, Y, O>
 }

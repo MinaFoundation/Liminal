@@ -41,13 +41,12 @@ export class Type<K extends string = any, N = any, M = any, From = any, Into ext
 
 export type Native<T> = T extends string ? T : T extends Type<any, infer N> ? N : never
 
-export type Instance<T> = T extends string ? T
-  : T extends (new(...args: any) => infer U extends Type) ? U
-  : never
+export type Instance<T> = T extends string ? T : T extends Constructor<infer U> ? U : never
 
-export type Predicate<T> = T extends string ? T : new(...args: any) => T
-export type AnyPredicate = string | (new(...args: any) => any)
+export interface Constructor<T> {
+  new(...args: any): T
+}
+export type Predicate<T> = T extends string ? T : Constructor<T>
+export type AnyPredicate = string | Constructor<any>
 
-export type Value<T> = T extends string ? T
-  : T extends new(...args: any) => infer I ? I
-  : never
+export type Value<T> = T extends string ? T : T extends Constructor<infer I> ? I : never
