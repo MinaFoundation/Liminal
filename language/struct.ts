@@ -1,19 +1,21 @@
-import { Any, Type, TypeNative, Value } from "./type.js"
+import { Native, Type, TypeConstructor } from "./Type.js"
 
-export type Fields = Record<string, Any>
+export type Fields = Record<string, TypeConstructor>
 
-export type StructNative<M extends Fields> = {
-  [K in keyof M]: TypeNative<M[K]>
-}
-
-export function struct<F extends Fields>(fieldTypes: F) {
-  return class Instance extends Type("struct", { fieldTypes })<StructNative<F>> {
+// TODO: do we want to parameterize the conversions?
+// TODO: enable tuple structs
+export function Struct<F extends Fields>(fieldTypes: F) {
+  return class extends Type<"Struct", StructNative<F>, { fieldTypes: F }, never, never> {
     declare fields: {
       [K in keyof F]: InstanceType<F[K]>
     }
 
-    static from(fields: { [K in keyof F]: Value<F[K]> }) {
-      return new Instance(fields)
+    constructor() {
+      super("Struct", { fieldTypes })
     }
   }
+}
+
+export type StructNative<F extends Fields> = {
+  [K in keyof F]: Native<InstanceType<F[K]>>
 }

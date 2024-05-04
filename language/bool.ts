@@ -1,19 +1,37 @@
-import { AssertError } from "./asserts.js"
-import { Any, Type } from "./type.js"
+import { Type } from "./Type.js"
 
-export class bool extends Type("bool", {})<boolean> {
-  declare if: <T>(if_: () => Generator<T, void>) => Generator<T, void>
+export class bool extends Type<"bool", boolean, {}, never, never> {
+  static true = new bool()
+  static false = new bool()
 
-  declare ifElse: <YI, YE, O>(
-    if_: () => Generator<YI, O>,
-    else_: () => Generator<YE, O>,
-  ) => Generator<YI | YE, O>
+  constructor() {
+    super("bool", {})
+  }
 
-  declare assert: <T>(value: T) => Generator<AssertError<T>, void, never>
-  // TODO: get the following working:
-  // assert<T>(value: T) {
-  //   return this.assertEquals(new bool(true), value)
-  // }
+  if<Y>(f: () => Generator<Y, void>): If<Y> {
+    throw 0
+  }
 
-  declare not: () => bool
+  ifElse<Y1, Y2, O>(
+    if_: () => Generator<Y1, O>,
+    else_: () => Generator<Y2, O>,
+  ): IfElse<Y1, Y2, O> {
+    throw 0
+  }
+
+  not(): bool {
+    throw 0
+  }
+
+  assert<E>(error: E): E {
+    return this.assertEquals(bool.true, error)
+  }
+}
+
+export interface If<Y> extends Generator<Y, void> {
+  tag: "If"
+}
+
+export interface IfElse<Y1, Y2, O> extends Generator<Y1 | Y2, O> {
+  tag: "IfElse"
 }

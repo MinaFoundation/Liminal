@@ -1,27 +1,36 @@
-import { Contract, Spec } from "./Contract.js"
-import { Type } from "./type.js"
-import { union } from "./union.js"
+import { Contract } from "./Contract.js"
+import { Namespace } from "./Namespace.js"
+import { Type } from "./Type.js"
 
-export class id extends Type("id", { signer: true })<Uint8Array> {
-  declare as: <S extends Spec>(spec: S) => Contract<S>
+class Base<S extends boolean> extends Type<"id", Uint8Array, { signed: S }, never, never> {
+  constructor(signed: S) {
+    super("id", { signed })
+  }
 
-  declare deploy: <S extends Spec>(
-    spec: S,
-    override: boolean,
-  ) => Generator<DeployError, Contract<S>>
+  declare bind: <N extends Namespace>(namespace: N) => Contract<N>
 }
 
-export class signer extends id {
-  static {
-    this[""].metadata.signer = true
+export class id extends Base<false> {
+  constructor() {
+    super(false)
+  }
+
+  // TODO: enable chaining into .deploy
+  *signer<K extends string>(key: K): Generator<SignerRequirement<K>, signer> {
+    yield new SignerRequirement(key)
+    return new signer(this)
   }
 }
 
-class DeployError extends union("A", "B", "C") {}
+export class signer extends Base<true> {
+  constructor(readonly for_: id) {
+    super(true)
+  }
 
-export class Signers<N extends string[]> {
-  constructor(readonly names: N) {}
+  declare deploy: <N extends Namespace>(namespace: N) => Contract<N>
 }
-export declare function signers<N extends string[]>(
-  ...names: N
-): Generator<Signers<N>, { [K in keyof N]: signer }>
+
+export class SignerRequirement<K extends string> {
+  readonly tag = "SignerRequirement"
+  constructor(readonly key: K) {}
+}

@@ -1,12 +1,9 @@
 import { bool } from "./bool.js"
 import { u256 } from "./int.js"
 import { Reduce } from "./traits/reducible.js"
-import { Type } from "./Type.js"
+import { Type, TypeConstructor } from "./Type.js"
 
-export function MerkleMap<
-  K extends new(...args: any) => Type,
-  V extends new(...args: any) => Type,
->(
+export function MerkleMap<K extends TypeConstructor, V extends TypeConstructor>(
   keyType: K,
   valueType: V,
 ) {
@@ -46,7 +43,5 @@ export function MerkleMap<
 }
 
 export class MerkleMapNative<K, V> {
-  todo(key: K, value: V): void {
-    throw 0
-  }
+  todo(key: K, value: V) {}
 }

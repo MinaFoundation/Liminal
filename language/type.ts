@@ -1,43 +1,53 @@
-// TODO: some kind of toString/serialize method for Metadata generation
+export class Type<K extends string = any, N = any, M = any, From = any, Into extends Type = any> {
+  static from<T extends Type, A extends unknown[]>(
+    this: new(...args: A) => T,
+    value: T extends Type<any, any, any, infer F, any> ? F : never,
+    ...args: A
+  ): T {
+    return new this(...args) // TODO: get value in there
+  }
 
-import { AssertError } from "./asserts.js"
+  static lift<T extends Type, A extends unknown[]>(
+    this: new(...args: A) => T,
+    value: T extends Type<any, infer N, any, any, any> ? N : never,
+    ...args: A
+  ): T {
+    return new this(...args) // TODO: get value in there
+  }
 
-// TODO: hashing?
-export interface Type<K extends keyof any, M> extends ReturnType<typeof Type<K, M>> {}
-export function Type<K extends keyof any, M>(tag: K, metadata: M) {
-  return class Instance<T> {
-    static readonly "" = { tag, metadata }
+  "": {
+    name: K
+    native?: N
+    metadata: M
+    from?: From
+    into?: Into
+  }
 
-    "": {
-      type: typeof Instance<T>
-      value: T | Instance<T>
-      native: T
-    }
+  constructor(name: K, metadata: M) {
+    this[""] = { name, metadata }
+  }
 
-    // TODO: NO!
-    constructor(value: T | Instance<T>) {
-      this[""] = {
-        type: Instance<T>,
-        value,
-        native: null! as T,
-      }
-    }
+  into<O extends Into, A extends unknown[]>(
+    type: new(...args: A) => O,
+    ...args: A
+  ): O {
+    throw 0
+  }
 
-    // declare assertEquals: (
-    //   expected: this,
-    //   value: string,
-    // ) => Generator<AssertionError<string>, void>
+  assertEquals<This, E>(this: This, expected: This, error: E): E {
+    throw 0
   }
 }
 
-export type ValueNative<O extends InstanceType<Any>> = O[""]["native"]
-export type TypeNative<O extends Any> = ValueNative<InstanceType<O>>
+export type Native<T> = T extends string ? T : T extends Type<any, infer N> ? N : never
 
-export type Value<T extends Any | InstanceType<Any>> = T extends Any
-  ? InstanceType<T> | TypeNative<T>
-  : T extends InstanceType<Any> ? Value<T[""]["type"]>
-  : never
+export type Instance<T> = T extends string ? T : T extends Constructor<infer U> ? U : never
 
-export interface Any extends Type<any, any> {
-  new(value: any): InstanceType<Any>
+export interface TypeConstructor extends Constructor<Type> {}
+export interface Constructor<T> {
+  new(...args: any): T
 }
+export type Predicate<T> = T extends string ? T : Constructor<T>
+export type AnyPredicate = string | Constructor<any>
+
+export type Value<T> = T extends string ? T : T extends Constructor<infer I> ? I : never

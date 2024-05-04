@@ -12,20 +12,20 @@ class Human {
 }
 
 class Animal extends Union(Dog, Cat, Human, "Robot") {}
-declare const matcher: Matcher<Dog | Cat | Human | "Robot", never, number>
+const animal = Animal.from(new Dog())
 function* z() {
-  const x = yield* matcher
-    .when(Dog, function*(dog) {
+  const x = yield* animal
+    .when(Dog, function*(v) {
       yield "HELLO!" as const
       return 1
     })
-    .when("Robot", function*() {
+    .when("Robot", function*(v) {
       return 2
     })
-    .when(Cat, function*() {
+    .when(Cat, function*(v) {
       return 3
     })
-    .else(function*() {
+    .when(Human, function*(v) {
       return 4
     })
 }

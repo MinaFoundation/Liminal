@@ -1,36 +1,65 @@
-import { Type, Value } from "./type.js"
+import { Type } from "./Type.js"
 
-export class u8 extends int(false, 8) {}
-export class u16 extends int(false, 16) {}
-export class u32 extends int(false, 32) {}
-export class u64 extends int(false, 64) {}
-export class i8 extends int(true, 8) {}
-export class i16 extends int(true, 16) {}
-export class i32 extends int(true, 32) {}
-export class i64 extends int(true, 64) {}
+class Int<K extends string, From, Into extends Type, S extends boolean>
+  extends Type<K, number, {}, From, Into>
+{
+  constructor(name: K, signed: S) {
+    super(name, { signed })
+  }
 
-function int<S extends boolean, B extends 8 | 16 | 32 | 64>(signed: S, bytes: B) {
-  return class
-    extends Type(`${(signed ? "i" : "u") as S extends true ? "i" : "u"}${bytes}`, {})<number>
-  {
-    add<This extends this>(this: This, value: Value<This>): This {
-      throw this
-    }
+  add(value: this) {
+    return this
+  }
 
-    subtract<This extends this>(this: This, value: Value<This>): This {
-      return this
-    }
+  subtract(value: this) {
+    return this
+  }
 
-    divide<This extends this>(this: This, value: Value<This>): This {
-      return this
-    }
+  multiply(value: this) {
+    return this
+  }
 
-    multiply<This extends this>(this: This, value: Value<This>): This {
-      return this
-    }
+  divide(value: this) {
+    return this
+  }
 
-    square<This extends this>(this: This): This {
-      return this
-    }
+  square() {
+    return this
+  }
+}
+
+export class u8 extends Int<"u18", never, u16 | u32 | u64 | u128 | u256, false> {
+  constructor() {
+    super("u18", false)
+  }
+}
+
+export class u16 extends Int<"u16", u8, u32 | u64 | u128 | u256, false> {
+  constructor() {
+    super("u16", false)
+  }
+}
+
+export class u32 extends Int<"u32", u8 | u16, u64 | u128 | u256, false> {
+  constructor() {
+    super("u32", false)
+  }
+}
+
+export class u64 extends Int<"u64", u8 | u16 | u32, u128 | u256, false> {
+  constructor() {
+    super("u64", false)
+  }
+}
+
+export class u128 extends Int<"u128", u8 | u16 | u32 | u64, u256, false> {
+  constructor() {
+    super("u128", false)
+  }
+}
+
+export class u256 extends Int<"u256", u8 | u16 | u32 | u64 | u256, never, false> {
+  constructor() {
+    super("u256", false)
   }
 }

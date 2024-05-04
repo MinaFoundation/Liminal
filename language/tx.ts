@@ -1,9 +1,6 @@
-import { Context } from "./Contract.js"
+export declare function tx<Y, O>(f: () => Generator<Y, O>): Tx<Y, O>
 
-export declare function tx<Y, O>(
-  fn: (this: Context) => Generator<Y, O>,
-): void // TODO
-
-tx(function*() {
-  this.sender
-})
+export interface Tx<Y, O> {
+  tag: "tx"
+  f: () => Generator<Y, O>
+}

@@ -1,4 +1,24 @@
-import { Any, Type, TypeNative, Value } from "./type.js"
+import { Type, TypeConstructor } from "./Type.js"
+
+export function Hash<T extends TypeConstructor, A extends HashAlgorithm>(
+  targetType: T,
+  algorithm: A,
+) {
+  return class extends Type<
+    "Hash",
+    Uint8Array,
+    {
+      targetType: T
+      algorithm: A
+    },
+    never,
+    never
+  > {
+    constructor() {
+      super("Hash", { targetType, algorithm })
+    }
+  }
+}
 
 export type HashAlgorithm =
   | "Keccak256"
@@ -9,14 +29,3 @@ export type HashAlgorithm =
   | "SHA3_256"
   | "SHA3_384"
   | "SHA3_512"
-
-export interface hash<A extends HashAlgorithm, T extends Any>
-  extends ReturnType<typeof hash<A, T>>
-{}
-export function hash<A extends HashAlgorithm, T extends Any>(algorithm: A, type: T) {
-  return class Instance extends Type("Hash", { algorithm, type })<TypeNative<T>> {
-    static from(value: Value<T>) {
-      return new this(value)
-    }
-  }
-}

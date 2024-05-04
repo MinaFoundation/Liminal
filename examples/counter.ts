@@ -1,26 +1,30 @@
 import * as L from "liminal"
 
-class Counter extends L.impl({
-  add: L.method(L.u64, null!, L.u64),
-  subtract: L.method(L.u64, null!, L.u64),
-  square: L.method(null!, null!, L.u64),
-  state: L.state(L.u64),
-}) {}
+const state = L.state(L.u256)
 
-export default new Counter({
-  *add(value) {
-    const count = this.state.value()
-    const next = count.add(value)
-    return yield* this.state.set(next)
-  },
-  *subtract(value) {
-    const count = this.state.value()
-    const next = count.add(value)
-    return yield* this.state.set(next)
-  },
-  *square() {
-    const count = this.state.value()
-    const next = count.square()
-    return yield* this.state.set(next)
-  },
+const add = L.f(function*(value: L.u256) {
+  const count = yield* state
+  const next = count.add(value)
+  return yield* state.set(next)
+})
+
+const subtract = L.f(function*(value: L.u256) {
+  const count = yield* state
+  const next = count.add(value)
+  return yield* state.set(next)
+})
+
+const square = L.f(function*() {
+  const count = yield* state
+  const next = count.square()
+  return yield* state.set(next)
+})
+
+const Counter = { add, subtract, square, state }
+
+L.tx(function*() {
+  const contractId = yield* L.id
+    .lift(new Uint8Array())
+    .signer("contract")
+  const contract = contractId.deploy(Counter)
 })
