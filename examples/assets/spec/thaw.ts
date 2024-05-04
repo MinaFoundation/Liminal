@@ -6,9 +6,9 @@ export interface ThawProps {
   who: L.id
 }
 
-export class ThawError extends L.union("NotAnAdmin", "AnotherProblem") {}
+export class ThawError extends L.Union("NotAnAdmin", "AnotherProblem") {}
 
-export class ThawResult extends L.union("Ok", ThawError) {}
+export class ThawResult extends L.Union("Ok", ThawError) {}
 
 export const thaw = L.f(function*({}: ThawProps) {
   return ThawResult.from("Ok")

@@ -1,29 +1,35 @@
-export class Type<K extends string = any, N = any, M = any, From = any, Into extends Type = any> {
+export class Type<
+  Name extends string = any,
+  Native = any,
+  Metadata = any,
+  From = any,
+  Into extends Type = any,
+> {
   static from<T extends Type, A extends unknown[]>(
     this: new(...args: A) => T,
-    value: T extends Type<any, any, any, infer F, any> ? F : never,
+    value: FromType<T>,
     ...args: A
   ): T {
     return new this(...args) // TODO: get value in there
   }
 
-  static lift<T extends Type, A extends unknown[]>(
-    this: new(...args: A) => T,
-    value: T extends Type<any, infer N, any, any, any> ? N : never,
-    ...args: A
+  static lift<T extends Type, Args extends unknown[]>(
+    this: new(...args: Args) => T,
+    value: NativeType<T>,
+    ...args: Args
   ): T {
     return new this(...args) // TODO: get value in there
   }
 
   "": {
-    name: K
-    native?: N
-    metadata: M
+    name: Name
+    native?: Native
+    metadata: Metadata
     from?: From
     into?: Into
   }
 
-  constructor(name: K, metadata: M) {
+  constructor(name: Name, metadata: Metadata) {
     this[""] = { name, metadata }
   }
 
@@ -39,7 +45,8 @@ export class Type<K extends string = any, N = any, M = any, From = any, Into ext
   }
 }
 
-export type Native<T> = T extends string ? T : T extends Type<any, infer N> ? N : never
+export type NativeType<T> = T extends string ? T : T extends Type<any, infer Name> ? Name : never
+export type FromType<T> = T extends Type<any, any, any, infer From> ? From : never
 
 export type Instance<T> = T extends string ? T : T extends Constructor<infer U> ? U : never
 

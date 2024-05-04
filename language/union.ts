@@ -1,10 +1,10 @@
-import { Option } from "./std/Option.js"
-import { AnyPredicate, Native, Predicate, Type, Value } from "./Type.js"
+import { Option } from "./Option.js"
+import { AnyPredicate, NativeType, Predicate, Type, Value } from "./Type.js"
 
 export function Union<M extends AnyPredicate[]>(...memberTypes: M) {
   return class extends Type<
     "Union",
-    Native<Value<M[number]>>,
+    NativeType<Value<M[number]>>,
     { memberTypes: M },
     Value<M[number]>,
     never
@@ -13,10 +13,10 @@ export function Union<M extends AnyPredicate[]>(...memberTypes: M) {
       super("Union", { memberTypes })
     }
 
-    declare when: <P extends M[number], Y, O>(
-      match: P,
-      f: (value: Value<P>) => Generator<Y, O>,
-    ) => Matcher<Value<Exclude<M[number], P>>, Y, O>
+    declare when: <Target extends M[number], Yield, Result>(
+      match: Target,
+      f: (value: Value<Target>) => Generator<Yield, Result>,
+    ) => Matcher<Value<Exclude<M[number], Target>>, Yield, Result>
   }
 }
 

@@ -8,13 +8,13 @@ export interface TransferProps {
   amount: L.u64
 }
 
-export class TransferError extends L.union("NotAnAdmin", "AnotherProblem") {}
+export class TransferError extends L.Union("NotAnAdmin", "AnotherProblem") {}
 
-export class TransferResult extends L.union("Ok", TransferError) {}
+export class TransferResult extends L.Union("Ok", TransferError) {}
 
-export class TransferEvent extends L.union("Initiated", "Error", "Result") {}
+export class TransferEvent extends L.Union("Initiated", "Error", "Result") {}
 
 export const transfer = L.f(function*({ token, from, to, amount }: TransferProps) {
-  this.contract
+  // this.contract // TODO
   return TransferResult.from("Ok")
 })

@@ -2,8 +2,10 @@ import { Contract } from "./Contract.js"
 import { Namespace } from "./Namespace.js"
 import { Type } from "./Type.js"
 
-class Base<S extends boolean> extends Type<"id", Uint8Array, { signed: S }, never, never> {
-  constructor(signed: S) {
+class Base<Signed extends boolean>
+  extends Type<"id", Uint8Array, { signed: Signed }, never, never>
+{
+  constructor(signed: Signed) {
     super("id", { signed })
   }
 
@@ -16,10 +18,11 @@ export class id extends Base<false> {
   }
 
   // TODO: enable chaining into .deploy
-  *signer<K extends string>(key: K): Generator<SignerRequirement<K>, signer> {
-    yield new SignerRequirement(key)
-    return new signer(this)
-  }
+  declare signer: <K extends string>(key: K) => SignerResult<K>
+}
+
+export interface SignerResult<K extends string> extends Generator<SignerRequirement<K>, signer> {
+  deploy: <N extends Namespace>(namespace: N) => Generator<SignerRequirement<K>, Contract<N>>
 }
 
 export class signer extends Base<true> {

@@ -6,9 +6,9 @@ export interface FreezeProps {
   who: L.id
 }
 
-export class FreezeError extends L.union("NotAnAdmin", "AnotherProblem") {}
+export class FreezeError extends L.Union("NotAnAdmin", "AnotherProblem") {}
 
-export class FreezeResult extends L.union("Ok", FreezeError) {}
+export class FreezeResult extends L.Union("Ok", FreezeError) {}
 
 export const freeze = L.f(function*(input: FreezeProps) {
   return FreezeResult.from("Ok")

@@ -7,9 +7,9 @@ export interface BurnProps {
   amount: L.u64
 }
 
-export class BurnError extends L.union("NotAnAdmin", "AnotherProblem") {}
+export class BurnError extends L.Union("NotAnAdmin", "AnotherProblem") {}
 
-export class BurnResult extends L.union("Ok", BurnError) {}
+export class BurnResult extends L.Union("Ok", BurnError) {}
 
 export const burn = L.f(function*(value: BurnProps) {
   yield "HELLO" as const

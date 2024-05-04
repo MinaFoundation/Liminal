@@ -2,34 +2,8 @@ import * as L from "liminal"
 import * as spec from "./spec/mod.js"
 import { TransferEvent, TransferProps } from "./spec/mod.js"
 
-L.tx(function*() {
-  this.sender
-  const x = something(new L.u8(1))
-})
-
-const something = L.f(function*(hi: L.u8) {
-  const x = Animal.from(new Human())
-  const y = yield* x
-    .match()
-    .when("Another", function*(v) {
-      yield "SomeError" as const
-      return 4
-    })
-    .when(Cat, function*(v) {
-      yield "sup" as const
-      return 1
-    })
-    .when(Dog, function*(v) {
-      yield "hi" as const
-      return 2
-    })
-    .when(Human, function*(v) {
-      yield "yo" as const
-      return 3
-    })
-})
-
 const tx = L.f(function*() {
+  L.signer
   const [contract, from] = yield* L.signers("contract", "from")
 
   const deploy = new L.bool(true)
@@ -68,22 +42,3 @@ const tx = L.f(function*() {
   yield TransferEvent.from("Result")
   return result
 })
-
-type Signer = (input: Uint8Array) => Uint8Array
-declare const signerA: Signer
-declare const signerB: Signer
-declare const signerC: Signer
-
-class Attempt extends L.vec(L.u8) {}
-class VerifierDnMatchSpec extends L.struct({
-  attempt: Attempt,
-  target: L.vec(L.u8),
-}) {}
-class ContractError extends L.union(VerifierDnMatchSpec, "SomethingElse") {}
-
-class Human extends L.tagged("human") {}
-class Cat extends L.tagged("cat") {}
-class Dog extends L.tagged("dog") {}
-
-class RuleViolation<T> {}
-class Animal extends L.union(Human, Cat, Dog, "Another") {}

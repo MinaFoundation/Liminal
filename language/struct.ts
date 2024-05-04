@@ -1,4 +1,4 @@
-import { Native, Type, TypeConstructor } from "./Type.js"
+import { NativeType, Type, TypeConstructor } from "./Type.js"
 
 export type Fields = Record<string, TypeConstructor>
 
@@ -17,5 +17,5 @@ export function Struct<F extends Fields>(fieldTypes: F) {
 }
 
 export type StructNative<F extends Fields> = {
-  [K in keyof F]: Native<InstanceType<F[K]>>
+  [K in keyof F]: NativeType<InstanceType<F[K]>>
 }

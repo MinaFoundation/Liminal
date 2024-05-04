@@ -6,10 +6,10 @@ export interface SetMetadataProps {
   metadata: TokenMetadata
 }
 
-export class SetMetadataError extends L.union("NotAnAdmin", "AnotherProblem") {}
+export class SetMetadataError extends L.Union("NotAnAdmin", "AnotherProblem") {}
 
-export class SetMetadataResult extends L.union(TokenMetadata, SetMetadataError) {}
+export class SetMetadataResult extends L.Union(TokenMetadata, SetMetadataError) {}
 
 export const setMetadata = L.f(function*(input: SetMetadataProps) {
-  return SetMetadataResult.from(new TokenMetadata([]))
+  return SetMetadataResult.from(TokenMetadata.lift(new L.MerkleListNative()))
 })

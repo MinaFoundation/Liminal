@@ -8,14 +8,14 @@ export interface CreateInput {
   metadata: TokenMetadata
 }
 
-export class CreateOk extends L.struct({
+export class CreateOk extends L.Struct({
   id: L.u64,
 }) {}
 
-export class CreateError extends L.union("InsufficientFunds", "AnotherProblem") {}
+export class CreateError extends L.Union("InsufficientFunds", "AnotherProblem") {}
 
-export class CreateResult extends L.union(CreateOk, CreateError) {}
+export class CreateResult extends L.Union(CreateOk, CreateError) {}
 
 export const create = L.f(function*({}: CreateInput) {
-  return CreateResult.from(new CreateOk({ id: 0 }))
+  return CreateResult.from(CreateOk.lift({ id: 1 }))
 })

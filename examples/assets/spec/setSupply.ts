@@ -6,10 +6,10 @@ export interface SetSupplyProps {
   supply: L.u64
 }
 
-export class SetSupplyError extends L.union("NotAnAdmin", "AnotherProblem") {}
+export class SetSupplyError extends L.Union("NotAnAdmin", "AnotherProblem") {}
 
-export class SetSupplyResult extends L.union(L.u64, SetSupplyError) {}
+export class SetSupplyResult extends L.Union(L.u64, SetSupplyError) {}
 
 export const setSupply = L.f(function*({}: SetSupplyProps) {
-  return SetSupplyResult.from(new L.u64(1))
+  return SetSupplyResult.from(L.u64.lift(1))
 })

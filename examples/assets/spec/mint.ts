@@ -7,9 +7,9 @@ export interface MintProps {
   amount: L.u64
 }
 
-export class MintError extends L.union("NotAnAdmin", "AnotherProblem") {}
+export class MintError extends L.Union("NotAnAdmin", "AnotherProblem") {}
 
-export class MintResult extends L.union("Ok", MintError) {}
+export class MintResult extends L.Union("Ok", MintError) {}
 
 export const mint = L.f(function*(props: MintProps) {
   return MintResult.from("Ok")

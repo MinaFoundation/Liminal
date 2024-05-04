@@ -1,5 +1,5 @@
-import { AnyPredicate, Predicate } from "../Type.js"
-import { Union } from "../Union.js"
+import { AnyPredicate, Predicate } from "./Type.js"
+import { Union } from "./Union.js"
 
 export interface Option<T> extends ReturnType<typeof Option<Predicate<T>>> {}
 export function Option<T extends AnyPredicate>(some: T) {

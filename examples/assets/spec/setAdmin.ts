@@ -6,11 +6,11 @@ export interface SetAdminProps {
   admin: L.signer
 }
 
-export class SetAdminError extends L.union("NotAnAdmin", "AnotherProblem") {}
+export class SetAdminError extends L.Union("NotAnAdmin", "AnotherProblem") {}
 
-export class SetAdminResult extends L.union(L.id, SetAdminError) {}
+export class SetAdminResult extends L.Union(L.id, SetAdminError) {}
 
 /** Testing if docs work */
 export const setAdmin = L.f(function*(input: SetAdminProps) {
-  return SetAdminResult.from(new L.id(new Uint8Array()))
+  return SetAdminResult.from(L.id.lift(new Uint8Array()))
 })
