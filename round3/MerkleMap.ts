@@ -1,6 +1,6 @@
 import { bool } from "./bool.js"
-import { Reduce } from "./common.js"
 import { u256 } from "./int.js"
+import { Reduce } from "./traits/reducible.js"
 import { Type } from "./Type.js"
 
 export function MerkleMap<
@@ -10,15 +10,13 @@ export function MerkleMap<
   keyType: K,
   valueType: V,
 ) {
-  return class
-    extends Type<
-      "MerkleMap",
-      MerkleMapNative<InstanceType<K>, InstanceType<V>>,
-      { keyType: K; valueType: V },
-      never,
-      never
-    >
-  {
+  return class extends Type<
+    "MerkleMap",
+    MerkleMapNative<InstanceType<K>, InstanceType<V>>,
+    { keyType: K; valueType: V },
+    never,
+    never
+  > {
     size = new u256()
 
     constructor() {

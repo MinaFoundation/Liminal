@@ -5,7 +5,7 @@ class Base<S extends boolean> extends Type<"id", Uint8Array, { signed: S }, neve
     super("id", { signed })
   }
 
-  declare bind: () => void
+  declare bind: (module: "TODO") => void
 }
 
 export class id extends Base<false> {

@@ -1,3 +1,4 @@
+import { state } from "./state.js"
 import { Type } from "./Type.js"
 
 class Int<K extends string, From, Into extends Type, S extends boolean>
@@ -28,7 +29,7 @@ class Int<K extends string, From, Into extends Type, S extends boolean>
   }
 }
 
-export class u8 extends Int<"u18", never, u16 | u32 | u64 | u128 | u256, false> {
+export class u8 extends Int<"u18", never, u16 | u32 | u64 | u128 | u256 | state<typeof u8>, false> {
   constructor() {
     super("u18", false)
   }
