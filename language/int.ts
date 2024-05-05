@@ -1,4 +1,4 @@
-import { Source, Source, Type } from "./Type.js"
+import { Source, Type } from "./Type.js"
 
 class Int<K extends string = any, From = any, Into extends Type = any, S extends boolean = any>
   extends Type<K, number, {}, From, Into>

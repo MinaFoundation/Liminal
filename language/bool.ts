@@ -1,15 +1,19 @@
-import { Type } from "./Type.js"
+import { Source, Type } from "./Type.js"
+
+export type BoolSource = Source<"true" | "false" | "not", {}>
 
 export class bool extends Type<"bool", boolean, {}, never, never> {
-  static true = new bool()
-  static false = new bool()
+  private BoolSource = Source<BoolSource>()
+
+  static true = new this().BoolSource("true", {})
+  static false = new this().BoolSource("false", {})
 
   constructor() {
     super("bool", {})
   }
 
   if<Y>(f: () => Generator<Y, void>): If<Y> {
-    throw 0
+    return new If(this, f)
   }
 
   ifElse<Y1, Y2, O>(
@@ -20,7 +24,7 @@ export class bool extends Type<"bool", boolean, {}, never, never> {
   }
 
   not(): bool {
-    throw 0
+    return this.BoolSource("not", {})
   }
 
   assert<E extends Type>(error: E): E {
@@ -28,10 +32,47 @@ export class bool extends Type<"bool", boolean, {}, never, never> {
   }
 }
 
-export interface If<Y> extends Generator<Y, void> {
-  tag: "If"
+export class If<Y> implements Generator<Y, void> {
+  readonly tag = "If"
+
+  constructor(
+    readonly condition: bool,
+    readonly f: () => Generator<Y, void>,
+  ) {}
+
+  next(): IteratorResult<Y, void> {
+    throw 0
+  }
+
+  return(): IteratorResult<Y, void> {
+    throw 0
+  }
+
+  throw(): IteratorResult<Y, void> {
+    throw 0
+  }
+
+  [Symbol.iterator](): Generator<Y, void, unknown> {
+    throw 0
+  }
 }
 
-export interface IfElse<Y1, Y2, O> extends Generator<Y1 | Y2, O> {
-  tag: "IfElse"
+export class IfElse<Y1, Y2, O> implements Generator<Y1 | Y2, O> {
+  readonly tag = "IfElse"
+
+  next(): IteratorResult<Y1 | Y2, O> {
+    throw 0
+  }
+
+  return(): IteratorResult<Y1 | Y2, O> {
+    throw 0
+  }
+
+  throw(): IteratorResult<Y1 | Y2, O> {
+    throw 0
+  }
+
+  [Symbol.iterator](): Generator<Y1 | Y2, O, unknown> {
+    throw 0
+  }
 }

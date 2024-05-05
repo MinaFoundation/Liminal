@@ -1,3 +1,9 @@
+export type TypeSource =
+  | Source<"from", { value: TypeConstructor }>
+  | Source<"lift", { value: unknown }>
+  | Source<"into", {}>
+  | Source<"assertEquals", { expected: Type; actual: Type }>
+
 export class Type<
   Name extends string = any,
   Native_ = any,
@@ -5,6 +11,8 @@ export class Type<
   From_ = any,
   Into extends Type = any,
 > {
+  private typeSource = Source<TypeSource>()
+
   static from<T extends Type, A extends unknown[]>(
     this: new(...args: A) => T,
     value: From<T>,
@@ -51,8 +59,6 @@ export class Type<
   clone<This extends Type>(this: This): This {
     return Object.assign(Object.create(Object.getPrototypeOf(this)), this)
   }
-
-  typeSource = Source<TypeSource>()
 }
 
 export type Native<T> = T extends string ? T : T extends Type<any, infer Name> ? Name : never
@@ -69,12 +75,6 @@ export type Predicate<T> = T extends string ? T : Constructor<T>
 export type AnyPredicate = string | Constructor<any>
 
 export type Value<T> = T extends string ? T : T extends Constructor<infer I> ? I : never
-
-export type TypeSource =
-  | Source<"from", { value: TypeConstructor }>
-  | Source<"lift", { value: unknown }>
-  | Source<"into", {}>
-  | Source<"assertEquals", { expected: Type; actual: Type }>
 
 export type Source<Tag extends string, Props> = {
   tag: Tag
