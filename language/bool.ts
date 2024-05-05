@@ -23,7 +23,7 @@ export class bool extends Type<"bool", boolean, {}, never, never> {
     throw 0
   }
 
-  assert<E>(error: E): E {
+  assert<E extends Type>(error: E): E {
     return this.assertEquals(bool.true, error)
   }
 }

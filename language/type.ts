@@ -1,32 +1,33 @@
 export class Type<
   Name extends string = any,
-  Native = any,
+  Native_ = any,
   Metadata = any,
-  From = any,
+  From_ = any,
   Into extends Type = any,
 > {
   static from<T extends Type, A extends unknown[]>(
     this: new(...args: A) => T,
-    value: FromType<T>,
+    value: From<T>,
     ...args: A
   ): T {
-    return new this(...args) // TODO: get value in there
+    return new this(...args).typeSource("from", { value })
   }
 
   static lift<T extends Type, Args extends unknown[]>(
     this: new(...args: Args) => T,
-    value: NativeType<T>,
+    value: Native<T>,
     ...args: Args
   ): T {
-    return new this(...args) // TODO: get value in there
+    return new this(...args).typeSource("lift", { value })
   }
 
   "": {
     name: Name
-    native?: Native
+    native?: Native_
     metadata: Metadata
-    from?: From
+    from?: From_
     into?: Into
+    source?: unknown
   }
 
   constructor(name: Name, metadata: Metadata) {
@@ -34,22 +35,32 @@ export class Type<
   }
 
   into<O extends Into, A extends unknown[]>(
-    type: new(...args: A) => O,
+    into: new(...args: A) => O,
     ...args: A
   ): O {
-    throw 0
+    return new into(...args).typeSource("into", {})
   }
 
-  assertEquals<This, E>(this: This, expected: This, error: E): E {
-    throw 0
+  assertEquals<This extends Type, E extends Type>(this: This, expected: This, error: E): E {
+    return error.typeSource("assertEquals", {
+      actual: this,
+      expected,
+    })
   }
+
+  clone<This extends Type>(this: This): This {
+    return Object.assign(Object.create(Object.getPrototypeOf(this)), this)
+  }
+
+  typeSource = Source<TypeSource>()
 }
 
-export type NativeType<T> = T extends string ? T : T extends Type<any, infer Name> ? Name : never
-export type FromType<T> = T extends Type<any, any, any, infer From> ? From : never
+export type Native<T> = T extends string ? T : T extends Type<any, infer Name> ? Name : never
+export type From<T> = T extends Type<any, any, any, infer From> ? From : never
 
 export type Instance<T> = T extends string ? T : T extends Constructor<infer U> ? U : never
 
+// TODO: get rid of these somehow
 export interface TypeConstructor extends Constructor<Type> {}
 export interface Constructor<T> {
   new(...args: any): T
@@ -58,3 +69,31 @@ export type Predicate<T> = T extends string ? T : Constructor<T>
 export type AnyPredicate = string | Constructor<any>
 
 export type Value<T> = T extends string ? T : T extends Constructor<infer I> ? I : never
+
+export type TypeSource =
+  | Source<"from", { value: TypeConstructor }>
+  | Source<"lift", { value: unknown }>
+  | Source<"into", {}>
+  | Source<"assertEquals", { expected: Type; actual: Type }>
+
+export type Source<Tag extends string, Props> = {
+  tag: Tag
+  this: Type
+} & Props
+
+export function Source<Node extends { tag: string }>() {
+  return function<
+    Target extends Type,
+    K extends Node["tag"],
+    Member extends Node & { tag: K },
+  >(
+    this: Target,
+    tag: K,
+    props: Omit<Member, "tag" | "this">,
+  ) {
+    const next = this.clone()
+    const node = { tag, ...props } as never as Node
+    next[""].source = node
+    return next
+  }
+}

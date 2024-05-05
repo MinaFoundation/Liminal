@@ -27,5 +27,5 @@ L.tx(function*() {
     .lift(new Uint8Array())
     .signer("contract")
     .deploy(Counter)
-  contract.state
+  return contract.state
 })
