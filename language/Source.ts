@@ -1,23 +1,17 @@
 import { Type } from "./Type.js"
 
-export type Source<Tag extends string, Props> = {
-  tag: Tag
-  this: Type
-} & Props
+export function source<K extends string>(tag: K) {
+  return class Source<T extends Type, P = never> {
+    readonly tag = tag
+    readonly props
+    constructor(readonly self: T, ...[props]: [P] extends [never] ? [] : [P]) {
+      this.props = props
+    }
 
-export function Source<Node extends { tag: string }>() {
-  return function<
-    Target extends Type,
-    K extends Node["tag"],
-    Member extends Node & { tag: K },
-  >(
-    this: Target,
-    tag: K,
-    props: Omit<Member, "tag" | "this">,
-  ) {
-    const next = this.clone()
-    const node = { tag, ...props } as never as Node
-    next[""].source = node
-    return next
+    build(): T {
+      const clone = this.self.clone()
+      clone[""].source = this
+      return clone
+    }
   }
 }

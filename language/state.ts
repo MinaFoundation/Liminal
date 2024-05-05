@@ -1,8 +1,8 @@
 import { Effect } from "./Effect.js"
-import { Constructor, Type } from "./Type.js"
+import { Type } from "./Type.js"
 
 export class State<T extends Type = any> extends Effect<"state", never, T> {
-  constructor(type: Constructor<T>) {
+  constructor(type: new() => T) {
     super("state", type)
   }
 

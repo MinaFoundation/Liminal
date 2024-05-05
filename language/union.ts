@@ -1,5 +1,5 @@
-import { Match } from "./Match.js"
-import { AnyPredicate, Native, Type, Value } from "./Type.js"
+import { AnyPredicate, Match, Value } from "./Match.js"
+import { Native, Type } from "./Type.js"
 
 export function Union<Members extends AnyPredicate[]>(...memberTypes: Members) {
   return class extends Type<

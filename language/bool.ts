@@ -1,17 +1,17 @@
 import { Effect } from "./Effect.js"
-import { Source } from "./Source.js"
+import { source } from "./Source.js"
 import { Type } from "./Type.js"
 
-export type BoolSource = Source<"true" | "false" | "not", {}>
+export class TrueSource extends source("true")<bool> {}
+export class FalseSource extends source("false")<bool> {}
+export class NotSource extends source("not")<bool> {}
 
-export class bool extends Type<"bool", boolean, {}, never, never> {
-  #BoolSource = Source<BoolSource>()
-
-  static true = new this().#BoolSource("true", {})
-  static false = new this().#BoolSource("false", {})
+export class bool extends Type<"bool", boolean, never, never, never> {
+  static true = new TrueSource(new this()).build()
+  static false = new FalseSource(new this()).build()
 
   constructor() {
-    super("bool", {})
+    super("bool")
   }
 
   if<Y>(f: () => Generator<Y, void>): If<Y> {
@@ -26,7 +26,7 @@ export class bool extends Type<"bool", boolean, {}, never, never> {
   }
 
   not(): bool {
-    return this.#BoolSource("not", {})
+    return new NotSource(this).build()
   }
 
   assert<E extends Type>(error: E): E {

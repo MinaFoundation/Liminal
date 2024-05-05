@@ -1,51 +1,49 @@
-import { Source } from "./Source.js"
+import { source } from "./Source.js"
 import { Type } from "./Type.js"
 
-export type IntSource =
-  | Source<"add" | "subtract" | "multiply" | "divide" | "logarithm", { value: Type }>
-  | Source<"square" | "min" | "max", {}>
+export class AddSource<T extends Int> extends source("Add")<T, { value: Type }> {}
+export class SubtractSource<T extends Int> extends source("Subtract")<T, { value: Type }> {}
+export class MultiplySource<T extends Int> extends source("Multiply")<T, { value: Type }> {}
+export class DivideSource<T extends Int> extends source("Divide")<T, { value: Type }> {}
+export class LogarithmSource<T extends Int> extends source("Logarithm")<T, { value: Type }> {}
+export class SquareSource<T extends Int> extends source("Square")<T> {}
+export class MinSource<T extends Int> extends source("Min")<T> {}
+export class MaxSource<T extends Int> extends source("Max")<T> {}
 
 class Int<K extends string = any, From = any, Into extends Type = any, S extends boolean = any>
   extends Type<K, number, {}, From, Into>
 {
-  private intSource = Source<IntSource>()
-
-  static min<T extends Int, A extends unknown[]>(
-    this: new(...args: A) => T,
-    ...args: A
-  ): T {
-    return new this(...args).intSource("min", {})
+  // TODO: get as instance, not method
+  static min<T extends Int>(this: new() => T): T {
+    return new MinSource(new this()).build()
   }
-
-  static max<T extends Int, A extends unknown[]>(
-    this: new(...args: A) => T,
-    ...args: A
-  ): T {
-    return new this(...args).intSource("max", {})
+  // TODO: get as instance, not method
+  static max<T extends Int>(this: new() => T): T {
+    return new MaxSource(new this()).build()
   }
 
   constructor(name: K, signed: S) {
     super(name, { signed })
   }
 
-  add(value: this) {
-    return this.intSource("add", { value })
+  add(value: this): this {
+    return new AddSource(this, { value }).build()
   }
 
-  subtract(value: this) {
-    return this.intSource("subtract", { value })
+  subtract(value: this): this {
+    return new SubtractSource(this, { value }).build()
   }
 
-  multiply(value: this) {
-    return this.intSource("multiply", { value })
+  multiply(value: this): this {
+    return new MultiplySource(this, { value }).build()
   }
 
-  divide(value: this) {
-    return this.intSource("divide", { value })
+  divide(value: this): this {
+    return new DivideSource(this, { value }).build()
   }
 
-  square() {
-    return this.intSource("square", {})
+  square(): this {
+    return new SquareSource(this).build()
   }
 }
 

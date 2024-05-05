@@ -1,6 +1,5 @@
 import { Effect } from "./Effect.js"
 import { Option } from "./Option.js"
-import { AnyPredicate, Predicate, Value } from "./Type.js"
 
 export class Match<Remaining, PreviousYield, Return>
   extends Effect<"Match", PreviousYield, [Remaining] extends [never] ? Return : Option<Return>>
@@ -28,3 +27,7 @@ export class Match<Remaining, PreviousYield, Return>
     return new Match<never, PreviousYield | CurrentYield, Return>(this, f)
   }
 }
+
+export type Predicate<T> = T extends string ? T : new() => T
+export type AnyPredicate = string | (new() => any)
+export type Value<T> = T extends string ? T : T extends new() => infer I ? I : never

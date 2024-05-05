@@ -1,29 +1,47 @@
 import { u256 } from "./int.js"
-import { Type, TypeConstructor } from "./Type.js"
+import { source } from "./Source.js"
+import { Type } from "./Type.js"
 
-export function MerkleList<T extends TypeConstructor>(elementType: T) {
+export class MerkleListLengthSource extends source("MerkleListLength")<u256> {}
+
+export interface MerkleList<T extends Type>
+  extends InstanceType<ReturnType<typeof MerkleList<T>>>
+{}
+export function MerkleList<T extends Type>(elementType: new() => T) {
   return class
-    extends Type<"MerkleList", MerkleListNative<InstanceType<T>>, { elementType: T }, never, never>
+    extends Type<"MerkleList", MerkleListNative<T>, { elementType: new() => T }, never, never>
   {
-    length = new u256()
+    length = new MerkleListLengthSource(new u256()).build()
 
     constructor() {
       super("MerkleList", { elementType })
     }
 
-    push(value: InstanceType<T>) {
+    prepend(value: T): MerkleList<T> {
       throw 0
     }
 
-    unshift(value: InstanceType<T>) {
+    append(value: T): MerkleList<T> {
       throw 0
     }
 
-    pop(): InstanceType<T> {
+    shift(): MerkleList<T> {
       throw 0
     }
 
-    shift(): InstanceType<T> {
+    pop(): MerkleList<T> {
+      throw 0
+    }
+
+    first(): T {
+      throw 0
+    }
+
+    last(): T {
+      throw 0
+    }
+
+    at(index: u256): T {
       throw 0
     }
   }

@@ -1,8 +1,7 @@
 import { Effect } from "./Effect.js"
 import { id } from "./id.js"
-import { Match } from "./Match.js"
+import { Match, Predicate, Value } from "./Match.js"
 import { TxContext } from "./tx.js"
-import { Predicate, Value } from "./Type.js"
 
 export interface F<A extends unknown[] = any, Y = any, O = any> {
   (...args: A): Call<A, Y, O>
@@ -11,9 +10,7 @@ export interface F<A extends unknown[] = any, Y = any, O = any> {
 export function f<A extends unknown[], Y, O>(
   f: (this: FContext, ...args: A) => Generator<Y, O>,
 ): F<A, Y, O> {
-  return (...args) => {
-    return new Call(f, args)
-  }
+  return (...args) => new Call(f, args)
 }
 
 export interface FContext extends TxContext {

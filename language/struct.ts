@@ -1,6 +1,6 @@
-import { Native, Type, TypeConstructor } from "./Type.js"
+import { Native, Type } from "./Type.js"
 
-export type Fields = Record<string, TypeConstructor>
+export type Fields = Record<string, new() => Type>
 
 // TODO: do we want to parameterize the conversions?
 // TODO: enable tuple structs
