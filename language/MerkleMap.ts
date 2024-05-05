@@ -1,6 +1,6 @@
 import { bool } from "./bool.js"
 import { u256 } from "./int.js"
-import { Reduce } from "./traits/reducible.js"
+import { reduce } from "./reduce.js"
 import { Type, TypeConstructor } from "./Type.js"
 
 export function MerkleMap<K extends TypeConstructor, V extends TypeConstructor>(
@@ -36,9 +36,9 @@ export function MerkleMap<K extends TypeConstructor, V extends TypeConstructor>(
       throw 0
     }
 
-    declare reduceKeys: Reduce<InstanceType<K>>
-    declare reduceValues: Reduce<InstanceType<V>>
-    declare reduceEntries: Reduce<[InstanceType<K>, InstanceType<V>]>
+    reduceKeys = reduce<InstanceType<K>>()
+    reduceValues = reduce<InstanceType<V>>()
+    reduceEntries = reduce<[InstanceType<K>, InstanceType<V>]>()
   }
 }
 

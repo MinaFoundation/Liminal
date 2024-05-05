@@ -1,12 +1,13 @@
-import { signer } from "./id.js"
+import { id } from "./id.js"
 
-export declare function tx<Y, O>(f: (this: TxContext) => Generator<Y, O>): Tx<Y, O>
-
-export interface Tx<Y, O> {
-  tag: "tx"
-  f: (this: TxContext) => Generator<Y, O>
+export function tx<Y, O>(f: (this: TxContext) => Generator<Y, O>) {
+  return new Tx<Y, O>(f)
 }
 
-export interface TxContext {
-  sender: signer
+export class Tx<Y, O> {
+  constructor(readonly f: (this: TxContext) => Generator<Y, O>) {}
+}
+
+export class TxContext {
+  sender = id.sender
 }

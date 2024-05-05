@@ -1,26 +1,37 @@
+import { Effect } from "./Effect.js"
 import { id } from "./id.js"
+import { Match } from "./Match.js"
 import { TxContext } from "./tx.js"
 import { Predicate, Value } from "./Type.js"
-import { Matcher } from "./Union.js"
 
-export interface f<A extends unknown[] = any, Y = any, O = any> {
+export interface F<A extends unknown[] = any, Y = any, O = any> {
   (...args: A): Call<A, Y, O>
 }
 
-export declare function f<A extends unknown[], Y, O>(
+export function f<A extends unknown[], Y, O>(
   f: (this: FContext, ...args: A) => Generator<Y, O>,
-): f<A, Y, O>
+): F<A, Y, O> {
+  return (...args) => {
+    return new Call(f, args)
+  }
+}
 
 export interface FContext extends TxContext {
   contract: id
 }
 
-export interface Call<A extends unknown[], Y, O> extends Generator<Y, O> {
-  tag: "Call"
-  f: (...args: A) => Generator<Y, O>
-  args: A
-  when: <M extends Predicate<Y>>(
+export class Call<A extends unknown[], Y, O> extends Effect<"Call", Y, O> {
+  constructor(
+    self: (this: FContext, ...args: A) => Generator<Y, O>,
+    readonly args: A,
+  ) {
+    super("Call", self)
+  }
+
+  when<M extends Predicate<Y>>(
     match: M,
     f: (value: Value<M>) => Generator<Y, O>,
-  ) => Matcher<Exclude<Y, Value<M>>, Y, O>
+  ): Match<Exclude<Y, Value<M>>, Y, O> {
+    return new Match(this, f, match)
+  }
 }

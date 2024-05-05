@@ -1,6 +1,6 @@
 import { Namespace } from "./Namespace.js"
-import { state } from "./state.js"
+import { State } from "./state.js"
 
 export type Contract<N extends Namespace> = {
-  [K in keyof N]: N[K] extends state<infer T> ? T : N[K]
+  [K in keyof N]: N[K] extends State<infer T> ? T : N[K]
 }

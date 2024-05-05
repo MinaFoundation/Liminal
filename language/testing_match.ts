@@ -1,5 +1,6 @@
-import { f } from "./f.js"
-import { Matcher, Union } from "./Union.js"
+import { F, f } from "./f.js"
+import { Match } from "./Match.js"
+import { Union } from "./Union.js"
 
 class Dog {
   readonly tag = "Dog"

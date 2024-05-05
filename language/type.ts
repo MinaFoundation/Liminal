@@ -1,8 +1,12 @@
+import { Source } from "./Source.js"
+import { Struct } from "./Struct.js"
+
 export type TypeSource =
   | Source<"from", { value: TypeConstructor }>
   | Source<"lift", { value: unknown }>
   | Source<"into", {}>
   | Source<"assertEquals", { expected: Type; actual: Type }>
+  | Source<"structValue", { struct: Struct; key: string }>
 
 export class Type<
   Name extends string = any,
@@ -11,14 +15,14 @@ export class Type<
   From_ = any,
   Into extends Type = any,
 > {
-  private typeSource = Source<TypeSource>()
+  #typeSource = Source<TypeSource>()
 
   static from<T extends Type, A extends unknown[]>(
     this: new(...args: A) => T,
     value: From<T>,
     ...args: A
   ): T {
-    return new this(...args).typeSource("from", { value })
+    return new this(...args).#typeSource("from", { value })
   }
 
   static lift<T extends Type, Args extends unknown[]>(
@@ -26,7 +30,15 @@ export class Type<
     value: Native<T>,
     ...args: Args
   ): T {
-    return new this(...args).typeSource("lift", { value })
+    return new this(...args).#typeSource("lift", { value })
+  }
+
+  static structValue<T extends Type, Args extends unknown[]>(
+    this: new(...args: Args) => T,
+    value: Native<T>,
+    ...args: Args
+  ): T {
+    return new this(...args).#typeSource("lift", { value })
   }
 
   "": {
@@ -46,11 +58,11 @@ export class Type<
     into: new(...args: A) => O,
     ...args: A
   ): O {
-    return new into(...args).typeSource("into", {})
+    return new into(...args).#typeSource("into", {})
   }
 
   assertEquals<This extends Type, E extends Type>(this: This, expected: This, error: E): E {
-    return error.typeSource("assertEquals", {
+    return error.#typeSource("assertEquals", {
       actual: this,
       expected,
     })
@@ -75,25 +87,3 @@ export type Predicate<T> = T extends string ? T : Constructor<T>
 export type AnyPredicate = string | Constructor<any>
 
 export type Value<T> = T extends string ? T : T extends Constructor<infer I> ? I : never
-
-export type Source<Tag extends string, Props> = {
-  tag: Tag
-  this: Type
-} & Props
-
-export function Source<Node extends { tag: string }>() {
-  return function<
-    Target extends Type,
-    K extends Node["tag"],
-    Member extends Node & { tag: K },
-  >(
-    this: Target,
-    tag: K,
-    props: Omit<Member, "tag" | "this">,
-  ) {
-    const next = this.clone()
-    const node = { tag, ...props } as never as Node
-    next[""].source = node
-    return next
-  }
-}

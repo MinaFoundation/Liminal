@@ -1,12 +1,18 @@
-import { Type, TypeConstructor } from "./Type.js"
+import { Effect } from "./Effect.js"
+import { Constructor, Type } from "./Type.js"
 
-export interface state<T extends Type = Type> extends Generator<never, T> {
-  tag: "state"
-  type: T
-  set(value: T): SetState<T>
+export class State<T extends Type = any> extends Effect<"state", never, T> {
+  constructor(type: Constructor<T>) {
+    super("state", type)
+  }
+
+  set(value: T): SetState<T> {
+    throw 0
+  }
 }
-export declare function state<T extends TypeConstructor>(type: T): state<InstanceType<T>>
 
-export interface SetState<T extends Type> extends Generator<T, T> {
-  tag: "SetState"
+export class SetState<T extends Type> extends Effect<"SetState", T, T> {
+  constructor(self: State<T>, readonly value: T) {
+    super("SetState", self)
+  }
 }

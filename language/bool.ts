@@ -1,12 +1,14 @@
-import { Source, Type } from "./Type.js"
+import { Effect } from "./Effect.js"
+import { Source } from "./Source.js"
+import { Type } from "./Type.js"
 
 export type BoolSource = Source<"true" | "false" | "not", {}>
 
 export class bool extends Type<"bool", boolean, {}, never, never> {
-  private BoolSource = Source<BoolSource>()
+  #BoolSource = Source<BoolSource>()
 
-  static true = new this().BoolSource("true", {})
-  static false = new this().BoolSource("false", {})
+  static true = new this().#BoolSource("true", {})
+  static false = new this().#BoolSource("false", {})
 
   constructor() {
     super("bool", {})
@@ -20,11 +22,11 @@ export class bool extends Type<"bool", boolean, {}, never, never> {
     if_: () => Generator<Y1, O>,
     else_: () => Generator<Y2, O>,
   ): IfElse<Y1, Y2, O> {
-    throw 0
+    return new IfElse(this, if_, else_)
   }
 
   not(): bool {
-    return this.BoolSource("not", {})
+    return this.#BoolSource("not", {})
   }
 
   assert<E extends Type>(error: E): E {
@@ -32,47 +34,21 @@ export class bool extends Type<"bool", boolean, {}, never, never> {
   }
 }
 
-export class If<Y> implements Generator<Y, void> {
-  readonly tag = "If"
-
+export class If<Y> extends Effect<"If", Y, void> {
   constructor(
-    readonly condition: bool,
+    self: bool,
     readonly f: () => Generator<Y, void>,
-  ) {}
-
-  next(): IteratorResult<Y, void> {
-    throw 0
-  }
-
-  return(): IteratorResult<Y, void> {
-    throw 0
-  }
-
-  throw(): IteratorResult<Y, void> {
-    throw 0
-  }
-
-  [Symbol.iterator](): Generator<Y, void, unknown> {
-    throw 0
+  ) {
+    super("If", self)
   }
 }
 
-export class IfElse<Y1, Y2, O> implements Generator<Y1 | Y2, O> {
-  readonly tag = "IfElse"
-
-  next(): IteratorResult<Y1 | Y2, O> {
-    throw 0
-  }
-
-  return(): IteratorResult<Y1 | Y2, O> {
-    throw 0
-  }
-
-  throw(): IteratorResult<Y1 | Y2, O> {
-    throw 0
-  }
-
-  [Symbol.iterator](): Generator<Y1 | Y2, O, unknown> {
-    throw 0
+export class IfElse<Y1, Y2, O> extends Effect<"If", Y1 | Y2, O> {
+  constructor(
+    self: bool,
+    readonly if_: () => Generator<Y1, O>,
+    readonly else_: () => Generator<Y2, O>,
+  ) {
+    super("If", self)
   }
 }

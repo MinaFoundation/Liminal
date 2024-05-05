@@ -1,8 +1,15 @@
-import { Source, Type } from "./Type.js"
+import { Source } from "./Source.js"
+import { Type } from "./Type.js"
+
+export type IntSource =
+  | Source<"add" | "subtract" | "multiply" | "divide" | "logarithm", { value: Type }>
+  | Source<"square" | "min" | "max", {}>
 
 class Int<K extends string = any, From = any, Into extends Type = any, S extends boolean = any>
   extends Type<K, number, {}, From, Into>
 {
+  private intSource = Source<IntSource>()
+
   static min<T extends Int, A extends unknown[]>(
     this: new(...args: A) => T,
     ...args: A
@@ -40,15 +47,7 @@ class Int<K extends string = any, From = any, Into extends Type = any, S extends
   square() {
     return this.intSource("square", {})
   }
-
-  intSource = Source<IntSource>()
 }
-
-export type IntSource =
-  | Source<"add" | "subtract" | "multiply" | "divide" | "logarithm", { value: Type }>
-  | Source<"square", {}>
-  | Source<"min", {}>
-  | Source<"max", {}>
 
 export class u8 extends Int<"u18", never, u16 | u32 | u64 | u128 | u256, false> {
   constructor() {
