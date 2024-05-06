@@ -1,6 +1,6 @@
 import { u256 } from "./int.js"
 import { source } from "./Source.js"
-import { Type } from "./Type.js"
+import { Native, Type, type } from "./Type.js"
 
 export class MerkleListLength extends source("MerkleListLength")<u256> {}
 export class MerkleListPrepend<T extends Type>
@@ -21,19 +21,9 @@ export interface MerkleList<T extends Type = Type>
 {}
 export function MerkleList<T extends Type>(elementType: new() => T) {
   return class
-    extends Type<
-      "MerkleList",
-      "TODO: MerkleListNative<T>",
-      { elementType: new() => T },
-      never,
-      never
-    >
+    extends type("MerkleList", { elementType })<MerkleListNative<Native<T>>, never, never>
   {
     length = new MerkleListLength(new u256()).value()
-
-    constructor() {
-      super("MerkleList", { elementType })
-    }
 
     prepend(value: T): MerkleList<T> {
       return new MerkleListPrepend(this, value).value()
@@ -59,11 +49,14 @@ export function MerkleList<T extends Type>(elementType: new() => T) {
     }
 
     first(): T {
-      return this.at(u256.of(1))
+      return this.at(u256.from(1))
     }
 
     last(): T {
-      return this.at(this.length.subtract(u256.of(1)))
+      return this.at(this.length.subtract(u256.from(1)))
     }
   }
 }
+
+// TODO
+export class MerkleListNative<T> {}

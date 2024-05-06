@@ -31,6 +31,7 @@
 - Deploy method chaining off of signer
 - Inside of a tx, we have different context from inside of a contract method.
 - Generators are a risk
+- `signer` is assignable to `id`, but contains methods such as `deploy` and `send`.
 
 ———
 
@@ -49,6 +50,10 @@ Private vs. public –– represent at type level
 
 Contract with generator
 
+Equivalent of destructuring
+
+Can we do away with account updates
+
 <!--
 
 Be consistent about convention around type names/tags/misc.
@@ -61,3 +66,8 @@ Be consistent about convention around type names/tags/misc.
 -->
 
 // if you don't yield, it's effectively meta-programming
+
+Structure:
+
+- why generators?
+- ids and signers

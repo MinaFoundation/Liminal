@@ -12,5 +12,5 @@ export class SetAdminResult extends L.Union(L.id, SetAdminError) {}
 
 /** Testing if docs work */
 export const setAdmin = L.f(function*(input: SetAdminProps) {
-  return SetAdminResult.from(L.id.of(new Uint8Array()))
+  return SetAdminResult.from(L.id.from(new Uint8Array()))
 })

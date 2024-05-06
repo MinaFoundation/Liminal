@@ -1,20 +1,20 @@
 export function Effect<T extends string>(tag: T) {
-  return class<Y, O = never> implements Generator<Y, O> {
+  return class<Y, R = never> implements Generator<Y, R> {
     readonly tag = tag
 
-    next(): IteratorResult<Y, O> {
+    next(): IteratorResult<Y, R> {
       throw 0
     }
 
-    return(): IteratorResult<Y, O> {
+    return(): IteratorResult<Y, R> {
       throw 0
     }
 
-    throw(): IteratorResult<Y, O> {
+    throw(): IteratorResult<Y, R> {
       throw 0
     }
 
-    [Symbol.iterator](): Generator<Y, O> {
+    [Symbol.iterator](): Generator<Y, R> {
       throw 0
     }
   }

@@ -1,4 +1,4 @@
-import { Native, Type } from "./Type.js"
+import { Native, Type, type } from "./Type.js"
 
 export type Fields = Record<string, new() => Type>
 
@@ -7,15 +7,12 @@ export type Fields = Record<string, new() => Type>
 export interface Struct<F extends Fields = Fields>
   extends InstanceType<ReturnType<typeof Struct<F>>>
 {}
+
 export function Struct<F extends Fields>(fieldTypes: F) {
-  return class extends Type<"Struct", StructNative<F>, { fieldTypes: F }, never, never> {
-    // TODO: runtime
+  return class extends type("Struct", { fieldTypes })<StructNative<F>, never, never> {
+    // TODO:
     declare fields: {
       [K in keyof F]: InstanceType<F[K]>
-    }
-
-    constructor() {
-      super("Struct", { fieldTypes })
     }
   }
 }

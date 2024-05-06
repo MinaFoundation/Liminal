@@ -11,5 +11,5 @@ export class SetMetadataError extends L.Union("NotAnAdmin", "AnotherProblem") {}
 export class SetMetadataResult extends L.Union(TokenMetadata, SetMetadataError) {}
 
 export const setMetadata = L.f(function*(input: SetMetadataProps) {
-  return SetMetadataResult.from(TokenMetadata.of(new L.MerkleListNative()))
+  return SetMetadataResult.from(TokenMetadata.from(new L.MerkleListNative()))
 })

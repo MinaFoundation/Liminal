@@ -14,7 +14,7 @@
   "scripts": {
     "task": "node --enable-source-maps --no-warnings --loader ts-node/esm",
     "build": "tsc",
-    "check": "tsc --no-emit"
+    "check": "tsc --noEmit"
   },
   "dependencies": {},
   "devDependencies": {

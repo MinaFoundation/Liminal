@@ -1,5 +1,16 @@
 import { source } from "./Source.js"
 
+export function type<Name extends string, Metadata = undefined>(
+  name: Name,
+  metadata: Metadata = undefined!,
+) {
+  return class<Native, From, Into extends Type> extends Type<Name, Native, Metadata, From, Into> {
+    constructor() {
+      super(name, metadata)
+    }
+  }
+}
+
 export class Of<T extends Type> extends source("native")<T, { value: unknown }> {}
 export class FromSource<T extends Type> extends source("from")<T, { value: unknown }> {}
 export class IntoSource<T extends Type> extends source("into")<T, { self: unknown }> {}
@@ -14,16 +25,9 @@ export class Type<
   From_ = any,
   Into extends Type = any,
 > {
-  static of<T extends Type>(
-    this: new() => T,
-    value: Native<T>,
-  ): T {
-    return new Of(new this(), { value }).value()
-  }
-
   static from<T extends Type>(
     this: new() => T,
-    value: From<T>,
+    value: Native<T> | From<T>,
   ): T {
     return new FromSource(new this(), { value }).value()
   }
@@ -37,11 +41,8 @@ export class Type<
     source?: unknown
   }
 
-  constructor(name: Name, ...[metadata]: [Metadata] extends [never] ? [] : [Metadata]) {
-    this[""] = {
-      name,
-      metadata: metadata!,
-    }
+  constructor(name: Name, metadata: Metadata) {
+    this[""] = { name, metadata }
   }
 
   into<O extends Into>(into: new() => O): O {
@@ -62,4 +63,3 @@ export class Type<
 
 export type Native<T> = T extends string ? T : T extends Type<any, infer Name> ? Name : never
 export type From<T> = T extends Type<any, any, any, infer From> ? From : never
-export type Instance<T> = T extends string ? T : T extends new() => infer U ? U : never

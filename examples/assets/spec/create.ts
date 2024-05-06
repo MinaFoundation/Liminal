@@ -18,5 +18,5 @@ export class CreateResult extends L.Union(CreateOk, CreateError) {}
 
 export const create = L.f(function*({ admin, decimals, metadata }: CreateInput) {
   // ...
-  return CreateResult.from(CreateOk.of({ id: 1 }))
+  return CreateResult.from(CreateOk.from({ id: 1 }))
 })

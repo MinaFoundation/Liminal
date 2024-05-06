@@ -11,7 +11,7 @@ export class Min<T extends Int> extends source("Min")<T> {}
 export class Max<T extends Int> extends source("Max")<T> {}
 
 class Int<K extends string = any, From = any, Into extends Type = any, S extends boolean = any>
-  extends Type<K, number, {}, From, Into>
+  extends Type<K, number, { signed: S }, From, Into>
 {
   // TODO: get as instance, not method
   static min<T extends Int>(this: new() => T): T {

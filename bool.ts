@@ -1,18 +1,14 @@
 import { Effect } from "./Effect.js"
 import { source } from "./Source.js"
-import { Type } from "./Type.js"
+import { Type, type } from "./Type.js"
 
 export class True extends source("true")<bool> {}
 export class False extends source("false")<bool> {}
 export class Not extends source("not")<bool> {}
 
-export class bool extends Type<"bool", boolean, never, never, never> {
+export class bool extends type("bool")<boolean, never, never> {
   static true = new True(new this()).value()
   static false = new False(new this()).value()
-
-  constructor() {
-    super("bool")
-  }
 
   // TODO: chain this and return option if not else-d
   if<Y>(f: () => Generator<Y, void>): If<Y> {
