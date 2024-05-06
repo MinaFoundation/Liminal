@@ -2,7 +2,7 @@ import { Effect } from "Effect.js"
 import { bool } from "./bool.js"
 import { u256 } from "./int.js"
 import { source } from "./Source.js"
-import { Native, Type, type } from "./Type.js"
+import { Type, type } from "./Type.js"
 
 export class MerkleMapSize extends source("MerkleMapSize")<u256> {}
 export class MerkleMapGet<K extends Type> extends source("MerkleMapGet")<K, Type> {}
@@ -31,7 +31,7 @@ export function MerkleMap<K extends Type, V extends Type>(
   valueType: new() => V,
 ) {
   return class extends type("MerkleMap", { keyType, valueType })<
-    MerkleMapNative<Native<K>, Native<V>>,
+    MerkleMapNative<Type.Native<K>, Type.Native<V>>,
     never,
     never
   > {

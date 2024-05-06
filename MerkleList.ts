@@ -1,6 +1,6 @@
 import { u256 } from "./int.js"
 import { source } from "./Source.js"
-import { Native, Type, type } from "./Type.js"
+import { Type, type } from "./Type.js"
 
 export class MerkleListLength extends source("MerkleListLength")<u256> {}
 export class MerkleListPrepend<T extends Type>
@@ -21,7 +21,7 @@ export interface MerkleList<T extends Type = Type>
 {}
 export function MerkleList<T extends Type>(elementType: new() => T) {
   return class
-    extends type("MerkleList", { elementType })<MerkleListNative<Native<T>>, never, never>
+    extends type("MerkleList", { elementType })<MerkleListNative<Type.Native<T>>, never, never>
   {
     length = new MerkleListLength(new u256()).value()
 

@@ -12,24 +12,25 @@ export function type<Name extends string, Metadata = undefined>(
 }
 
 export class Of<T extends Type> extends source("native")<T, { value: unknown }> {}
-export class FromSource<T extends Type> extends source("from")<T, { value: unknown }> {}
-export class IntoSource<T extends Type> extends source("into")<T, { self: unknown }> {}
-export class AssertEqualsSource<T extends Type>
-  extends source("assertEquals")<T, { expected: Type; actual: Type }>
-{}
+export class From<T extends Type> extends source("from")<T, unknown> {}
+export class Into<T extends Type> extends source("into")<T, Type> {}
+export class AssertEquals<T extends Type> extends source("assertEquals")<T, {
+  expected: Type
+  actual: Type
+}> {}
 
 export class Type<
   Name extends string = any,
   Native_ = any,
   Metadata = any,
   From_ = any,
-  Into extends Type = any,
+  Into_ extends Type = any,
 > {
   static from<T extends Type>(
     this: new() => T,
-    value: Native<T> | From<T>,
+    value: Type.Native<T> | Type.From<T>,
   ): T {
-    return new FromSource(new this(), { value }).value()
+    return new From(new this(), value).value()
   }
 
   "": {
@@ -37,7 +38,7 @@ export class Type<
     native?: Native_
     metadata: Metadata
     from?: From_
-    into?: Into
+    into?: Into_
     source?: unknown
   }
 
@@ -45,12 +46,12 @@ export class Type<
     this[""] = { name, metadata }
   }
 
-  into<O extends Into>(into: new() => O): O {
-    return new IntoSource(new into(), { self: this }).value()
+  into<O extends Into_>(into: new() => O): O {
+    return new Into(new into(), this).value()
   }
 
   assertEquals<This extends Type, E extends Type>(this: This, expected: This, error: E): E {
-    return new AssertEqualsSource(error, {
+    return new AssertEquals(error, {
       actual: this,
       expected,
     }).value()
@@ -61,5 +62,8 @@ export class Type<
   }
 }
 
-export type Native<T> = T extends string ? T : T extends Type<any, infer Name> ? Name : never
-export type From<T> = T extends Type<any, any, any, infer From> ? From : never
+export namespace Type {
+  export type Native<T> = T extends string ? T : T extends Type<any, infer Name> ? Name : never
+  // TODO: why the presence of `undefined` when the `From` of `T` is `never`?
+  export type From<T> = T extends Type<any, any, any, infer From> ? Exclude<From, undefined> : never
+}

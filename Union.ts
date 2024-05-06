@@ -1,9 +1,9 @@
 import { AnyPredicate, Match, Value } from "./Match.js"
-import { Native, type } from "./Type.js"
+import { Type, type } from "./Type.js"
 
 export function Union<Members extends AnyPredicate[]>(...memberTypes: Members) {
   return class extends type("Union", { memberTypes })<
-    Native<Value<Members[number]>>,
+    Type.Native<Value<Members[number]>>,
     Value<Members[number]>,
     never
   > {
