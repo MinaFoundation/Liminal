@@ -1,7 +1,7 @@
+import { source } from "Source.js"
 import { Effect } from "./Effect.js"
-import { id } from "./id.js"
+import { id, signer } from "./id.js"
 import { Match, Predicate, Value } from "./Match.js"
-import { TxContext } from "./tx.js"
 
 export interface F<A extends unknown[] = any, Y = any, O = any> {
   (...args: A): Call<A, Y, O>
@@ -13,16 +13,23 @@ export function f<A extends unknown[], Y, O>(
   return (...args) => new Call(f, args)
 }
 
-export interface FContext extends TxContext {
-  contract: id
+export class CallerNode extends source("callerId")<id> {}
+
+export class Self extends source("Self")<signer<typeof Self.key>> {
+  static readonly key = Symbol()
 }
 
-export class Call<A extends unknown[], Y, O> extends Effect<"Call", Y, O> {
+export class FContext {
+  caller = new CallerNode(new id()).value()
+  self = new Self(new (signer(Self.key))()).value()
+}
+
+export class Call<A extends unknown[], Y, O> extends Effect("Call")<Y, O> {
   constructor(
-    self: (this: FContext, ...args: A) => Generator<Y, O>,
+    readonly self: (this: FContext, ...args: A) => Generator<Y, O>,
     readonly args: A,
   ) {
-    super("Call", self)
+    super()
   }
 
   when<M extends Predicate<Y>>(

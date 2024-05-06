@@ -1,5 +1,5 @@
-import { SignalOptions } from "../util/AbortController.js"
-import { Subscription } from "../util/Subscription.js"
+import { SignalOptions } from "./util/AbortController.js"
+import { Subscription } from "./util/Subscription.js"
 
 export interface Client {
   send(tx: Uint8Array, options: SignalOptions): Subscription<TxStatus>

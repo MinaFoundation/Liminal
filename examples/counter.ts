@@ -23,9 +23,8 @@ const square = L.f(function*() {
 
 const Counter = { add, subtract, square, state }
 
-const tx = L
-  .tx(function*() {
-    const contractId = yield* L.id.of(new Uint8Array()).signer("contract")
-    const contract = yield* contractId.deploy(Counter)
-    return contract
-  })
+const tx = L.tx(function*() {
+  const contractId = yield* L.id.of(new Uint8Array()).signer("contract")
+  const contract = yield* contractId.deploy(Counter)
+  return contract
+})

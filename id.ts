@@ -3,53 +3,41 @@ import { Effect } from "./Effect.js"
 import { Namespace } from "./Namespace.js"
 import { Type } from "./Type.js"
 
-class Base<Signed extends boolean>
-  extends Type<"id", Uint8Array, { signed: Signed }, never, never>
-{
-  constructor(signed: Signed) {
-    super("id", { signed })
+export class id extends Type<"id", Uint8Array, never, never, never> {
+  constructor() {
+    super("id")
   }
 
   bind<N extends Namespace>(namespace: N) {
-    return new BindEffect(this, namespace)
+    return new Bind(this, namespace)
+  }
+
+  signer<K extends string>(key: K): Signer<K> {
+    return new Signer(this, key)
   }
 }
 
-export class BindEffect<N extends Namespace> extends Effect<"Bind", Contract<N>, never> {
-  constructor(self: Base<boolean>, readonly namespace: N) {
-    super("Bind", self)
+export interface signer<K extends keyof any = any>
+  extends InstanceType<ReturnType<typeof signer<K>>>
+{}
+export function signer<K extends keyof any>(key: K) {
+  return class extends id {
+    readonly key = key
+
+    deploy<N extends Namespace>(namespace: N): Deploy<N> {
+      return new Deploy(this, namespace)
+    }
   }
 }
 
-export class id extends Base<false> {
-  constructor() {
-    super(false)
-  }
-
-  // TODO: enable chaining into .deploy?
-  signer<K extends string>(key: K) {
-    return new SignerResult<K>(this, key)
-  }
-}
-
-export class SignerResult<K extends string> extends Effect("signer")<SignerRequirement<K>, signer> {
-  constructor(readonly self: id, readonly key: K) {
+export class Bind<N extends Namespace> extends Effect("Bind")<Contract<N>, never> {
+  constructor(readonly self: id, readonly namespace: N) {
     super()
   }
 }
 
-export class signer extends Base<true> {
-  constructor(readonly for_: id) {
-    super(true)
-  }
-
-  deploy<N extends Namespace>(namespace: N) {
-    return new DeployResult<N>(this, namespace)
-  }
-}
-
-export class DeployResult<N extends Namespace> extends Effect("Deploy")<never, Contract<N>> {
-  constructor(readonly self: signer, readonly namespace: N) {
+export class Signer<K extends string> extends Effect("signer")<SignerRequirement<K>, signer<K>> {
+  constructor(readonly self: id, readonly key: K) {
     super()
   }
 }
@@ -57,4 +45,10 @@ export class DeployResult<N extends Namespace> extends Effect("Deploy")<never, C
 export class SignerRequirement<K extends string> {
   readonly tag = "SignerRequirement"
   constructor(readonly key: K) {}
+}
+
+export class Deploy<N extends Namespace> extends Effect("Deploy")<never, Contract<N>> {
+  constructor(readonly self: signer, readonly namespace: N) {
+    super()
+  }
 }

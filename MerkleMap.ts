@@ -1,20 +1,20 @@
+import { Effect } from "Effect.js"
 import { bool } from "./bool.js"
 import { u256 } from "./int.js"
-import { reduce } from "./reduce.js"
 import { source } from "./Source.js"
 import { Type } from "./Type.js"
 
-export class MerkleMapSizeSource extends source("MerkleMapSize")<u256> {}
-export class MerkleMapGetSource<K extends Type> extends source("MerkleMapGet")<K, Type> {}
-export class MerkleMapHasSource extends source("MerkleMapHas")<bool, Type> {}
-export class MerkleMapDeleteSource<K extends Type, V extends Type>
+export class MerkleMapSize extends source("MerkleMapSize")<u256> {}
+export class MerkleMapGet<K extends Type> extends source("MerkleMapGet")<K, Type> {}
+export class MerkleMapHas extends source("MerkleMapHas")<bool, Type> {}
+export class MerkleMapDelete<K extends Type, V extends Type>
   extends source("MerkleMapDelete")<MerkleMap<K, V>, Type>
 {}
-export class MerkleMapSetSource<K extends Type, V extends Type>
+export class MerkleMapSet<K extends Type, V extends Type>
   extends source("MerkleMapSet")<MerkleMap<K, V>, { key: K; value: V }>
 {}
 
-export interface MerkleMap<K extends Type, V extends Type>
+export interface MerkleMap<K extends Type = Type, V extends Type = Type>
   extends InstanceType<ReturnType<typeof MerkleMap<K, V>>>
 {}
 export function MerkleMap<K extends Type, V extends Type>(
@@ -23,7 +23,7 @@ export function MerkleMap<K extends Type, V extends Type>(
 ) {
   return class extends Type<
     "MerkleMap",
-    MerkleMapNative<K, V>,
+    "TODO: MerkleMapNative<K, V>",
     {
       keyType: new() => K
       valueType: new() => V
@@ -31,34 +31,46 @@ export function MerkleMap<K extends Type, V extends Type>(
     never,
     never
   > {
-    size = new MerkleMapSizeSource(new u256()).build()
+    size = new MerkleMapSize(new u256()).value()
 
     constructor() {
       super("MerkleMap", { keyType, valueType })
     }
 
     set(key: K, value: V): MerkleMap<K, V> {
-      return new MerkleMapSetSource(this, { key, value }).build()
+      return new MerkleMapSet(this, { key, value }).value()
     }
 
     delete(key: K): MerkleMap<K, V> {
-      return new MerkleMapDeleteSource<K, V>(this, key).build()
+      return new MerkleMapDelete<K, V>(this, key).value()
     }
 
     get(key: K): V {
-      return new MerkleMapGetSource(new valueType(), key).build()
+      return new MerkleMapGet(new valueType(), key).value()
     }
 
     has(key: K): bool {
-      return new MerkleMapHasSource(new bool(), key).build()
+      return new MerkleMapHas(new bool(), key).value()
     }
 
-    reduceKeys = reduce<K>()
-    reduceValues = reduce<V>()
-    reduceEntries = reduce<[K, V]>()
+    reduceKeys<R extends Type, Y>(
+      initial: R,
+      f: (acc: R, cur: K) => Generator<Y, R>,
+    ): ReduceKeys<R, Y> {
+      return new ReduceKeys(this, initial, f)
+    }
+
+    // reduceValues = reduce<V>()
+    // reduceEntries = reduce<[K, V]>()
   }
 }
 
-export class MerkleMapNative<K, V> {
-  todo(key: K, value: V) {}
+export class ReduceKeys<R, Y> extends Effect("reduceKeys")<R, Y> {
+  constructor(
+    readonly self: MerkleMap,
+    readonly initial: Type,
+    readonly f: (acc: any, cur: any) => Generator,
+  ) {
+    super()
+  }
 }

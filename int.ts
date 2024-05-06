@@ -1,25 +1,25 @@
 import { source } from "./Source.js"
 import { Type } from "./Type.js"
 
-export class AddSource<T extends Int> extends source("Add")<T, { value: Type }> {}
-export class SubtractSource<T extends Int> extends source("Subtract")<T, { value: Type }> {}
-export class MultiplySource<T extends Int> extends source("Multiply")<T, { value: Type }> {}
-export class DivideSource<T extends Int> extends source("Divide")<T, { value: Type }> {}
-export class LogarithmSource<T extends Int> extends source("Logarithm")<T, { value: Type }> {}
-export class SquareSource<T extends Int> extends source("Square")<T> {}
-export class MinSource<T extends Int> extends source("Min")<T> {}
-export class MaxSource<T extends Int> extends source("Max")<T> {}
+export class Add<T extends Int> extends source("Add")<T, { value: Type }> {}
+export class Subtract<T extends Int> extends source("Subtract")<T, { value: Type }> {}
+export class Multiply<T extends Int> extends source("Multiply")<T, { value: Type }> {}
+export class Divide<T extends Int> extends source("Divide")<T, { value: Type }> {}
+export class Logarithm<T extends Int> extends source("Logarithm")<T, { value: Type }> {}
+export class Square<T extends Int> extends source("Square")<T> {}
+export class Min<T extends Int> extends source("Min")<T> {}
+export class Max<T extends Int> extends source("Max")<T> {}
 
 class Int<K extends string = any, From = any, Into extends Type = any, S extends boolean = any>
   extends Type<K, number, {}, From, Into>
 {
   // TODO: get as instance, not method
   static min<T extends Int>(this: new() => T): T {
-    return new MinSource(new this()).build()
+    return new Min(new this()).value()
   }
   // TODO: get as instance, not method
   static max<T extends Int>(this: new() => T): T {
-    return new MaxSource(new this()).build()
+    return new Max(new this()).value()
   }
 
   constructor(name: K, signed: S) {
@@ -27,23 +27,23 @@ class Int<K extends string = any, From = any, Into extends Type = any, S extends
   }
 
   add(value: this): this {
-    return new AddSource(this, { value }).build()
+    return new Add(this, { value }).value()
   }
 
   subtract(value: this): this {
-    return new SubtractSource(this, { value }).build()
+    return new Subtract(this, { value }).value()
   }
 
   multiply(value: this): this {
-    return new MultiplySource(this, { value }).build()
+    return new Multiply(this, { value }).value()
   }
 
   divide(value: this): this {
-    return new DivideSource(this, { value }).build()
+    return new Divide(this, { value }).value()
   }
 
   square(): this {
-    return new SquareSource(this).build()
+    return new Square(this).value()
   }
 }
 

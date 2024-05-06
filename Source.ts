@@ -8,7 +8,7 @@ export function source<K extends string>(tag: K) {
       this.props = props
     }
 
-    build(): T {
+    value(): T {
       const clone = this.self.clone()
       clone[""].source = this
       return clone

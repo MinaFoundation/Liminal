@@ -2,13 +2,13 @@ import { Effect } from "./Effect.js"
 import { source } from "./Source.js"
 import { Type } from "./Type.js"
 
-export class TrueSource extends source("true")<bool> {}
-export class FalseSource extends source("false")<bool> {}
-export class NotSource extends source("not")<bool> {}
+export class True extends source("true")<bool> {}
+export class False extends source("false")<bool> {}
+export class Not extends source("not")<bool> {}
 
 export class bool extends Type<"bool", boolean, never, never, never> {
-  static true = new TrueSource(new this()).build()
-  static false = new FalseSource(new this()).build()
+  static true = new True(new this()).value()
+  static false = new False(new this()).value()
 
   constructor() {
     super("bool")
@@ -27,7 +27,7 @@ export class bool extends Type<"bool", boolean, never, never, never> {
   }
 
   not(): bool {
-    return new NotSource(this).build()
+    return new Not(this).value()
   }
 
   assert<E extends Type>(error: E): E {
@@ -35,21 +35,21 @@ export class bool extends Type<"bool", boolean, never, never, never> {
   }
 }
 
-export class If<Y> extends Effect<"If", Y, void> {
+export class If<Y> extends Effect("If")<Y, void> {
   constructor(
-    self: bool,
+    readonly self: bool,
     readonly f: () => Generator<Y, void>,
   ) {
-    super("If", self)
+    super()
   }
 }
 
-export class IfElse<Y1, Y2, O> extends Effect<"If", Y1 | Y2, O> {
+export class IfElse<Y1, Y2, O> extends Effect("If")<Y1 | Y2, O> {
   constructor(
-    self: bool,
+    readonly self: bool,
     readonly if_: () => Generator<Y1, O>,
     readonly else_: () => Generator<Y2, O>,
   ) {
-    super("If", self)
+    super()
   }
 }

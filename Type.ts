@@ -1,6 +1,6 @@
 import { source } from "./Source.js"
 
-export class LiftSource<T extends Type> extends source("native")<T, { value: unknown }> {}
+export class Of<T extends Type> extends source("native")<T, { value: unknown }> {}
 export class FromSource<T extends Type> extends source("from")<T, { value: unknown }> {}
 export class IntoSource<T extends Type> extends source("into")<T, { self: unknown }> {}
 export class AssertEqualsSource<T extends Type>
@@ -18,14 +18,14 @@ export class Type<
     this: new() => T,
     value: Native<T>,
   ): T {
-    return new LiftSource(new this(), { value }).build()
+    return new Of(new this(), { value }).value()
   }
 
   static from<T extends Type>(
     this: new() => T,
     value: From<T>,
   ): T {
-    return new FromSource(new this(), { value }).build()
+    return new FromSource(new this(), { value }).value()
   }
 
   "": {
@@ -45,14 +45,14 @@ export class Type<
   }
 
   into<O extends Into>(into: new() => O): O {
-    return new IntoSource(new into(), { self: this }).build()
+    return new IntoSource(new into(), { self: this }).value()
   }
 
   assertEquals<This extends Type, E extends Type>(this: This, expected: This, error: E): E {
     return new AssertEqualsSource(error, {
       actual: this,
       expected,
-    }).build()
+    }).value()
   }
 
   clone<This extends Type>(this: This): This {

@@ -2,54 +2,68 @@ import { u256 } from "./int.js"
 import { source } from "./Source.js"
 import { Type } from "./Type.js"
 
-export class MerkleListLengthSource extends source("MerkleListLength")<u256> {}
-export class MerkleListPrependSource<T extends Type>
+export class MerkleListLength extends source("MerkleListLength")<u256> {}
+export class MerkleListPrepend<T extends Type>
   extends source("MerkleListPrepend")<MerkleList<T>, Type>
 {}
+export class MerkleListAppend<T extends Type>
+  extends source("MerkleListAppend")<MerkleList<T>, Type>
+{}
+export class MerkleListShift<T extends Type> extends source("MerkleListShift")<MerkleList<T>> {}
+export class MerkleListPop<T extends Type> extends source("MerkleListPop")<MerkleList<T>> {}
+export class MerkleListAt<T extends Type> extends source("MerkleListAt")<T, {
+  list: MerkleList
+  index: u256
+}> {}
 
-export interface MerkleList<T extends Type>
+export interface MerkleList<T extends Type = Type>
   extends InstanceType<ReturnType<typeof MerkleList<T>>>
 {}
 export function MerkleList<T extends Type>(elementType: new() => T) {
   return class
-    extends Type<"MerkleList", MerkleListNative<T>, { elementType: new() => T }, never, never>
+    extends Type<
+      "MerkleList",
+      "TODO: MerkleListNative<T>",
+      { elementType: new() => T },
+      never,
+      never
+    >
   {
-    length = new MerkleListLengthSource(new u256()).build()
+    length = new MerkleListLength(new u256()).value()
 
     constructor() {
       super("MerkleList", { elementType })
     }
 
     prepend(value: T): MerkleList<T> {
-      return new MerkleListPrependSource(this, value).build()
+      return new MerkleListPrepend(this, value).value()
     }
 
     append(value: T): MerkleList<T> {
-      throw 0
+      return new MerkleListAppend(this, value).value()
     }
 
     shift(): MerkleList<T> {
-      throw 0
+      return new MerkleListShift(this).value()
     }
 
     pop(): MerkleList<T> {
-      throw 0
-    }
-
-    first(): T {
-      throw 0
-    }
-
-    last(): T {
-      throw 0
+      return new MerkleListPop(this).value()
     }
 
     at(index: u256): T {
-      throw 0
+      return new MerkleListAt(new elementType(), {
+        list: this,
+        index,
+      }).value()
+    }
+
+    first(): T {
+      return this.at(u256.of(1))
+    }
+
+    last(): T {
+      return this.at(this.length.subtract(u256.of(1)))
     }
   }
-}
-
-export class MerkleListNative<T> {
-  todo(key: T) {}
 }

@@ -1,5 +1,5 @@
 export function Effect<T extends string>(tag: T) {
-  return class<Y, O> implements Generator<Y, O> {
+  return class<Y, O = never> implements Generator<Y, O> {
     readonly tag = tag
 
     next(): IteratorResult<Y, O> {
