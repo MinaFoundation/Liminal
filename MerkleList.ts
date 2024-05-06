@@ -1,3 +1,4 @@
+import { Effect } from "Effect.js"
 import { u256 } from "./int.js"
 import { source } from "./Source.js"
 import { Type, type } from "./Type.js"
@@ -19,11 +20,14 @@ export class MerkleListAt<T extends Type> extends source("MerkleListAt")<T, {
 export interface MerkleList<T extends Type = Type>
   extends InstanceType<ReturnType<typeof MerkleList<T>>>
 {}
+
 export function MerkleList<T extends Type>(elementType: new() => T) {
   return class
     extends type("MerkleList", { elementType })<MerkleListNative<Type.Native<T>>, never, never>
   {
     length = new MerkleListLength(new u256()).value()
+    first = this.at(u256.from(1))
+    last = this.at(this.length.subtract(u256.from(1)))
 
     prepend(value: T): MerkleList<T> {
       return new MerkleListPrepend(this, value).value()
@@ -48,13 +52,22 @@ export function MerkleList<T extends Type>(elementType: new() => T) {
       }).value()
     }
 
-    first(): T {
-      return this.at(u256.from(1))
+    reduceKeys<R extends Type, Y>(
+      initial: R,
+      f: (acc: R, cur: T) => Generator<Y, R>,
+    ): MerkleListReduce<R, Y> {
+      return new MerkleListReduce(this, initial, f)
     }
+  }
+}
 
-    last(): T {
-      return this.at(this.length.subtract(u256.from(1)))
-    }
+export class MerkleListReduce<R, Y> extends Effect("ReduceMerkleList")<R, Y> {
+  constructor(
+    readonly self: MerkleList,
+    readonly initial: Type,
+    readonly f: (acc: any, cur: any) => Generator,
+  ) {
+    super()
   }
 }
 
