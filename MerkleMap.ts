@@ -60,18 +60,35 @@ export function MerkleMap<K extends Type, V extends Type>(
       return new ReduceKeys(this, initial, f)
     }
 
-    // reduceValues = reduce<V>()
-    // reduceEntries = reduce<[K, V]>()
+    reduceValues<R extends Type, Y>(
+      initial: R,
+      f: (acc: R, cur: V) => Generator<Y, R>,
+    ): ReduceValues<R, Y> {
+      return new ReduceValues(this, initial, f)
+    }
+
+    reduceEntries<R extends Type, Y>(
+      initial: R,
+      f: (acc: R, cur: [K, V]) => Generator<Y, R>,
+    ): ReduceEntries<R, Y> {
+      return new ReduceEntries(this, initial, f)
+    }
   }
 }
 
-export class ReduceKeys<R, Y> extends Effect("reduceKeys")<R, Y> {
-  constructor(
-    readonly self: MerkleMap,
-    readonly initial: Type,
-    readonly f: (acc: any, cur: any) => Generator,
-  ) {
-    super()
+export class ReduceKeys<R, Y> extends MerkleMapReduce("Keys")<R, Y> {}
+export class ReduceValues<R, Y> extends MerkleMapReduce("Values")<R, Y> {}
+export class ReduceEntries<R, Y> extends MerkleMapReduce("Entries")<R, Y> {}
+
+function MerkleMapReduce<TK extends string>(tag: TK) {
+  return class<R, Y> extends Effect(`reduce${tag}`)<R, Y> {
+    constructor(
+      readonly self: MerkleMap,
+      readonly initial: Type,
+      readonly f: (acc: any, cur: any) => Generator,
+    ) {
+      super()
+    }
   }
 }
 
