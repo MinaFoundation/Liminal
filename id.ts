@@ -1,11 +1,11 @@
 import { u64 } from "int.js"
+import { State } from "state.js"
 import { Contract } from "./Contract.js"
 import { Effect } from "./Effect.js"
-import { Namespace } from "./Namespace.js"
-import { Type, type } from "./Type.js"
+import { type } from "./Type.js"
 
 export class id extends type("id")<Uint8Array, never, never> {
-  bind<N extends Namespace>(namespace: N): Bind<N> {
+  bind<N>(namespace: N): Bind<N> {
     return new Bind(this, namespace)
   }
 
@@ -14,7 +14,7 @@ export class id extends type("id")<Uint8Array, never, never> {
   }
 }
 
-export class Bind<N extends Namespace> extends Effect("Bind")<never, Contract<N>> {
+export class Bind<N> extends Effect("Bind")<never, Contract<N>> {
   constructor(readonly self: id, readonly namespace: N) {
     super()
   }
@@ -39,8 +39,8 @@ export function signer<K extends keyof any>(key: K) {
   return class extends id {
     readonly key = key
 
-    deploy<N extends Namespace>(namespace: N): Deploy<N> {
-      return new Deploy(this, namespace)
+    deploy<N>(namespace: N, initialState: NamespaceState<N>): Deploy<N> {
+      return new Deploy(this, namespace, initialState)
     }
 
     send(props: SendProps): Send {
@@ -49,8 +49,16 @@ export function signer<K extends keyof any>(key: K) {
   }
 }
 
-export class Deploy<N extends Namespace> extends Effect("Deploy")<never, Contract<N>> {
-  constructor(readonly self: signer, readonly namespace: N) {
+export type NamespaceState<N> = {
+  [K in keyof N as N[K] extends State ? K : never]: N[K] extends State<infer T> ? T : never
+}
+
+export class Deploy<N> extends Effect("Deploy")<never, Contract<N>> {
+  constructor(
+    readonly self: signer,
+    readonly namespace: N,
+    readonly initialState: NamespaceState<N>,
+  ) {
     super()
   }
 }

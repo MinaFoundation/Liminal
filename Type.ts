@@ -4,7 +4,9 @@ export function type<Name extends string, Metadata = undefined>(
   name: Name,
   metadata: Metadata = undefined!,
 ) {
-  return class<Native, From, Into extends Type> extends Type<Name, Native, Metadata, From, Into> {
+  return class<Native, From = never, Into extends Type = never>
+    extends Type<Name, Native, Metadata, From, Into>
+  {
     constructor() {
       super(name, metadata)
     }

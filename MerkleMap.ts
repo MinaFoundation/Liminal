@@ -8,19 +8,14 @@ export class MerkleMapSize extends source("MerkleMapSize")<u256> {}
 export class MerkleMapGet<K extends Type> extends source("MerkleMapGet")<K, Type> {}
 export class MerkleMapHas extends source("MerkleMapHas")<bool, Type> {}
 export class MerkleMapDelete<K extends Type, V extends Type>
-  extends Effect("MerkleMapDelete")<never, MerkleMap<K, V>>
-{
-  constructor(readonly key: K) {
-    super()
-  }
-}
+  extends source("MerkleMapDelete")<MerkleMap<K, V>, Type>
+{}
 export class MerkleMapSet<K extends Type, V extends Type>
-  extends Effect("MerkleMapSet")<never, MerkleMap<K, V>>
-{
-  constructor(readonly key: K, readonly value: V) {
-    super()
-  }
-}
+  extends source("MerkleMapSet")<MerkleMap<K, V>, {
+    key: Type
+    value: Type
+  }>
+{}
 
 export interface MerkleMap<K extends Type = Type, V extends Type = Type>
   extends InstanceType<ReturnType<typeof MerkleMap<K, V>>>
@@ -37,12 +32,12 @@ export function MerkleMap<K extends Type, V extends Type>(
   > {
     size = new MerkleMapSize(new u256()).value()
 
-    set(key: K, value: V): MerkleMapSet<K, V> {
-      return new MerkleMapSet(key, value)
+    set(key: K, value: V): MerkleMap<K, V> {
+      return new MerkleMapSet(this, { key, value }).value()
     }
 
-    delete(key: K): MerkleMapDelete<K, V> {
-      return new MerkleMapDelete(key)
+    delete(key: K): MerkleMap<K, V> {
+      return new MerkleMapDelete(this, key).value()
     }
 
     get(key: K): V {

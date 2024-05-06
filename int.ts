@@ -1,3 +1,4 @@
+import { bool } from "bool.js"
 import { source } from "./Source.js"
 import { Type } from "./Type.js"
 
@@ -9,6 +10,22 @@ export class Logarithm<T extends Int> extends source("Logarithm")<T, { value: Ty
 export class Square<T extends Int> extends source("Square")<T> {}
 export class Min<T extends Int> extends source("Min")<T> {}
 export class Max<T extends Int> extends source("Max")<T> {}
+export class Gt<T extends Int> extends source("Gt")<bool, {
+  self: T
+  value: Type
+}> {}
+export class Gte<T extends Int> extends source("Gte")<bool, {
+  self: T
+  value: Type
+}> {}
+export class Lt<T extends Int> extends source("Lt")<bool, {
+  self: T
+  value: Type
+}> {}
+export class Lte<T extends Int> extends source("Lte")<bool, {
+  self: T
+  value: Type
+}> {}
 
 class Int<K extends string = any, From = any, Into extends Type = any, S extends boolean = any>
   extends Type<K, number, { signed: S }, From, Into>
@@ -44,6 +61,22 @@ class Int<K extends string = any, From = any, Into extends Type = any, S extends
 
   square(): this {
     return new Square(this).value()
+  }
+
+  gt(value: this): bool {
+    return new Gt(new bool(), { self: this, value }).value()
+  }
+
+  gte(value: this): bool {
+    return new Gte(new bool(), { self: this, value }).value()
+  }
+
+  lt(value: this): bool {
+    return new Lt(new bool(), { self: this, value }).value()
+  }
+
+  lte(value: this): bool {
+    return new Lte(new bool(), { self: this, value }).value()
   }
 }
 

@@ -1,16 +1,13 @@
 import { signer } from "./id.js"
 import { source } from "./Source.js"
 
-export function tx<Y, O>(f: (this: TxContext) => Generator<Y, O>) {
-  return new Tx<Y, O>(f)
+export function tx<Y, R>(f: () => Generator<Y, R>) {
+  return new Tx<Y, R>(f)
 }
 
-export class Tx<Y, O> {
-  constructor(readonly f: (this: TxContext) => Generator<Y, O>) {}
+export class Tx<Y, R> {
+  constructor(readonly f: () => Generator<Y, R>) {}
 }
 
 export class TxSender extends source("txSender")<signer<"sender">> {}
-
-export class TxContext {
-  sender = new TxSender(new (signer("sender"))()).value()
-}
+export const sender = new TxSender(new (signer("sender"))()).value()
