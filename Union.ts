@@ -16,8 +16,8 @@ export function Union<Members extends AnyPredicate[]>(...memberTypes: Members) {
     when<Target extends Members[number], Yield, Result>(
       match: Target,
       f: (value: Value<Target>) => Generator<Yield, Result>,
-    ) {
-      return new Match<Value<Exclude<Members[number], Target>>, Yield, Result>(this, f, match)
+    ): Match<Value<Exclude<Members[number], Target>>, Yield, Result> {
+      return new Match(this, f, match)
     }
   }
 }

@@ -14,6 +14,7 @@ export class bool extends Type<"bool", boolean, never, never, never> {
     super("bool")
   }
 
+  // TODO: chain this and return option if not else-d
   if<Y>(f: () => Generator<Y, void>): If<Y> {
     return new If(this, f)
   }

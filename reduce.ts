@@ -10,12 +10,12 @@ export function reduce<C>() {
   }
 }
 
-export class ReduceResult<C, T, Y, R> extends Effect<"reduce", Y, R> {
+export class ReduceResult<C, T, Y, R> extends Effect("reduce")<Y, R> {
   constructor(
-    self: T,
+    readonly self: T,
     readonly initial: R,
     readonly f: (acc: R, cur: C) => Generator<Y, R>,
   ) {
-    super("reduce", self)
+    super()
   }
 }

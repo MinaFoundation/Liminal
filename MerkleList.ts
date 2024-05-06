@@ -3,6 +3,9 @@ import { source } from "./Source.js"
 import { Type } from "./Type.js"
 
 export class MerkleListLengthSource extends source("MerkleListLength")<u256> {}
+export class MerkleListPrependSource<T extends Type>
+  extends source("MerkleListPrepend")<MerkleList<T>, Type>
+{}
 
 export interface MerkleList<T extends Type>
   extends InstanceType<ReturnType<typeof MerkleList<T>>>
@@ -18,7 +21,7 @@ export function MerkleList<T extends Type>(elementType: new() => T) {
     }
 
     prepend(value: T): MerkleList<T> {
-      throw 0
+      return new MerkleListPrependSource(this, value).build()
     }
 
     append(value: T): MerkleList<T> {

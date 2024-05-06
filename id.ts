@@ -32,9 +32,9 @@ export class id extends Base<false> {
   }
 }
 
-export class SignerResult<K extends string> extends Effect<"signer", SignerRequirement<K>, signer> {
-  constructor(self: id, readonly key: K) {
-    super("signer", self)
+export class SignerResult<K extends string> extends Effect("signer")<SignerRequirement<K>, signer> {
+  constructor(readonly self: id, readonly key: K) {
+    super()
   }
 }
 
@@ -48,9 +48,9 @@ export class signer extends Base<true> {
   }
 }
 
-export class DeployResult<N extends Namespace> extends Effect<"Deploy", Contract<N>, never> {
-  constructor(self: signer, readonly namespace: N) {
-    super("Deploy", self)
+export class DeployResult<N extends Namespace> extends Effect("Deploy")<never, Contract<N>> {
+  constructor(readonly self: signer, readonly namespace: N) {
+    super()
   }
 }
 

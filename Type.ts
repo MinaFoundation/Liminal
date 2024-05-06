@@ -14,7 +14,7 @@ export class Type<
   From_ = any,
   Into extends Type = any,
 > {
-  static lift<T extends Type>(
+  static of<T extends Type>(
     this: new() => T,
     value: Native<T>,
   ): T {

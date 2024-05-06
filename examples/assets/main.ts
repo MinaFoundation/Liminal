@@ -1,6 +1,8 @@
 import * as L from "liminal"
-import * as spec from "./spec/mod.js"
 import { TransferEvent, TransferProps } from "./spec/mod.js"
+
+const contract = L.id.of(new Uint8Array()).bind(spec).next().value!
+// yield* contract.tokens.set()
 
 const tx = L.f(function*() {
   L.signer

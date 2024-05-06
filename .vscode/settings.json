@@ -1,7 +1,4 @@
 {
-  "[graphql]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
   "[json]": {
     "editor.defaultFormatter": "dprint.dprint"
   },

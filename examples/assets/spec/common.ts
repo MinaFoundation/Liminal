@@ -17,6 +17,6 @@ export class TokenInfo extends L.Struct({
 
 export class Tokens extends L.MerkleMap(TokenId, TokenInfo) {}
 
-export const tokens = L.State(Tokens)
+export const tokens = new L.State(Tokens)
 
 export class TokenMetadata extends L.MerkleList(L.u8) {}

@@ -16,6 +16,7 @@ export class CreateError extends L.Union("InsufficientFunds", "AnotherProblem") 
 
 export class CreateResult extends L.Union(CreateOk, CreateError) {}
 
-export const create = L.f(function*({}: CreateInput) {
-  return CreateResult.from(CreateOk.lift({ id: 1 }))
+export const create = L.f(function*({ admin, decimals, metadata }: CreateInput) {
+  // ...
+  return CreateResult.from(CreateOk.of({ id: 1 }))
 })
