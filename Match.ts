@@ -1,49 +1,49 @@
+import { Constructor, Type } from "Type.js"
 import { Effect } from "./Effect.js"
+import { None } from "./None.js"
 
-export function match<T>(value: T) {
-  return new Match(value)
-}
-
-export class Match<T> {
+export class Match<T extends Type> {
   constructor(private value: T) {}
 
-  when<Target extends Predicate<T>, Yield, Result>(
+  when<Target extends Constructor<T>, Yield, Result extends Type | void>(
     match: Target,
-    f: (value: Value<Target>) => Generator<Yield, Result>,
-  ): Matcher<Exclude<T, Value<Target>>, Yield, Result> {
+    f: (value: InstanceType<Target>) => Generator<Yield, Result>,
+  ): Matcher<Exclude<T, InstanceType<Target>>, Yield, Result> {
     return new Matcher(this.value, f, match)
   }
 }
 
-export function handle<Y, R>(call: Generator<Y, R>) {
-  return new Handle(call)
+export function rehandle<Y, R extends Type>(call: Generator<Y, R>) {
+  return new Rehandle(call)
 }
 
-export class Handle<Y, R> {
+export class Rehandle<Y, R extends Type> {
   constructor(private call: Generator<Y, R>) {}
 
-  when<Target extends Predicate<Y>, Yield>(
+  when<Target extends Constructor<Y>, Yield>(
     match: Target,
-    f: (value: Value<Target>) => Generator<Yield, R>,
-  ): Matcher<Exclude<Y, Value<Target>>, Yield, R> {
+    f: (value: InstanceType<Target>) => Generator<Yield, R>,
+  ): Matcher<Exclude<Y, InstanceType<Target>>, Yield, R> {
     return new Matcher(this.call, f, match)
   }
 }
 
-export class Matcher<Remaining, PreviousYield, Return>
-  extends Effect("Match")<PreviousYield, [Remaining] extends [never] ? Return : undefined | Return>
-{
+export class Matcher<Remaining, PreviousYield, Return extends Type | void> extends Effect("Match")<
+  PreviousYield,
+  [Remaining] extends [never] ? void extends Return ? Exclude<Return, void> | None : Return
+    : None | Exclude<Return, void>
+> {
   constructor(
     readonly self: unknown,
     readonly f: (value: any) => Generator<unknown, Return>,
-    readonly match?: AnyPredicate,
+    readonly match?: Constructor,
   ) {
     super()
   }
 
   when<
-    Target extends Predicate<Remaining>,
-    V extends Value<Target>,
+    Target extends Constructor<Remaining>,
+    V extends InstanceType<Target>,
     CurrentYield,
   >(
     match: Target,
@@ -58,10 +58,3 @@ export class Matcher<Remaining, PreviousYield, Return>
     return new Matcher(this, f)
   }
 }
-
-export type Predicate<T> = T extends undefined ? undefined : T extends string ? T : new() => T
-export type AnyPredicate = undefined | string | (new() => any)
-export type Value<T> = T extends undefined ? undefined
-  : T extends string ? T
-  : T extends new() => infer I ? I
-  : never

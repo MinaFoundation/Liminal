@@ -1,6 +1,7 @@
 import { Effect } from "Effect.js"
 import { bool } from "./bool.js"
 import { u256 } from "./int.js"
+import { None } from "./None.js"
 import { source } from "./Source.js"
 import { Type, type } from "./Type.js"
 
@@ -26,9 +27,7 @@ export function MerkleMap<K extends Type, V extends Type>(
   valueType: new() => V,
 ) {
   return class extends type("MerkleMap", { keyType, valueType })<
-    MerkleMapNative<Type.Native<K>, Type.Native<V>>,
-    never,
-    never
+    MerkleMapNative<Type.Native<K>, Type.Native<V>>
   > {
     size = new MerkleMapSize(new u256()).value()
 
@@ -40,7 +39,7 @@ export function MerkleMap<K extends Type, V extends Type>(
       return new MerkleMapDelete(this, key).value()
     }
 
-    get(key: K): V {
+    get(key: K): V | None {
       return new MerkleMapGet(new valueType(), key).value()
     }
 

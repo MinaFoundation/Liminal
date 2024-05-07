@@ -4,15 +4,9 @@ export class Balances extends L.MerkleMap(L.id, L.u256) {}
 export class Allowances extends L.MerkleMap(L.id, Balances) {}
 
 export class FungibleToken {
-  #totalSupply
-  #balances
-  #allowances
-
-  constructor() {
-    this.#totalSupply = new L.State(L.u256)
-    this.#balances = new L.State(Balances)
-    this.#allowances = new L.State(Allowances)
-  }
+  #totalSupply = new L.State(L.u256)
+  #balances = new L.State(Balances)
+  #allowances = new L.State(Allowances);
 
   *totalSupply() {
     return yield* this.#totalSupply
@@ -25,24 +19,26 @@ export class FungibleToken {
 
   *transfer(recipient: L.id, amount: L.u256) {
     const balances = yield* this.#balances
-    const fromBalance = balances.get(L.sender)
+    const fromBalance = yield* balances.get(L.sender).unhandle(L.None)
     yield fromBalance.gte(amount).assert(new InsufficientBalanceError())
-    const recipientBalance = balances.get(recipient)
+    const recipientBalance = yield* balances.get(recipient).handle(L.None, function*() {
+      return L.u256.from(0)
+    })
     const updated = balances
       .set(L.sender, fromBalance.subtract(amount))
       .set(recipient, recipientBalance.add(amount))
     yield* this.#balances.set(updated)
   }
 
-  *allowance(owner: L.id, spender: L.id) {}
+  *allowance(owner: L.id, spender: L.id) {
+    const allowances = yield* this.#allowances
+    const spenderAllowances = yield* allowances.get(spender).unhandle(L.None)
+    return spenderAllowances.get(owner)
+  }
 
   *approve(spender: L.id, amount: L.id) {}
 
-  *transferFrom(
-    sender: L.id,
-    recipient: L.id,
-    amount: L.id,
-  ) {}
+  *transferFrom(sender: L.id, recipient: L.id, amount: L.id) {}
 }
 
 export class TransferEvent extends L.Struct({
@@ -58,3 +54,18 @@ export class ApprovalEvent extends L.Struct({
 }) {}
 
 export class InsufficientBalanceError extends L.Tagged("InsufficientBalanceError") {}
+
+declare const x: TransferEvent | ApprovalEvent | InsufficientBalanceError
+function* g() {
+  const y = yield* x
+    .match()
+    .when(TransferEvent, function*(v) {
+      return L.u8.from(1)
+    })
+    .when(ApprovalEvent, function*(v) {
+      return L.u8.from(1)
+    })
+    .else(function*(v) {
+      return L.u8.from(1)
+    })
+}

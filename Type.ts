@@ -1,3 +1,5 @@
+import { Effect } from "./Effect.js"
+import { Match } from "./Match.js"
 import { source } from "./Source.js"
 
 export function type<Name extends string, Metadata = undefined>(
@@ -62,10 +64,51 @@ export class Type<
   clone<This extends Type>(this: This): This {
     return Object.assign(Object.create(Object.getPrototypeOf(this)), this)
   }
+
+  match<This extends Type>(this: This): Match<This> {
+    return new Match(this)
+  }
+
+  unhandle<This extends Type, Match extends Constructor<This>>(
+    this: This,
+    match: Match,
+  ): Unhandle<This, Match> {
+    return new Unhandle(this, match)
+  }
+
+  // TODO: enable overload
+  handle<This extends Type, Target extends Constructor, Y>(
+    this: This,
+    match: Target,
+    f: (value: InstanceType<Target>) => Generator<Y, Exclude<This, InstanceType<Target>>>,
+  ): Handle<This, Target, Y> {
+    return new Handle(this, match, f)
+  }
 }
 
 export namespace Type {
   export type Native<T> = T extends string ? T : T extends Type<any, infer Name> ? Name : never
   // TODO: why the presence of `undefined` when the `From` of `T` is `never`?
   export type From<T> = T extends Type<any, any, any, infer From> ? Exclude<From, undefined> : never
+}
+export type Constructor<T = any> = new(...args: any) => T
+
+export class Handle<T, Target extends Constructor<T>, Y>
+  extends Effect("handle")<InstanceType<Target> | Y, Exclude<T, InstanceType<Target>>>
+{
+  constructor(
+    readonly value: T,
+    readonly match: Target,
+    readonly f: (value: any) => Generator<unknown, unknown>,
+  ) {
+    super()
+  }
+}
+
+export class Unhandle<T, Target extends Constructor<T>>
+  extends Effect("unhandle")<InstanceType<Target>, Exclude<T, InstanceType<Target>>>
+{
+  constructor(readonly value: T, match: Target) {
+    super()
+  }
 }
