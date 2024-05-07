@@ -1,7 +1,13 @@
 import * as L from "liminal"
 
 export class Balances extends L.MerkleMap(L.id, L.u256) {}
-export class Allowances extends L.MerkleMap(L.id, Balances) {}
+
+// We could just reuse `Balances` as `L.MerkleMap(L.id, Balances)`,
+// but the following helps with signature legibility.
+export class Owner extends L.id {}
+export class Spender extends L.id {}
+export class AllowedBy extends L.MerkleMap(Spender, L.u256) {}
+export class Allowances extends L.MerkleMap(Owner, AllowedBy) {}
 
 export class FungibleToken {
   #totalSupply = new L.State(L.u256)
@@ -30,15 +36,31 @@ export class FungibleToken {
     yield* this.#balances.set(updated)
   }
 
-  *allowance(owner: L.id, spender: L.id) {
+  *allowance(owner: Owner, spender: Spender) {
     const allowances = yield* this.#allowances
-    const spenderAllowances = yield* allowances.get(spender).unhandle(L.None)
-    return spenderAllowances.get(owner)
+    const spenderAllowances = yield* allowances.get(owner).unhandle(L.None)
+    return spenderAllowances.get(spender)
   }
 
-  *approve(spender: L.id, amount: L.id) {}
+  *approve(spender: Spender, amount: L.u256) {
+    const allowances = yield* this.#allowances
+    const ownerAllowedBy = yield* allowances.get(L.caller).handle(L.None, function*() {
+      return new AllowedBy()
+    })
+    const spenderAllows = yield* ownerAllowedBy.get(spender).handle(L.None, function*() {
+      return L.u256.from(0)
+    })
+    const updated = allowances.set(L.caller, ownerAllowedBy.set(spender, spenderAllows.add(amount)))
+    yield* this.#allowances.set(updated)
+  }
 
-  *transferFrom(sender: L.id, recipient: L.id, amount: L.id) {}
+  *transferFrom(sender: L.id, recipient: L.id, amount: L.id) {
+    const allowances = yield* this.#allowances
+    const recipientAllowanceFromSender = L.call(function*() {
+      const recipientAllowances = yield* allowances.get(recipient).unhandle(L.None)
+      return yield* recipientAllowances.get(sender).unhandle(L.None)
+    }).rehandle(L.None)
+  }
 }
 
 export class TransferEvent extends L.Struct({
@@ -53,7 +75,7 @@ export class ApprovalEvent extends L.Struct({
   value: L.u256,
 }) {}
 
-export class InsufficientBalanceError extends L.Tagged("InsufficientBalanceError") {}
+export class InsufficientBalanceError extends L.Err("InsufficientBalanceError") {}
 
 declare const x: TransferEvent | ApprovalEvent | InsufficientBalanceError
 function* g() {

@@ -5,24 +5,12 @@ import { Effect } from "./Effect.js"
 import { type } from "./Type.js"
 
 export class id extends type("id")<Uint8Array, never, never> {
-  bind<N>(namespace: N): Bind<N> {
-    return new Bind(this, namespace)
+  bind<N>(namespace: N): Effect<never, Contract<N>> {
+    throw 0
   }
 
-  signer<K extends string>(key: K): Signer<K> {
-    return new Signer(this, key)
-  }
-}
-
-export class Bind<N> extends Effect("Bind")<never, Contract<N>> {
-  constructor(readonly self: id, readonly namespace: N) {
-    super()
-  }
-}
-
-export class Signer<K extends string> extends Effect("signer")<SignerRequirement<K>, signer<K>> {
-  constructor(readonly self: id, readonly key: K) {
-    super()
+  signer<K extends string>(key: K): Effect<SignerRequirement<K>, signer<K>> {
+    throw 0
   }
 }
 
@@ -39,34 +27,18 @@ export function signer<K extends keyof any>(key: K) {
   return class extends id {
     readonly key = key
 
-    deploy<N>(namespace: N, initialState: NamespaceState<N>): Deploy<N> {
-      return new Deploy(this, namespace, initialState)
+    deploy<N>(namespace: N, initialState: NamespaceState<N>): Effect<never, Contract<N>> {
+      throw 0
     }
 
-    send(props: SendProps): Send {
-      return new Send(props)
+    send(props: SendProps): Effect<never, never> {
+      throw 0
     }
   }
 }
 
 export type NamespaceState<N> = {
   [K in keyof N as N[K] extends State ? K : never]: N[K] extends State<infer T> ? T : never
-}
-
-export class Deploy<N> extends Effect("Deploy")<never, Contract<N>> {
-  constructor(
-    readonly self: signer,
-    readonly namespace: N,
-    readonly initialState: NamespaceState<N>,
-  ) {
-    super()
-  }
-}
-
-export class Send extends Effect("Send")<never, never> {
-  constructor(readonly props: SendProps) {
-    super()
-  }
 }
 
 export interface SendProps {

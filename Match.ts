@@ -13,10 +13,6 @@ export class Match<T extends Type> {
   }
 }
 
-export function rehandle<Y, R extends Type>(call: Generator<Y, R>) {
-  return new Rehandle(call)
-}
-
 export class Rehandle<Y, R extends Type> {
   constructor(private call: Generator<Y, R>) {}
 
@@ -28,7 +24,7 @@ export class Rehandle<Y, R extends Type> {
   }
 }
 
-export class Matcher<Remaining, PreviousYield, Return extends Type | void> extends Effect("Match")<
+export class Matcher<Remaining, PreviousYield, Return extends Type | void> extends Effect<
   PreviousYield,
   [Remaining] extends [never] ? void extends Return ? Exclude<Return, void> | None : Return
     : None | Exclude<Return, void>

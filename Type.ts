@@ -1,4 +1,5 @@
 import { Effect } from "./Effect.js"
+import { Err } from "./Err.js"
 import { Match } from "./Match.js"
 import { source } from "./Source.js"
 
@@ -18,7 +19,7 @@ export function type<Name extends string, Metadata = undefined>(
 export class Of<T extends Type> extends source("native")<T, { value: unknown }> {}
 export class From<T extends Type> extends source("from")<T, unknown> {}
 export class Into<T extends Type> extends source("into")<T, Type> {}
-export class AssertEquals<T extends Type> extends source("assertEquals")<T, {
+export class AssertEquals<T extends Err> extends source("assertEquals")<T, {
   expected: Type
   actual: Type
 }> {}
@@ -54,7 +55,7 @@ export class Type<
     return new Into(new into(), this).value()
   }
 
-  assertEquals<This extends Type, E extends Type>(this: This, expected: This, error: E): E {
+  assertEquals<This extends Type, E extends Err>(this: This, expected: This, error: E): E {
     return new AssertEquals(error, {
       actual: this,
       expected,
@@ -72,17 +73,17 @@ export class Type<
   unhandle<This extends Type, Match extends Constructor<This>>(
     this: This,
     match: Match,
-  ): Unhandle<This, Match> {
-    return new Unhandle(this, match)
+  ): Effect<InstanceType<Match>, Exclude<This, InstanceType<Match>>> {
+    throw 0
   }
 
   // TODO: enable overload
-  handle<This extends Type, Target extends Constructor, Y>(
+  handle<This extends Type, Match extends Constructor, Y>(
     this: This,
-    match: Target,
-    f: (value: InstanceType<Target>) => Generator<Y, Exclude<This, InstanceType<Target>>>,
-  ): Handle<This, Target, Y> {
-    return new Handle(this, match, f)
+    match: Match,
+    f: (value: InstanceType<Match>) => Generator<Y, Exclude<This, InstanceType<Match>>>,
+  ): Effect<InstanceType<Match> | Y, Exclude<This, InstanceType<Match>>> {
+    throw 0
   }
 }
 
@@ -92,23 +93,3 @@ export namespace Type {
   export type From<T> = T extends Type<any, any, any, infer From> ? Exclude<From, undefined> : never
 }
 export type Constructor<T = any> = new(...args: any) => T
-
-export class Handle<T, Target extends Constructor<T>, Y>
-  extends Effect("handle")<InstanceType<Target> | Y, Exclude<T, InstanceType<Target>>>
-{
-  constructor(
-    readonly value: T,
-    readonly match: Target,
-    readonly f: (value: any) => Generator<unknown, unknown>,
-  ) {
-    super()
-  }
-}
-
-export class Unhandle<T, Target extends Constructor<T>>
-  extends Effect("unhandle")<InstanceType<Target>, Exclude<T, InstanceType<Target>>>
-{
-  constructor(readonly value: T, match: Target) {
-    super()
-  }
-}

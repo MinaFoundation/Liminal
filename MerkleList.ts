@@ -55,19 +55,9 @@ export function MerkleList<T extends Type>(elementType: new() => T) {
     reduceKeys<R extends Type, Y>(
       initial: R,
       f: (acc: R, cur: T) => Generator<Y, R>,
-    ): MerkleListReduce<R, Y> {
-      return new MerkleListReduce(this, initial, f)
+    ): Effect<R, Y> {
+      throw 0
     }
-  }
-}
-
-export class MerkleListReduce<R, Y> extends Effect("ReduceMerkleList")<R, Y> {
-  constructor(
-    readonly self: MerkleList,
-    readonly initial: Type,
-    readonly f: (acc: any, cur: any) => Generator,
-  ) {
-    super()
   }
 }
 
