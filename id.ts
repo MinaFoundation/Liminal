@@ -1,5 +1,4 @@
 import { u64 } from "int.js"
-import { State } from "state.js"
 import { Contract } from "./Contract.js"
 import { Effect } from "./Effect.js"
 import { type } from "./Type.js"
@@ -27,7 +26,7 @@ export function signer<K extends keyof any>(key: K) {
   return class extends id {
     readonly key = key
 
-    deploy<N>(namespace: N, initialState: NamespaceState<N>): Generator<never, Contract<N>> {
+    deploy<N>(namespace: N, initialState: InitialState<N>): Generator<never, Contract<N>> {
       throw 0
     }
 
@@ -37,8 +36,9 @@ export function signer<K extends keyof any>(key: K) {
   }
 }
 
-export type NamespaceState<N> = {
-  [K in keyof N as N[K] extends State ? K : never]: N[K] extends State<infer T> ? T : never
+// TODO: make this check better
+export type InitialState<N> = {
+  [K in keyof N as N[K] extends Function ? never : K]: N[K]
 }
 
 export interface SendProps {

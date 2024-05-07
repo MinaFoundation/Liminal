@@ -5,16 +5,15 @@ declare const sign: L.SignBytes
 declare const l2: L.Client
 
 class Counter {
-  count = new L.State(L.u256);
+  count = L.State(L.u256);
 
   *increment() {
-    const count = yield* this.count
-    const incremented = count.add(L.u256.from(1))
+    const incremented = this.count.add(L.u256.from(1))
     yield new IncrementedEvent({
-      from: count,
+      from: this.count,
       to: incremented,
     })
-    return yield* this.count.set(incremented)
+    return yield* L.set(this.count, incremented)
   }
 }
 
