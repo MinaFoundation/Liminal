@@ -1,5 +1,4 @@
 import { Effect } from "./Effect.js"
-import { Err } from "./Err.js"
 import { Match } from "./Match.js"
 import { source } from "./Source.js"
 
@@ -19,7 +18,7 @@ export function type<Name extends string, Metadata = undefined>(
 export class Of<T extends Type> extends source("native")<T, { value: unknown }> {}
 export class From<T extends Type> extends source("from")<T, unknown> {}
 export class Into<T extends Type> extends source("into")<T, Type> {}
-export class AssertEquals<T extends Err> extends source("assertEquals")<T, {
+export class AssertEquals<T extends Type> extends source("assertEquals")<T, {
   expected: Type
   actual: Type
 }> {}
@@ -55,7 +54,7 @@ export class Type<
     return new Into(new into(), this).value()
   }
 
-  assertEquals<This extends Type, E extends Err>(this: This, expected: This, error: E): E {
+  assertEquals<This extends Type, E extends Type>(this: This, expected: This, error: E): E {
     return new AssertEquals(error, {
       actual: this,
       expected,
@@ -78,7 +77,7 @@ export class Type<
   }
 
   // TODO: enable overload
-  handle<This extends Type, Match extends Constructor, Y>(
+  handle<This extends Type, Match extends Constructor, Y extends Type>(
     this: This,
     match: Match,
     f: (value: InstanceType<Match>) => Generator<Y, Exclude<This, InstanceType<Match>>>,

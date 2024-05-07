@@ -1,6 +1,5 @@
-import { Effect } from "./Effect.js"
-import { Type } from "./Type.js"
+import { Effect, Result, Yield } from "./Effect.js"
 
-export function call<Y, R extends Type>(f: () => Generator<Y, R>): Effect<Y, R> {
+export function call<Y extends Yield, R extends Result>(f: () => Generator<Y, R>): Effect<Y, R> {
   throw 0
 }

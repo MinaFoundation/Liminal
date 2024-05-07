@@ -1,7 +1,6 @@
-import { Effect } from "./Effect.js"
-import { Err } from "./Err.js"
+import { Effect, Result, Yield } from "./Effect.js"
 import { source } from "./Source.js"
-import { type } from "./Type.js"
+import { Type, type } from "./Type.js"
 
 export class True extends source("true")<bool> {}
 export class False extends source("false")<bool> {}
@@ -11,7 +10,7 @@ export class bool extends type("bool")<boolean, never, never> {
   static true = new True(new this()).value()
   static false = new False(new this()).value()
 
-  if<Y, R>(f: () => Generator<Y, R>): If<Y, R> {
+  if<Y extends Yield, R extends Result>(f: () => Generator<Y, R>): If<Y, R> {
     return new If(this, f)
   }
 
@@ -19,12 +18,12 @@ export class bool extends type("bool")<boolean, never, never> {
     return new Not(this).value()
   }
 
-  assert<E extends Err>(error: E): E {
+  assert<E extends Type>(error: E): E {
     return this.assertEquals(bool.true, error)
   }
 }
 
-export class If<Y, R> extends Effect<Y, R | undefined> {
+export class If<Y extends Yield, R extends Result> extends Effect<Y, R | undefined> {
   constructor(
     readonly self: bool,
     readonly f: () => Generator<Y, R>,
@@ -32,7 +31,7 @@ export class If<Y, R> extends Effect<Y, R | undefined> {
     super()
   }
 
-  else<Y2>(f: () => Generator<Y2, R>): Effect<Y | Y2, R> {
+  else<Y2 extends Yield>(f: () => Generator<Y2, R>): Effect<Y | Y2, R> {
     throw 0
   }
 }

@@ -1,22 +1,25 @@
+import { constant } from "./constant.js"
 import { Constructor, Type, type } from "./Type.js"
 
-export type Fields = Record<string, Constructor>
+export type FieldsTypes = Record<string, Constructor>
+export type Fields<F extends FieldsTypes> = {
+  [K in keyof F as F[K] extends Constructor<constant> ? never : K]: InstanceType<F[K]>
+}
 
 // TODO: do we want to parameterize the conversions?
 // TODO: enable tuple structs
-export interface Struct<F extends Fields = Fields>
+export interface Struct<F extends FieldsTypes = FieldsTypes>
   extends InstanceType<ReturnType<typeof Struct<F>>>
 {}
 
-export function Struct<F extends Fields>(fieldTypes: F) {
-  return class extends type("Struct", { fieldTypes })<StructNative<F>, never, never> {
-    // TODO:
-    declare fields: {
-      [K in keyof F]: InstanceType<F[K]>
+export function Struct<F extends FieldsTypes>(fieldTypes: F) {
+  return class extends type("Struct", { fieldTypes })<StructNative<F>> {
+    constructor(readonly fields: Fields<F>) {
+      super()
     }
   }
 }
 
-export type StructNative<F extends Fields> = {
+export type StructNative<F extends FieldsTypes> = {
   [K in keyof F]: Type.Native<InstanceType<F[K]>>
 }

@@ -5,7 +5,7 @@ import { Effect } from "./Effect.js"
 import { type } from "./Type.js"
 
 export class id extends type("id")<Uint8Array, never, never> {
-  bind<N>(namespace: N): Effect<never, Contract<N>> {
+  bind<N>(namespace: N): Generator<never, Contract<N>> {
     throw 0
   }
 
@@ -14,7 +14,7 @@ export class id extends type("id")<Uint8Array, never, never> {
   }
 }
 
-export class SignerRequirement<K extends string> {
+export class SignerRequirement<K extends string = any> {
   readonly tag = "SignerRequirement"
   constructor(readonly key: K) {}
 }
@@ -27,7 +27,7 @@ export function signer<K extends keyof any>(key: K) {
   return class extends id {
     readonly key = key
 
-    deploy<N>(namespace: N, initialState: NamespaceState<N>): Effect<never, Contract<N>> {
+    deploy<N>(namespace: N, initialState: NamespaceState<N>): Generator<never, Contract<N>> {
       throw 0
     }
 

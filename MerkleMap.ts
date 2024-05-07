@@ -47,21 +47,21 @@ export function MerkleMap<K extends Type, V extends Type>(
       return new MerkleMapHas(new bool(), key).value()
     }
 
-    reduceKeys<R extends Type, Y>(
+    reduceKeys<R extends Type, Y extends Type>(
       initial: R,
       f: (acc: R, cur: K) => Generator<Y, R>,
     ): Effect<R, Y> {
       throw 0
     }
 
-    reduceValues<R extends Type, Y>(
+    reduceValues<R extends Type, Y extends Type>(
       initial: R,
       f: (acc: R, cur: V) => Generator<Y, R>,
     ): Effect<R, Y> {
       throw 0
     }
 
-    reduceEntries<R extends Type, Y>(
+    reduceEntries<R extends Type, Y extends Type>(
       initial: R,
       f: (acc: R, cur: [K, V]) => Generator<Y, R>,
     ): Effect<R, Y> {

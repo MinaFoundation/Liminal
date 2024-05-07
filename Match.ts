@@ -1,11 +1,11 @@
 import { Constructor, Type } from "Type.js"
-import { Effect } from "./Effect.js"
+import { Effect, Yield } from "./Effect.js"
 import { None } from "./None.js"
 
 export class Match<T extends Type> {
   constructor(private value: T) {}
 
-  when<Target extends Constructor<T>, Yield, Result extends Type | void>(
+  when<Target extends Constructor<T>, Yield extends Type, Result extends Type | void>(
     match: Target,
     f: (value: InstanceType<Target>) => Generator<Yield, Result>,
   ): Matcher<Exclude<T, InstanceType<Target>>, Yield, Result> {
@@ -13,18 +13,11 @@ export class Match<T extends Type> {
   }
 }
 
-export class Rehandle<Y, R extends Type> {
-  constructor(private call: Generator<Y, R>) {}
-
-  when<Target extends Constructor<Y>, Yield>(
-    match: Target,
-    f: (value: InstanceType<Target>) => Generator<Yield, R>,
-  ): Matcher<Exclude<Y, InstanceType<Target>>, Yield, R> {
-    return new Matcher(this.call, f, match)
-  }
-}
-
-export class Matcher<Remaining, PreviousYield, Return extends Type | void> extends Effect<
+export class Matcher<
+  Remaining extends Yield,
+  PreviousYield extends Type,
+  Return extends Type | void,
+> extends Effect<
   PreviousYield,
   [Remaining] extends [never] ? void extends Return ? Exclude<Return, void> | None : Return
     : None | Exclude<Return, void>
@@ -40,7 +33,7 @@ export class Matcher<Remaining, PreviousYield, Return extends Type | void> exten
   when<
     Target extends Constructor<Remaining>,
     V extends InstanceType<Target>,
-    CurrentYield,
+    CurrentYield extends Type,
   >(
     match: Target,
     f: (value: V) => Generator<CurrentYield, Return>,
@@ -48,7 +41,7 @@ export class Matcher<Remaining, PreviousYield, Return extends Type | void> exten
     return new Matcher(this, f, match)
   }
 
-  else<CurrentYield>(
+  else<CurrentYield extends Type>(
     f: (value: Remaining) => Generator<CurrentYield, Return>,
   ): Matcher<never, PreviousYield | CurrentYield, Return> {
     return new Matcher(this, f)

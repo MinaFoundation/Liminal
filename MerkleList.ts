@@ -52,7 +52,7 @@ export function MerkleList<T extends Type>(elementType: new() => T) {
       }).value()
     }
 
-    reduceKeys<R extends Type, Y>(
+    reduceKeys<R extends Type, Y extends Type>(
       initial: R,
       f: (acc: R, cur: T) => Generator<Y, R>,
     ): Effect<R, Y> {
