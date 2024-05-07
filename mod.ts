@@ -1,5 +1,6 @@
 export * from "./bool.js"
 export * from "./call.js"
+export * from "./Client.js"
 export * from "./constant.js"
 export * from "./Contract.js"
 export * from "./env.js"
