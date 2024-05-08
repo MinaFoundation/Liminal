@@ -15,7 +15,7 @@ export class Erc20 {
 
   *transfer(recipient: L.id, amount: L.u256) {
     const fromBalance = yield* this.balances_.value.get(L.sender).unhandle(L.None)
-    yield fromBalance.gte(amount).assert(new InsufficientBalanceError({}))
+    yield fromBalance.gte(amount).assert(InsufficientBalanceError.of({}))
     const recipientBalance = this.balances_.value.get(recipient).when(L.None, function*() {
       return L.u256.from(0)
     })
@@ -23,7 +23,7 @@ export class Erc20 {
       .set(L.sender, fromBalance.subtract(amount))
       .set(recipient, recipientBalance.add(amount))
     yield* this.balances_.set(updated)
-    yield new TransferEvent({
+    yield TransferEvent.of({
       from: L.caller,
       to: recipient,
       value: amount,
@@ -52,7 +52,7 @@ export class Erc20 {
   *transferFrom(sender: L.id, recipient: L.id, amount: L.u256) {
     const recipientAllowances = yield* this.allowances_.value.get(recipient).unhandle(L.None)
     const recipientAllowanceFromSender = yield* recipientAllowances.get(sender).unhandle(L.None)
-    yield recipientAllowanceFromSender.gte(amount).assert(new InsufficientBalanceError({}))
+    yield recipientAllowanceFromSender.gte(amount).assert(InsufficientBalanceError.of({}))
   }
 }
 
