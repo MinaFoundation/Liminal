@@ -1,16 +1,16 @@
-import { ConstructorSource, TypeSource } from "../Source.js"
+import { ConstructorNode, TypeNode } from "../Node.js"
 import { bool } from "./Bool.js"
 
-export class True extends ConstructorSource("true")<bool> {
+export class True extends ConstructorNode("true")<bool> {
   constructor() {
     super(bool)
   }
 }
 
-export class False extends ConstructorSource("false")<bool> {
+export class False extends ConstructorNode("false")<bool> {
   constructor() {
     super(bool)
   }
 }
 
-export class Not extends TypeSource("not")<bool> {}
+export class Not extends TypeNode("not")<bool> {}

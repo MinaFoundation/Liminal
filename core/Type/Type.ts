@@ -34,7 +34,7 @@ export class Type<
     metadata: Metadata
     from?: From
     into?: Into
-    source?: unknown
+    node?: unknown
   }
 
   constructor(name: Name, metadata: Metadata) {

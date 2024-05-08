@@ -1,16 +1,16 @@
 import { u256 } from "../Int/Int.js"
-import { ConstructorSource, StaticConstructorSource, TypeSource } from "../Source.js"
+import { ConstructorNode, TypeNode } from "../Node.js"
 import { Constructor, Type } from "../Type/Type.js"
 import { MerkleMap } from "./MerkleMap.js"
 
-export class MerkleMapSize extends StaticConstructorSource("MerkleMapSize", u256) {
+export class MerkleMapSize extends ConstructorNode("MerkleMapSize")<u256> {
   constructor(readonly list: MerkleMap) {
-    super()
+    super(u256)
   }
 }
 
 export class MerkleMapGet<K extends Type = any, V extends Type = any>
-  extends ConstructorSource("MerkleMapGet")<V>
+  extends ConstructorNode("MerkleMapGet")<V>
 {
   constructor(readonly map: MerkleMap<K, V>, readonly key: K, valueType: Constructor<V>) {
     super(valueType)
@@ -18,7 +18,7 @@ export class MerkleMapGet<K extends Type = any, V extends Type = any>
 }
 
 export class MerkleMapDelete<K extends Type = any, V extends Type = any>
-  extends TypeSource("MerkleMapSet")<MerkleMap<K, V>>
+  extends TypeNode("MerkleMapSet")<MerkleMap<K, V>>
 {
   constructor(map: MerkleMap<K, V>, readonly key: K) {
     super(map)
@@ -26,7 +26,7 @@ export class MerkleMapDelete<K extends Type = any, V extends Type = any>
 }
 
 export class MerkleMapSet<K extends Type = any, V extends Type = any>
-  extends TypeSource("MerkleMapSet")<MerkleMap<K, V>>
+  extends TypeNode("MerkleMapSet")<MerkleMap<K, V>>
 {
   constructor(map: MerkleMap<K, V>, readonly key: K, readonly value: V) {
     super(map)

@@ -5,8 +5,8 @@ export function erc20DeploymentTx(deployerId: Uint8Array) {
     const deployer = yield* L.id.from(deployerId).signer("deployer")
     yield* deployer.deploy(new Erc20(), {
       totalSupply_: L.u256.from(1e9),
-      balances_: Balances.from(new L.MerkleMapNative()),
-      allowances_: Allowances.from(new L.MerkleMapNative()),
+      balances_: new Balances(),
+      allowances_: new Allowances(),
     })
   })
 }

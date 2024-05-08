@@ -1,7 +1,7 @@
-import { CallerNode, SelfSource, SenderSource } from "./EnvNode.js"
+import { CallerNode, SelfNode, SenderNode } from "./EnvNode.js"
 
 export const caller = new CallerNode().instance()
 
-export const self = new SelfSource().instance()
+export const self = new SelfNode().instance()
 
-export const sender = new SenderSource().instance()
+export const sender = new SenderNode().instance()

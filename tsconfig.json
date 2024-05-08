@@ -17,7 +17,8 @@
     "noUncheckedIndexedAccess": true,
     "outDir": "target",
     "paths": {
-      "liminal": ["./mod.ts"]
+      "liminal": ["./mod.ts"],
+      "liminal/lib": ["./lib/mod.ts"]
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,
