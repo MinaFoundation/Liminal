@@ -7,10 +7,10 @@ const sender = TestSigner()
 
 await L
   .tx(function*() {
-    const contract = yield* L.id
+    const counter = L.id
       .from(new TextEncoder().encode(process.argv[0]))
       .bind(new Counter())
-    yield* contract.increment()
+    yield* counter.increment()
   })
   .sign(sender)
   .run()

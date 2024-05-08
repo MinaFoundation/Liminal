@@ -5,7 +5,7 @@ import { State } from "../State.js"
 import { Type } from "../Type/Type.js"
 
 export class id extends Type.make("id")<Uint8Array, never, never> {
-  bind<N>(namespace: N): Generator<never, Contract<N>> {
+  bind<N>(namespace: N): Contract<N> {
     throw 0
   }
 

@@ -1,4 +1,5 @@
-// TODO: constrain
+import { State } from "./State.js"
+
 export type Contract<N> = {
-  [K in keyof N]: N[K]
+  [K in keyof N]: N[K] extends State<infer T> ? T : N[K]
 }
