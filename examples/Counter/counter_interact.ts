@@ -10,10 +10,15 @@ const finalization = await L
     const counter = L.id
       .from(new TextEncoder().encode(process.argv[0]))
       .bind(new Counter())
-    return yield* counter.increment()
+    yield* counter.increment()
+    yield* counter.increment()
+    yield* counter.increment()
+    return counter.count
   })
   .sign(sender)
-  .run()
+  .run((v) => {
+    v
+  })
   .commit(client)
   .finalized()
 
