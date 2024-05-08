@@ -14,6 +14,7 @@ function* unhandle() {
   value satisfies L.u8
   return value
 }
+unhandle satisfies () => Generator<L.None, L.u8, unknown>
 
 function handle() {
   const effect = maybe.unhandle(L.None)
