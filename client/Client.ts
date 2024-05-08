@@ -1,7 +1,9 @@
 import { SignalOptions } from "../util/AbortController.js"
 import { Subscription } from "../util/Subscription.js"
 
-export interface Client {
+export declare function Client(...bootNodes: string[]): Promise<Client>
+
+export interface Client extends Disposable {
   send(tx: Uint8Array, options: SignalOptions): Subscription<TxStatus>
 }
 
@@ -12,11 +14,11 @@ export type TxStatus =
   }
   | {
     type: "Included"
-    blockHash: Uint8Array
+    block: string
   }
   | {
     type: "Finalized"
-    blockHash: Uint8Array
+    block: string
   }
   | {
     type: "Rejected"

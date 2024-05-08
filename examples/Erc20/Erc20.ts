@@ -1,16 +1,5 @@
 import * as L from "liminal"
 
-export function erc20DeploymentTx(deployerId: Uint8Array) {
-  return L.tx(function*() {
-    const deployer = yield* L.id.from(deployerId).signer("deployer")
-    yield* deployer.deploy(new Erc20(), {
-      totalSupply_: L.u256.from(1e9),
-      balances_: new Balances(),
-      allowances_: new Allowances(),
-    })
-  })
-}
-
 export class Erc20 {
   totalSupply_ = new L.State(L.u256)
   balances_ = new L.State(Balances)

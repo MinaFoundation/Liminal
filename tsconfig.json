@@ -18,7 +18,8 @@
     "outDir": "target",
     "paths": {
       "liminal": ["./mod.ts"],
-      "liminal/lib": ["./lib/mod.ts"]
+      "liminal/lib": ["./lib/mod.ts"],
+      "liminal/test": ["./test/mod.ts"]
     },
     "resolveJsonModule": true,
     "skipLibCheck": true,

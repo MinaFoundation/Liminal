@@ -9,7 +9,16 @@ export class id extends Type.make("id")<Uint8Array, never, never> {
     throw 0
   }
 
-  signer<K extends string>(key: K): Effect<SignerRequirement<K>, signer<K>> {
+  signer<K extends string>(key: K): SignerEffect<K> {
+    throw 0
+  }
+}
+
+export class SignerEffect<K extends string> extends Effect<SignerRequirement<K>, signer<K>> {
+  deploy<N>(
+    namespace: N,
+    deployOptions: DeployOptions<N>,
+  ): Generator<SignerRequirement<K>, Contract<N>> {
     throw 0
   }
 }
@@ -27,7 +36,7 @@ export function signer<K extends keyof any>(key: K) {
   return class extends id {
     readonly key = key
 
-    deploy<N>(namespace: N, initialState: InferState<N>): Generator<never, Contract<N>> {
+    deploy<N>(namespace: N, deployOptions: DeployOptions<N>): Generator<never, Contract<N>> {
       throw 0
     }
 
@@ -37,9 +46,11 @@ export function signer<K extends keyof any>(key: K) {
   }
 }
 
-// TODO: make this check better
-export type InferState<N> = {
-  [K in keyof N as N[K] extends State ? K : never]: N[K] extends State<infer T> ? T : never
+export interface DeployOptions<N> {
+  deployer: signer<any>
+  state: {
+    [K in keyof N as N[K] extends State ? K : never]: N[K] extends State<infer T> ? T : never
+  }
 }
 
 export interface SendProps {
