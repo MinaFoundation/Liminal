@@ -5,14 +5,16 @@ import Counter from "./Counter.js"
 using client = await L.Client()
 const sender = TestSigner()
 
-await L
+const finalization = await L
   .tx(function*() {
     const counter = L.id
       .from(new TextEncoder().encode(process.argv[0]))
       .bind(new Counter())
-    yield* counter.increment()
+    return yield* counter.increment()
   })
   .sign(sender)
   .run()
   .commit(client)
   .finalized()
+
+finalization.result satisfies number

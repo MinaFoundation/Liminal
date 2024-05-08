@@ -1,29 +1,36 @@
+import { Result, Type } from "../core/mod.js"
 import { SignalOptions } from "../util/AbortController.js"
 import { Subscription } from "../util/Subscription.js"
 
 export declare function Client(...bootNodes: string[]): Promise<Client>
 
 export interface Client extends Disposable {
-  send(tx: Uint8Array, options: SignalOptions): Subscription<TxStatus>
+  send<R extends Result>(
+    tx: () => Generator<unknown, R>,
+    options: SignalOptions,
+  ): Subscription<TxStatus<Type.Native<R>>>
 }
 
-export type TxStatus =
-  | {
-    type: "Broadcasted"
-    peers: string[]
-  }
-  | {
-    type: "Included"
-    block: string
-  }
-  | {
-    type: "Finalized"
-    block: string
-  }
-  | {
-    type: "Rejected"
-    reason: TxRejectionReason
-  }
+export interface TxBroadcast {
+  type: "Broadcasted"
+  peers: string[]
+}
+export interface TxInclusion<R> {
+  type: "Included"
+  block: string
+  result: R
+}
+export interface TxFinalization<R> {
+  type: "Finalized"
+  block: string
+  result: R
+}
+export interface TxRejection {
+  type: "Rejected"
+  reason: TxRejectionReason
+}
+
+export type TxStatus<R> = TxBroadcast | TxInclusion<R> | TxFinalization<R> | TxRejection
 
 // TODO
 export type TxRejectionReason =

@@ -6,7 +6,7 @@ const client = await L.Client()
 const contract = TestSigner()
 const sender = TestSigner()
 
-await L
+const result = await L
   .tx(function*() {
     yield* L.id
       .from(contract.publicKey)

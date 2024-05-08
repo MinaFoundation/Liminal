@@ -1,5 +1,5 @@
 import { SignalOptions } from "util/AbortController.js"
-import { Client, TxStatus } from "../../client/Client.js"
+import { Client, TxBroadcast, TxFinalization, TxInclusion, TxStatus } from "../../client/Client.js"
 import { Subscription } from "../../util/Subscription.js"
 import { Result, Yield } from "../Effect/Effect.js"
 import { SignerRequirement } from "../Id/Id.js"
@@ -42,7 +42,7 @@ export type TxHandler<Y extends Yield> = (value: Type.Native<Exclude<Y, SignerRe
 export class TxRun<Y extends Yield, R extends Result> {
   constructor(readonly signedTx: SignedTx<Y, R>) {}
 
-  commit(chain: Client, options?: CommitOptions): Commit {
+  commit(chain: Client, options?: CommitOptions): Commit<Type.Native<R>> {
     throw 0
   }
 }
@@ -50,8 +50,8 @@ export class TxRun<Y extends Yield, R extends Result> {
 export interface CommitOptions extends SignalOptions {}
 
 // TODO: should `included` and `finalized` include the tx result value in the case that the tx generator returns a value?
-export interface Commit extends Subscription<TxStatus> {
-  broadcasted(): Promise<string[]>
-  included(): Promise<string>
-  finalized(): Promise<string>
+export interface Commit<R> extends Subscription<TxStatus<R>> {
+  broadcasted(): Promise<TxBroadcast>
+  included(): Promise<TxInclusion<R>>
+  finalized(): Promise<TxFinalization<R>>
 }
