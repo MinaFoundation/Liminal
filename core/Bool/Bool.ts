@@ -1,21 +1,17 @@
-import { Effect, Result, Yield } from "./Effect.js"
-import { Source } from "./Source.js"
-import { Type } from "./Type.js"
+import { Effect, Result, Yield } from "../Effect/Effect.js"
+import { Type } from "../Type/Type.js"
+import { False, Not, True } from "./BoolNode.js"
 
-export class True extends Source("true")<bool> {}
-export class False extends Source("false")<bool> {}
-export class Not extends Source("not")<bool> {}
-
-export class bool extends Type.new("bool")<boolean, never, never> {
-  static true = new True(new this()).value()
-  static false = new False(new this()).value()
+export class bool extends Type.make("bool")<boolean, never, never> {
+  static true = new True().instance()
+  static false = new False().instance()
 
   if<Y extends Yield, R extends Result>(f: () => Generator<Y, R>): If<Y, R> {
     return new If(this, f)
   }
 
   not(): bool {
-    return new Not(this).value()
+    return new Not(this).instance()
   }
 
   assert<E extends Type>(error: E): E {

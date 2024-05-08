@@ -1,5 +1,5 @@
-import { Effect } from "./Effect.js"
-import { Constructor, Type } from "./Type.js"
+import { Effect } from "./Effect/Effect.js"
+import { Constructor, Type } from "./Type/Type.js"
 
 export class State<T extends Type = any> {
   readonly tag = "State"

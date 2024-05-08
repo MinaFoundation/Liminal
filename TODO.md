@@ -34,6 +34,7 @@
 - `signer` is assignable to `id`, but contains methods such as `deploy` and `send`.
 - default values
 - get min/max as instances, not methods
+- merkle map/list equality checks, slicing
 
 ———
 

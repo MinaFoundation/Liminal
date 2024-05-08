@@ -1,10 +1,9 @@
 import { SignalOptions } from "util/AbortController.js"
-import { Client, TxStatus } from "./Client.js"
-import { Result, Yield } from "./Effect.js"
-import { signer, SignerRequirement } from "./id.js"
-import { Source } from "./Source.js"
-import { Type } from "./Type.js"
-import { Subscription } from "./util/Subscription.js"
+import { Client, TxStatus } from "../../client/Client.js"
+import { Subscription } from "../../util/Subscription.js"
+import { Result, Yield } from "../Effect/Effect.js"
+import { SignerRequirement } from "../Id/Id.js"
+import { Type } from "../Type/Type.js"
 
 export function tx<Y extends Yield, R extends Result>(f: () => Generator<Y, R>) {
   return new Tx<Y, R>(f)
@@ -13,8 +12,8 @@ export function tx<Y extends Yield, R extends Result>(f: () => Generator<Y, R>) 
 export class Tx<Y extends Yield, R extends Result> {
   constructor(readonly f: () => Generator<Y, R>) {}
 
-  sign(signers: TxSigners<Y>): SignedTx<Y, R> {
-    return new SignedTx(this, signers)
+  sign(senderSigner: SignBytes, signers: TxSigners<Y>): SignedTx<Y, R> {
+    return new SignedTx(this, senderSigner, signers)
   }
 }
 
@@ -26,6 +25,7 @@ export type SignBytes = (bytes: Uint8Array) => Uint8Array
 export class SignedTx<Y extends Yield, R extends Result> {
   constructor(
     readonly tx: Tx<Y, R>,
+    readonly senderSigner: SignBytes,
     readonly signers: TxSigners<Y>,
   ) {}
 
@@ -45,6 +45,3 @@ export class TxRun<Y extends Yield, R extends Result> {
 }
 
 export interface CommitOptions extends SignalOptions {}
-
-export class TxSender extends Source("txSender")<signer<"sender">> {}
-export const sender = new TxSender(new (signer("sender"))()).value()

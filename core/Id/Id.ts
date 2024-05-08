@@ -1,9 +1,10 @@
-import { u64 } from "int.js"
-import { Contract } from "./Contract.js"
-import { Effect } from "./Effect.js"
-import { Type } from "./Type.js"
+import { Contract } from "../Contract.js"
+import { Effect } from "../Effect/Effect.js"
+import { u64 } from "../Int/Int.js"
+import { State } from "../State.js"
+import { Type } from "../Type/Type.js"
 
-export class id extends Type.new("id")<Uint8Array, never, never> {
+export class id extends Type.make("id")<Uint8Array, never, never> {
   bind<N>(namespace: N): Generator<never, Contract<N>> {
     throw 0
   }
@@ -26,7 +27,7 @@ export function signer<K extends keyof any>(key: K) {
   return class extends id {
     readonly key = key
 
-    deploy<N>(namespace: N, initialState: InitialState<N>): Generator<never, Contract<N>> {
+    deploy<N>(namespace: N, initialState: InferState<N>): Generator<never, Contract<N>> {
       throw 0
     }
 
@@ -37,8 +38,8 @@ export function signer<K extends keyof any>(key: K) {
 }
 
 // TODO: make this check better
-export type InitialState<N> = {
-  [K in keyof N as N[K] extends Function ? never : K]: N[K]
+export type InferState<N> = {
+  [K in keyof N as N[K] extends State ? K : never]: N[K] extends State<infer T> ? T : never
 }
 
 export interface SendProps {

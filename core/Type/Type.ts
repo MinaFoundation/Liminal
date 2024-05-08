@@ -1,4 +1,5 @@
-import { Effect, Result, Yield } from "./Effect.js"
+import { Effect, Result, Yield } from "../Effect/Effect.js"
+import { AssertEquals, From, Into } from "./TypeNode.js"
 
 export class Type<
   Name extends string = any,
@@ -7,7 +8,7 @@ export class Type<
   From = any,
   Into extends Type = any,
 > {
-  static new<Name extends string, Metadata = undefined>(
+  static make<Name extends string, Metadata = undefined>(
     name: Name,
     metadata: Metadata = undefined!,
   ) {
@@ -41,11 +42,11 @@ export class Type<
   }
 
   into<O extends Into>(into: new() => O): O {
-    return new Into(this, into).instance()
+    return new Into(into, this).instance()
   }
 
   assertEquals<T extends Type, E extends Type>(this: T, expected: T, error: E): E {
-    return new AssertEquals(this, expected, error).instance()
+    return new AssertEquals(error, this, expected).instance()
   }
 
   clone<This>(this: This): This {
@@ -80,46 +81,3 @@ export namespace Type {
   export type Native<T> = T extends string ? T : T extends Type<any, infer Name> ? Name : never
 }
 export type Constructor<T = any> = new(...args: any) => T
-
-export class From<T extends Type> {
-  readonly tag = "From"
-  constructor(
-    readonly type: Constructor<T>,
-    readonly value: Type.Native<T> | Type.From<T>,
-  ) {}
-
-  instance(): T {
-    const value = new this.type()
-    value[""].source = this
-    return value
-  }
-}
-
-export class Into<O extends Type> {
-  readonly tag = "Into"
-  constructor(
-    readonly self: O,
-    readonly value: Type,
-  ) {}
-
-  instance(): O {
-    const value = this.self.clone()
-    value[""].source = this
-    return value
-  }
-}
-
-export class AssertEquals<T extends Type, E extends Type> {
-  readonly tag = "AssertEquals"
-  constructor(
-    readonly self: T,
-    readonly expected: T,
-    readonly error: E,
-  ) {}
-
-  instance() {
-    const value = this.error.clone()
-    value[""].source = this
-    return value
-  }
-}

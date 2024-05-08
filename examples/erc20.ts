@@ -12,28 +12,28 @@ export function erc20DeploymentTx(deployerId: Uint8Array) {
 }
 
 export class Erc20 {
-  totalSupply_ = L.State(L.u256)
-  balances_ = L.State(Balances)
-  allowances_ = L.State(Allowances);
+  totalSupply_ = new L.State(L.u256)
+  balances_ = new L.State(Balances)
+  allowances_ = new L.State(Allowances);
 
   *totalSupply() {
     return this.totalSupply_
   }
 
   *balanceOf(account: L.id) {
-    return this.balances_.get(account)
+    return this.balances_.value.get(account)
   }
 
   *transfer(recipient: L.id, amount: L.u256) {
-    const fromBalance = yield* this.balances_.get(L.sender).unhandle(L.None)
+    const fromBalance = yield* this.balances_.value.get(L.sender).unhandle(L.None)
     yield fromBalance.gte(amount).assert(new InsufficientBalanceError({}))
-    const recipientBalance = this.balances_.get(recipient).when(L.None, function*() {
+    const recipientBalance = this.balances_.value.get(recipient).when(L.None, function*() {
       return L.u256.from(0)
     })
-    const updated = this.balances_
+    const updated = this.balances_.value
       .set(L.sender, fromBalance.subtract(amount))
       .set(recipient, recipientBalance.add(amount))
-    yield* L.set(this.balances_, updated)
+    yield* this.balances_.set(updated)
     yield new TransferEvent({
       from: L.caller,
       to: recipient,
@@ -42,26 +42,26 @@ export class Erc20 {
   }
 
   *allowance(owner: Owner, spender: Spender) {
-    const spenderAllowances = yield* this.allowances_.get(owner).unhandle(L.None)
+    const spenderAllowances = yield* this.allowances_.value.get(owner).unhandle(L.None)
     return spenderAllowances.get(spender)
   }
 
   *approve(spender: Spender, amount: L.u256) {
-    const ownerAllowedBy = this.allowances_.get(L.caller).when(L.None, function*() {
+    const ownerAllowedBy = this.allowances_.value.get(L.caller).when(L.None, function*() {
       return new AllowedBy()
     })
     const spenderAllows = ownerAllowedBy.get(spender).when(L.None, function*() {
       return L.u256.from(0)
     })
-    const updated = this.allowances_.set(
+    const updated = this.allowances_.value.set(
       L.caller,
       ownerAllowedBy.set(spender, spenderAllows.add(amount)),
     )
-    yield* L.set(this.allowances_, updated)
+    yield* this.allowances_.set(updated)
   }
 
   *transferFrom(sender: L.id, recipient: L.id, amount: L.u256) {
-    const recipientAllowances = yield* this.allowances_.get(recipient).unhandle(L.None)
+    const recipientAllowances = yield* this.allowances_.value.get(recipient).unhandle(L.None)
     const recipientAllowanceFromSender = yield* recipientAllowances.get(sender).unhandle(L.None)
     yield recipientAllowanceFromSender.gte(amount).assert(new InsufficientBalanceError({}))
   }

@@ -30,7 +30,7 @@ L
     const deployed = yield* deployer.deploy(new Counter(), { count })
     yield* deployed.increment()
   })
-  .sign({ deployer: sign })
+  .sign(sign, { deployer: sign })
   .run((value) => {
     if (value.event === "Incremented") {
       console.log("Before:", value.from)

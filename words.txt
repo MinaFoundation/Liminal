@@ -73,6 +73,7 @@ mybranch
 neovim
 nodenext
 nodir
+nullary
 objs
 ocamldoc
 ocamlformat
