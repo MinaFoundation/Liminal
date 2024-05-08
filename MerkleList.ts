@@ -1,18 +1,18 @@
 import { Effect } from "Effect.js"
 import { u256 } from "./int.js"
-import { source } from "./Source.js"
-import { Type, type } from "./Type.js"
+import { Source } from "./Source.js"
+import { Type } from "./Type.js"
 
-export class MerkleListLength extends source("MerkleListLength")<u256> {}
+export class MerkleListLength extends Source("MerkleListLength")<u256> {}
 export class MerkleListPrepend<T extends Type>
-  extends source("MerkleListPrepend")<MerkleList<T>, Type>
+  extends Source("MerkleListPrepend")<MerkleList<T>, Type>
 {}
 export class MerkleListAppend<T extends Type>
-  extends source("MerkleListAppend")<MerkleList<T>, Type>
+  extends Source("MerkleListAppend")<MerkleList<T>, Type>
 {}
-export class MerkleListShift<T extends Type> extends source("MerkleListShift")<MerkleList<T>> {}
-export class MerkleListPop<T extends Type> extends source("MerkleListPop")<MerkleList<T>> {}
-export class MerkleListAt<T extends Type> extends source("MerkleListAt")<T, {
+export class MerkleListShift<T extends Type> extends Source("MerkleListShift")<MerkleList<T>> {}
+export class MerkleListPop<T extends Type> extends Source("MerkleListPop")<MerkleList<T>> {}
+export class MerkleListAt<T extends Type> extends Source("MerkleListAt")<T, {
   list: MerkleList
   index: u256
 }> {}
@@ -23,10 +23,12 @@ export interface MerkleList<T extends Type = Type>
 
 export function MerkleList<T extends Type>(elementType: new() => T) {
   return class
-    extends type("MerkleList", { elementType })<MerkleListNative<Type.Native<T>>, never, never>
+    extends Type.new("MerkleList", { elementType })<MerkleListNative<Type.Native<T>>, never, never>
   {
     length = new MerkleListLength(new u256()).value()
+
     first = this.at(u256.from(1))
+
     last = this.at(this.length.subtract(u256.from(1)))
 
     prepend(value: T): MerkleList<T> {

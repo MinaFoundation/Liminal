@@ -1,12 +1,12 @@
 import { Effect, Result, Yield } from "./Effect.js"
-import { source } from "./Source.js"
-import { Type, type } from "./Type.js"
+import { Source } from "./Source.js"
+import { Type } from "./Type.js"
 
-export class True extends source("true")<bool> {}
-export class False extends source("false")<bool> {}
-export class Not extends source("not")<bool> {}
+export class True extends Source("true")<bool> {}
+export class False extends Source("false")<bool> {}
+export class Not extends Source("not")<bool> {}
 
-export class bool extends type("bool")<boolean, never, never> {
+export class bool extends Type.new("bool")<boolean, never, never> {
   static true = new True(new this()).value()
   static false = new False(new this()).value()
 

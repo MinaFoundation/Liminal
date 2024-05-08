@@ -1,5 +1,5 @@
 import { constant } from "./constant.js"
-import { Constructor, Type, type } from "./Type.js"
+import { Constructor, Type } from "./Type.js"
 
 export type FieldsTypes = Record<string, Constructor>
 export type Fields<F extends FieldsTypes> = {
@@ -13,7 +13,7 @@ export interface Struct<F extends FieldsTypes = FieldsTypes>
 {}
 
 export function Struct<F extends FieldsTypes>(fieldTypes: F) {
-  return class extends type("Struct", { fieldTypes })<StructNative<F>> {
+  return class extends Type.new("Struct", { fieldTypes })<StructNative<F>> {
     constructor(readonly fields: Fields<F>) {
       super()
     }

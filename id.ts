@@ -1,9 +1,9 @@
 import { u64 } from "int.js"
 import { Contract } from "./Contract.js"
 import { Effect } from "./Effect.js"
-import { type } from "./Type.js"
+import { Type } from "./Type.js"
 
-export class id extends type("id")<Uint8Array, never, never> {
+export class id extends Type.new("id")<Uint8Array, never, never> {
   bind<N>(namespace: N): Generator<never, Contract<N>> {
     throw 0
   }

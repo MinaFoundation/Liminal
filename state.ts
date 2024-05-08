@@ -1,9 +1,26 @@
+import { Effect } from "./Effect.js"
 import { Constructor, Type } from "./Type.js"
 
-export function State<T extends Type>(ctor: Constructor<T>): T {
-  return new ctor()
+export class State<T extends Type = any> {
+  readonly tag = "State"
+  readonly value
+  constructor(readonly type: Constructor<T>) {
+    this.value = new type()
+  }
+
+  set(value: T): Effect<never, T> {
+    return new SetState(this, value).instance()
+  }
 }
 
-export function set<T extends Type>(type: T, value: T): Generator<never, T> {
-  throw 0
+export class SetState<T extends Type = any> {
+  readonly tag = "SetState"
+  constructor(
+    readonly state: State<T>,
+    readonly value: T,
+  ) {}
+
+  instance(): Effect<never, T> {
+    throw 0
+  }
 }

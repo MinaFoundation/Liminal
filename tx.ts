@@ -2,7 +2,7 @@ import { SignalOptions } from "util/AbortController.js"
 import { Client, TxStatus } from "./Client.js"
 import { Result, Yield } from "./Effect.js"
 import { signer, SignerRequirement } from "./id.js"
-import { source } from "./Source.js"
+import { Source } from "./Source.js"
 import { Type } from "./Type.js"
 import { Subscription } from "./util/Subscription.js"
 
@@ -39,12 +39,12 @@ export type TxHandler<Y extends Yield> = (value: Type.Native<Exclude<Y, SignerRe
 export class TxRun<Y extends Yield, R extends Result> {
   constructor(readonly signedTx: SignedTx<Y, R>) {}
 
-  commit(chain: Client, options?: CommitOptions): Subscription<TxStatus> {
+  commit(chain: Client): Subscription<TxStatus> {
     throw 0
   }
 }
 
 export interface CommitOptions extends SignalOptions {}
 
-export class TxSender extends source("txSender")<signer<"sender">> {}
+export class TxSender extends Source("txSender")<signer<"sender">> {}
 export const sender = new TxSender(new (signer("sender"))()).value()

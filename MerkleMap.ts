@@ -2,17 +2,17 @@ import { Effect } from "Effect.js"
 import { bool } from "./bool.js"
 import { u256 } from "./int.js"
 import { None } from "./None.js"
-import { source } from "./Source.js"
-import { Type, type } from "./Type.js"
+import { Source } from "./Source.js"
+import { Type } from "./Type.js"
 
-export class MerkleMapSize extends source("MerkleMapSize")<u256> {}
-export class MerkleMapGet<K extends Type> extends source("MerkleMapGet")<K, Type> {}
-export class MerkleMapHas extends source("MerkleMapHas")<bool, Type> {}
+export class MerkleMapSize extends Source("MerkleMapSize")<u256> {}
+export class MerkleMapGet<K extends Type> extends Source("MerkleMapGet")<K, Type> {}
+export class MerkleMapHas extends Source("MerkleMapHas")<bool, Type> {}
 export class MerkleMapDelete<K extends Type, V extends Type>
-  extends source("MerkleMapDelete")<MerkleMap<K, V>, Type>
+  extends Source("MerkleMapDelete")<MerkleMap<K, V>, Type>
 {}
 export class MerkleMapSet<K extends Type, V extends Type>
-  extends source("MerkleMapSet")<MerkleMap<K, V>, {
+  extends Source("MerkleMapSet")<MerkleMap<K, V>, {
     key: Type
     value: Type
   }>
@@ -26,7 +26,7 @@ export function MerkleMap<K extends Type, V extends Type>(
   keyType: new() => K,
   valueType: new() => V,
 ) {
-  return class extends type("MerkleMap", { keyType, valueType })<
+  return class extends Type.new("MerkleMap", { keyType, valueType })<
     MerkleMapNative<Type.Native<K>, Type.Native<V>>
   > {
     size = new MerkleMapSize(new u256()).value()

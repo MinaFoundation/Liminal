@@ -1,48 +1,38 @@
-import { Effect } from "./Effect.js"
-import { Match } from "./Match.js"
-import { source } from "./Source.js"
-
-export function type<Name extends string, Metadata = undefined>(
-  name: Name,
-  metadata: Metadata = undefined!,
-) {
-  return class<Native, From = never, Into extends Type = never>
-    extends Type<Name, Native, Metadata, From, Into>
-  {
-    constructor() {
-      super(name, metadata)
-    }
-  }
-}
-
-export class Of<T extends Type> extends source("native")<T, { value: unknown }> {}
-export class From<T extends Type> extends source("from")<T, unknown> {}
-export class Into<T extends Type> extends source("into")<T, Type> {}
-export class AssertEquals<T extends Type> extends source("assertEquals")<T, {
-  expected: Type
-  actual: Type
-}> {}
+import { Effect, Result, Yield } from "./Effect.js"
 
 export class Type<
   Name extends string = any,
-  Native_ = any,
+  Native = any,
   Metadata = any,
-  From_ = any,
-  Into_ extends Type = any,
+  From = any,
+  Into extends Type = any,
 > {
+  static new<Name extends string, Metadata = undefined>(
+    name: Name,
+    metadata: Metadata = undefined!,
+  ) {
+    return class<Native, From = never, Into extends Type = never>
+      extends this<Name, Native, Metadata, From, Into>
+    {
+      constructor() {
+        super(name, metadata)
+      }
+    }
+  }
+
   static from<T extends Type>(
     this: new() => T,
     value: Type.Native<T> | Type.From<T>,
   ): T {
-    return new From(new this(), value).value()
+    return new From(this, value).instance()
   }
 
   "": {
     name: Name
-    native?: Native_
+    native?: Native
     metadata: Metadata
-    from?: From_
-    into?: Into_
+    from?: From
+    into?: Into
     source?: unknown
   }
 
@@ -50,45 +40,86 @@ export class Type<
     this[""] = { name, metadata }
   }
 
-  into<O extends Into_>(into: new() => O): O {
-    return new Into(new into(), this).value()
+  into<O extends Into>(into: new() => O): O {
+    return new Into(this, into).instance()
   }
 
-  assertEquals<This extends Type, E extends Type>(this: This, expected: This, error: E): E {
-    return new AssertEquals(error, {
-      actual: this,
-      expected,
-    }).value()
+  assertEquals<T extends Type, E extends Type>(this: T, expected: T, error: E): E {
+    return new AssertEquals(this, expected, error).instance()
   }
 
-  clone<This extends Type>(this: This): This {
+  clone<This>(this: This): This {
     return Object.assign(Object.create(Object.getPrototypeOf(this)), this)
   }
 
-  match<This extends Type>(this: This): Match<This> {
-    return new Match(this)
-  }
-
-  unhandle<This extends Type, Match extends Constructor<This>>(
-    this: This,
-    match: Match,
-  ): Effect<InstanceType<Match>, Exclude<This, InstanceType<Match>>> {
+  when<
+    T extends Type,
+    M extends Constructor<T>,
+    Y extends Yield,
+    R extends Result,
+    U extends Exclude<T, InstanceType<M>> | R,
+  >(
+    this: T,
+    match: M,
+    f: (value: InstanceType<M>) => Generator<Y, R>,
+  ): [Y] extends [never] ? U : Effect<Y, U> {
     throw 0
   }
 
-  // TODO: enable overload
-  handle<This extends Type, Match extends Constructor, Y extends Type>(
-    this: This,
-    match: Match,
-    f: (value: InstanceType<Match>) => Generator<Y, Exclude<This, InstanceType<Match>>>,
-  ): Effect<InstanceType<Match> | Y, Exclude<This, InstanceType<Match>>> {
+  unhandle<T extends Type, M extends Constructor<T>>(
+    this: T,
+    match: M,
+  ): Effect<InstanceType<M>, Exclude<T, InstanceType<M>>> {
     throw 0
   }
 }
 
 export namespace Type {
-  export type Native<T> = T extends string ? T : T extends Type<any, infer Name> ? Name : never
   // TODO: why the presence of `undefined` when the `From` of `T` is `never`?
   export type From<T> = T extends Type<any, any, any, infer From> ? Exclude<From, undefined> : never
+  export type Native<T> = T extends string ? T : T extends Type<any, infer Name> ? Name : never
 }
 export type Constructor<T = any> = new(...args: any) => T
+
+export class From<T extends Type> {
+  readonly tag = "From"
+  constructor(
+    readonly type: Constructor<T>,
+    readonly value: Type.Native<T> | Type.From<T>,
+  ) {}
+
+  instance(): T {
+    const value = new this.type()
+    value[""].source = this
+    return value
+  }
+}
+
+export class Into<O extends Type> {
+  readonly tag = "Into"
+  constructor(
+    readonly self: O,
+    readonly value: Type,
+  ) {}
+
+  instance(): O {
+    const value = this.self.clone()
+    value[""].source = this
+    return value
+  }
+}
+
+export class AssertEquals<T extends Type, E extends Type> {
+  readonly tag = "AssertEquals"
+  constructor(
+    readonly self: T,
+    readonly expected: T,
+    readonly error: E,
+  ) {}
+
+  instance() {
+    const value = this.error.clone()
+    value[""].source = this
+    return value
+  }
+}

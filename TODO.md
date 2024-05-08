@@ -32,13 +32,10 @@
 - Inside of a tx, we have different context from inside of a contract method.
 - Generators are a risk
 - `signer` is assignable to `id`, but contains methods such as `deploy` and `send`.
+- default values
+- get min/max as instances, not methods
 
 ———
-
-Make Globals generic
-
-yield L.f function incompatibility errors by extracting an internal error types for things such as
-incomplete matchAll chains. Aka. make certain statements impossible
 
 Better anonymous types
 
@@ -53,6 +50,8 @@ Contract with generator
 Equivalent of destructuring
 
 Can we do away with account updates
+
+Implicit type conversion in misc. methods
 
 <!--
 

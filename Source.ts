@@ -1,17 +1,22 @@
 import { Type } from "./Type.js"
 
-export function source<K extends string>(tag: K) {
-  return class Source<T extends Type, P = never> {
+export function TypeSource<K extends string>(tag: K) {
+  return class<T extends Type> {
     readonly tag = tag
-    readonly props
-    constructor(readonly self: T, ...[props]: [P] extends [never] ? [] : [P]) {
-      this.props = props
-    }
+    constructor(readonly target: T) {}
 
-    value(): T {
-      const clone = this.self.clone()
+    instance(): T {
+      const clone = this.target.clone()
       clone[""].source = this
       return clone
+    }
+  }
+}
+
+export function BinaryOperationSource<K extends string>(tag: K) {
+  return class<T extends Type> extends TypeSource(tag)<T> {
+    constructor(target: T, readonly right: T) {
+      super(target)
     }
   }
 }
