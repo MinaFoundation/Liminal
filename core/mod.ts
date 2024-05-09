@@ -1,4 +1,5 @@
 export * from "./Bool/Bool.js"
+export * from "./Branch.js"
 export * from "./Bytes/Bytes.js"
 export * from "./Call/Call.js"
 export * from "./Constant/Constant.js"

@@ -1,5 +1,6 @@
 import { bool } from "../Bool/Bool.js"
-import { Effect, Result, Yield } from "../Effect/Effect.js"
+import { Result, Yield } from "../Branch.js"
+import { Effect } from "../Effect/Effect.js"
 import { EqualsNode, From, Into } from "./TypeNode.js"
 
 export class Type<
@@ -63,7 +64,7 @@ export class Type<
   >(
     this: T,
     match: M,
-    f: (value: InstanceType<M>) => Generator<Y, R>,
+    f: (matched: InstanceType<M>) => Generator<Y, R>,
   ): [Y] extends [never] ? U : Effect<Y, U> {
     throw 0
   }

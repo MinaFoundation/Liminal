@@ -34,8 +34,8 @@
 - `signer` is assignable to `id`, but contains methods such as `deploy` and `send`.
 - default values
 - all values are immutable / all methods pure
-- a given state will remain unchanged during a single tx (?). Referring to a state after yielding a
-  `set` will give you the unchanged state (?)
+- lots of methods in eth ecosystem interfaces return a boolean to indicate success. We don't need to
+  do that, because we can observe events during the given execution locally
 
 ———
 
@@ -60,6 +60,8 @@ Contract with generator
 Equivalent of destructuring on structs
 
 clean up story around struct initialization / non-nullary constructors
+
+Merkle list+map impls
 
 Rethink L.constant
 

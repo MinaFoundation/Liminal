@@ -1,11 +1,10 @@
 import { Effect } from "./Effect/Effect.js"
 import { Constructor, Type } from "./Type/Type.js"
 
-export class State<T extends Type = any> {
+export class State<T extends Type = any> extends Effect<never, T> {
   readonly tag = "State"
-  readonly value
   constructor(readonly type: Constructor<T>) {
-    this.value = new type()
+    super()
   }
 
   set(value: T): Effect<never, T> {

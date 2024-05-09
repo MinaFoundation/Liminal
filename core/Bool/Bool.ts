@@ -1,5 +1,6 @@
 import { None } from "liminal"
-import { Effect, Result, Yield } from "../Effect/Effect.js"
+import { Result, Yield } from "../Branch.js"
+import { Effect } from "../Effect/Effect.js"
 import { Type } from "../Type/Type.js"
 import { AssertNode, FalseNode, NotNode, TrueNode } from "./BoolNode.js"
 

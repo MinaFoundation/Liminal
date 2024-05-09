@@ -22,7 +22,7 @@ export class SignerEffect<K extends string> extends Effect<SignerRequirement<K>,
   deploy<N>(
     namespace: N,
     deployOptions: DeployOptions<N>,
-  ): Generator<SignerRequirement<K>, Contract<N>> {
+  ): Generator<SignerRequirement<K>, never> {
     throw 0
   }
 }

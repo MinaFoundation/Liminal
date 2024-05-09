@@ -16,8 +16,11 @@ const finalization = await L
     return counter.count
   })
   .sign(sender)
-  .run((v) => {
-    v
+  .run((event) => {
+    if (event.tag === "Incremented") {
+      const { from, to } = event.value
+      console.log(`Incremented from ${from} to ${to}.`)
+    }
   })
   .commit(client)
   .finalized()

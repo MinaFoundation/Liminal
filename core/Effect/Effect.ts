@@ -1,8 +1,5 @@
-import { SignerRequirement } from "../Id/Id.js"
-import { Constructor, Type } from "../Type/Type.js"
-
-export type Yield = Type | SignerRequirement
-export type Result = Type | void
+import { Result, Yield } from "../Branch.js"
+import { Constructor } from "../Type/Type.js"
 
 export class Effect<Y extends Yield, R extends Result> implements Generator<Y, R> {
   "" = {} as { node: unknown }
