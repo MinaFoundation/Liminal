@@ -55,7 +55,7 @@ export class Type<
     return Object.assign(Object.create(Object.getPrototypeOf(this)), this)
   }
 
-  when<
+  match<
     T extends Type,
     M extends Constructor<T>,
     Y extends Yield,

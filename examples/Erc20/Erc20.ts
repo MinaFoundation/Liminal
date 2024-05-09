@@ -29,7 +29,7 @@ export function* totalSupply() {
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L32
 export function* balanceOf(account: L.id) {
   const balances = yield* balances_
-  return balances.get(account).when(L.None, function*() {
+  return balances.get(account).match(L.None, function*() {
     return L.u256.from(0)
   })
 }
@@ -41,10 +41,10 @@ export function* transfer(to: L.id, value: L.u256) {
   const newSenderBalance = senderBalance.subtract(value)
   const toNewBalance = balances
     .get(to)
-    .when(L.u256, function*(prev) {
+    .match(L.u256, function*(prev) {
       return prev.add(value)
     })
-    .when(L.None, function*() {
+    .match(L.None, function*() {
       return value
     })
   const newBalances = balances
@@ -64,10 +64,10 @@ export function* allowance(owner: L.id, spender: L.id) {
   const allowances = yield* allowances_
   return allowances
     .get(owner)
-    .when(Balances, function*(balances) {
+    .match(Balances, function*(balances) {
       return balances.get(spender)
     })
-    .when(L.None, function*() {
+    .match(L.None, function*() {
       return L.u256.from(0)
     })
 }
@@ -78,15 +78,15 @@ export function* approve(spender: L.id, value: L.u256) {
   yield assertNotNullAddress(spender)
   yield* assertHasBalanceGte(spender, value)
   const allowances = yield* allowances_
-  const ownerApprovals = allowances.get(L.sender).when(L.None, function*() {
+  const ownerApprovals = allowances.get(L.sender).match(L.None, function*() {
     return new Balances()
   })
   const newSpenderAllowance = ownerApprovals
     .get(spender)
-    .when(L.u256, function*(prev) {
+    .match(L.u256, function*(prev) {
       return prev.add(value)
     })
-    .when(L.None, function*() {
+    .match(L.None, function*() {
       return value
     })
   const newOwnerApprovals = ownerApprovals.set(spender, newSpenderAllowance)
@@ -113,10 +113,10 @@ export function* transferFrom(from: L.id, to: L.id, value: L.u256) {
   const newFromBalance = fromBalance.subtract(value)
   const toNewBalance = balances
     .get(to)
-    .when(L.u256, function*(prev) {
+    .match(L.u256, function*(prev) {
       return prev.add(value)
     })
-    .when(L.None, function*() {
+    .match(L.None, function*() {
       return value
     })
   const newBalances = balances.set(from, newFromBalance).set(to, toNewBalance)

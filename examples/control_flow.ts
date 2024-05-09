@@ -3,7 +3,7 @@ import * as L from "liminal"
 declare const maybe: L.u8 | L.None
 
 function match() {
-  const value = maybe.when(L.None, function*() {
+  const value = maybe.match(L.None, function*() {
     return L.u8.from(0)
   })
   value satisfies L.u8
