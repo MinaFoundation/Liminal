@@ -138,6 +138,7 @@ function assertNotNullAddress(inQuestion: L.id) {
   return inQuestion.equals(L.id.null).not().assert(CannotTargetNullAddress.of({}))
 }
 
+export class AlreadyInitialized extends L.Struct("AlreadyInitialized", {}) {}
 export class InsufficientBalance extends L.Struct("InsufficientBalance", {}) {}
 export class CannotTargetNullAddress extends L.Struct("CannotTargetNullAddress", {}) {}
 export class InsufficientAllowance extends L.Struct("InsufficientAllowance", {}) {}

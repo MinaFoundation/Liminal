@@ -1,16 +1,16 @@
 import { SignalOptions } from "util/AbortController.js"
 import { Client, TxBroadcast, TxFinalization, TxInclusion, TxStatus } from "../../client/Client.js"
 import { Subscription } from "../../util/Subscription.js"
-import { Branch, Result, Yield } from "../Branch.js"
+import { Result, Yield } from "../Branch.js"
 import { SignerRequirement } from "../Id/Id.js"
 import { Type } from "../Type/Type.js"
 
-export function tx<Y extends Yield, R extends Result>(f: Branch<[], Y, R>) {
+export function tx<Y extends Yield, R extends Result>(f: () => Generator<Y, R>) {
   return new Tx<Y, R>(f)
 }
 
 export class Tx<Y extends Yield, R extends Result> {
-  constructor(readonly f: Branch<[], Y, R>) {}
+  constructor(readonly f: () => Generator<Y, R>) {}
 
   sign(senderSigner: SignBytes, ...maybeSigners: MaybeTxSigners<Y>): SignedTx<Y, R> {
     return new SignedTx(this, senderSigner, ...maybeSigners)
