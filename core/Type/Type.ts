@@ -1,5 +1,6 @@
+import { bool } from "../Bool/Bool.js"
 import { Effect, Result, Yield } from "../Effect/Effect.js"
-import { AssertEquals, From, Into } from "./TypeNode.js"
+import { EqualsNode, From, Into } from "./TypeNode.js"
 
 export class Type<
   Name extends string = any,
@@ -45,8 +46,8 @@ export class Type<
     return new Into(into, this).instance()
   }
 
-  assertEquals<T extends Type, E extends Type>(this: T, expected: T, error: E): E {
-    return new AssertEquals(error, this, expected).instance()
+  equals<T extends Type>(this: T, inQuestion: T): bool {
+    return new EqualsNode(this, inQuestion).instance()
   }
 
   clone<This>(this: This): This {
@@ -70,7 +71,17 @@ export class Type<
   unhandle<T extends Type, M extends Constructor<T>>(
     this: T,
     match: M,
-  ): Effect<InstanceType<M>, Exclude<T, InstanceType<M>>> {
+  ): Effect<InstanceType<M>, Exclude<T, InstanceType<M>>>
+  unhandle<T extends Type, M extends Constructor<T>, W extends Type>(
+    this: T,
+    match: M,
+    with_: W,
+  ): Effect<W, Exclude<T, InstanceType<M>>>
+  unhandle(
+    this: Type,
+    match: Constructor<Type>,
+    with_?: Type,
+  ): Effect<Type, Type> {
     throw 0
   }
 }

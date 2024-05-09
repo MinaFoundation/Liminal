@@ -1,22 +1,22 @@
 import * as L from "liminal"
-import { TestSigner } from "liminal/test"
+import { signer } from "liminal/test"
 import { Allowances, Balances, Erc20 } from "./Erc20.js"
 
 const client = await L.Client()
-const contract = TestSigner()
-const sender = TestSigner()
+const [contract, sender] = signer(2)
 
-const result = await L
+await L
   .tx(function*() {
     yield* L.id
       .from(contract.publicKey)
       .signer("contract")
       .deploy(new Erc20(), {
-        deployer: L.sender,
         state: {
           totalSupply_: L.u256.from(1e9),
           balances_: new Balances(),
           allowances_: new Allowances(),
+          name_: L.String.from("Liminal Coin"),
+          symbol_: L.String.from("LMN"),
         },
       })
   })

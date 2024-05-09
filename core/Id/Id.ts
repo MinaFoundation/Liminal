@@ -1,10 +1,14 @@
+import { constant } from "../Constant/Constant.js"
 import { Contract } from "../Contract.js"
 import { Effect } from "../Effect/Effect.js"
 import { u64 } from "../Int/Int.js"
 import { State } from "../State.js"
 import { Type } from "../Type/Type.js"
+import { NullIdNode } from "./IdNode.js"
 
 export class id extends Type.make("id")<Uint8Array, never, never> {
+  static null = new NullIdNode().instance()
+
   bind<N>(namespace: N): Contract<N> {
     throw 0
   }
@@ -47,10 +51,13 @@ export function signer<K extends keyof any>(key: K) {
 }
 
 export interface DeployOptions<N> {
-  deployer: signer<any>
-  state: {
-    [K in keyof N as N[K] extends State ? K : never]: N[K] extends State<infer T> ? T : never
-  }
+  deployer?: signer<any>
+  state: DeployState<N>
+}
+
+export type DeployState<N> = {
+  [K in keyof N as N[K] extends State<infer T> ? T extends constant ? never : K : never]:
+    N[K] extends State<infer T> ? T : never
 }
 
 export interface SendProps {

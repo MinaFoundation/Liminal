@@ -20,7 +20,7 @@ export class u16 extends Int("u16", false)<u8, u32 | u64 | u128 | u256> {}
 export class u32 extends Int("u32", false)<u8 | u16, u64 | u128 | u256> {}
 export class u64 extends Int("u64", false)<u8 | u16 | u32, u128 | u256> {}
 export class u128 extends Int("u128", false)<u8 | u16 | u32 | u64, u256> {}
-export class u256 extends Int("u256", false)<u8 | u16 | u32 | u64 | u256, never> {}
+export class u256 extends Int("u256", false)<u8 | u16 | u32 | u64 | u128, never> {}
 export class i8 extends Int("i18", true)<never, i16 | i32 | i64 | i128 | i256> {}
 export class i16 extends Int("i16", true)<i8, i32 | i64 | i128 | i256> {}
 export class i32 extends Int("i32", true)<i8 | i16, i64 | i128 | i256> {}

@@ -33,6 +33,9 @@
 - Generators are a risk
 - `signer` is assignable to `id`, but contains methods such as `deploy` and `send`.
 - default values
+- all values are immutable / all methods pure
+- a given state will remain unchanged during a single tx (?). Referring to a state after yielding a
+  `set` will give you the unchanged state (?)
 
 ———
 
@@ -40,6 +43,9 @@
 - merkle map/list equality checks, slicing
 
 do we want to parameterize the conversions?
+
+How do we deal with tipping within the tx generator? Ideally we could use different tips for
+different calls, no?
 
 Better anonymous types
 
@@ -51,7 +57,11 @@ Private vs. public –– represent at type level
 
 Contract with generator
 
-Equivalent of destructuring
+Equivalent of destructuring on structs
+
+clean up story around struct initialization / non-nullary constructors
+
+Rethink L.constant
 
 Can we do away with account updates
 

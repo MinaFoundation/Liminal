@@ -13,8 +13,7 @@ export default class Counter {
   }
 }
 
-export class IncrementedEvent extends L.Struct({
-  event: L.constant("Incremented"),
+export class IncrementedEvent extends L.Struct("Incremented", {
   from: L.u256,
   to: L.u256,
 }) {}

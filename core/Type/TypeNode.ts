@@ -1,4 +1,5 @@
-import { ConstructorNode, TypeNode } from "../Node.js"
+import { bool } from "../Bool/Bool.js"
+import { ConstructorNode } from "../Node.js"
 import { Constructor, Type } from "./Type.js"
 
 export class From<T extends Type> extends ConstructorNode("From")<T> {
@@ -13,8 +14,8 @@ export class Into<T extends Type> extends ConstructorNode("Into")<T> {
   }
 }
 
-export class AssertEquals<T extends Type, E extends Type> extends TypeNode("AssertEquals")<E> {
-  constructor(error: E, readonly actual: T, readonly expected: T) {
-    super(error)
+export class EqualsNode<T extends Type> extends ConstructorNode("Equals")<bool> {
+  constructor(readonly left: T, readonly right: T) {
+    super(bool)
   }
 }
