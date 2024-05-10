@@ -5,7 +5,7 @@ export default class Counter {
 
   *increment() {
     const incremented = this.count.add(L.u256.from(1))
-    yield IncrementedEvent.of({ from: this.count, to: incremented })
+    yield IncrementedEvent.from({ from: this.count, to: incremented })
     return yield* this.count.assign(incremented)
   }
 }

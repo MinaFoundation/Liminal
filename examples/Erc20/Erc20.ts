@@ -53,7 +53,9 @@ export function* balanceOf(account: L.id) {
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L41
 export function* transfer(to: L.id, value: L.u256) {
   yield* assertHasBalanceGte(L.sender, value)
-  const senderBalance = yield* balances_.get(L.sender).unhandle(L.None, InsufficientBalance.of({}))
+  const senderBalance = yield* balances_
+    .get(L.sender)
+    .unhandle(L.None, InsufficientBalance.from({}))
   const newSenderBalance = senderBalance.subtract(value)
   const toNewBalance = balances_
     .get(to)
@@ -71,7 +73,7 @@ export function* transfer(to: L.id, value: L.u256) {
     const newTotalSupply = totalSupply_.subtract(value)
     yield* totalSupply_.assign(newTotalSupply)
   })
-  yield Transfer.of({ from: L.sender, to, value })
+  yield Transfer.from({ from: L.sender, to, value })
 }
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L50
@@ -116,17 +118,19 @@ export function* transferFrom(from: L.id, to: L.id, value: L.u256) {
   yield assertNotNullAddress(to)
   const fromApprovals = yield* allowances_
     .get(from)
-    .unhandle(L.None, InsufficientAllowance.of({}))
+    .unhandle(L.None, InsufficientAllowance.from({}))
   const senderAllowance = yield* fromApprovals
     .get(L.sender)
-    .unhandle(L.None, InsufficientAllowance.of({}))
-  yield senderAllowance.gt(value).assert(InsufficientAllowance.of({}))
+    .unhandle(L.None, InsufficientAllowance.from({}))
+  yield senderAllowance.gt(value).assert(InsufficientAllowance.from({}))
   const newSenderAllowance = senderAllowance.subtract(value)
   const newFromApprovals = fromApprovals.set(L.sender, newSenderAllowance)
   const newAllowances = allowances_.set(from, newFromApprovals)
   yield* allowances_.assign(newAllowances)
   yield* assertHasBalanceGte(from, value)
-  const fromBalance = yield* balances_.get(from).unhandle(L.None, InsufficientBalance.of({}))
+  const fromBalance = yield* balances_
+    .get(from)
+    .unhandle(L.None, InsufficientBalance.from({}))
   const newFromBalance = fromBalance.subtract(value)
   const toNewBalance = balances_
     .get(to)
@@ -145,12 +149,12 @@ export function* transferFrom(from: L.id, to: L.id, value: L.u256) {
 function* assertHasBalanceGte(inQuestion: L.id, value: L.u256) {
   const inQuestionBalance = yield* balances_
     .get(inQuestion)
-    .unhandle(L.None, InsufficientBalance.of({}))
+    .unhandle(L.None, InsufficientBalance.from({}))
   yield inQuestionBalance
     .gte(value)
-    .assert(InsufficientBalance.of({}))
+    .assert(InsufficientBalance.from({}))
 }
 
 function* assertNotNullAddress(inQuestion: L.id) {
-  return inQuestion.equals(L.id.null).not().assert(CannotTargetNullAddress.of({}))
+  return inQuestion.equals(L.id.null).not().assert(CannotTargetNullAddress.from({}))
 }

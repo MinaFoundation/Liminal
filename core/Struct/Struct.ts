@@ -1,27 +1,18 @@
 import { Flatten } from "../../util/Flatten.js"
 import { const as const_ } from "../Constant/Constant.js"
 import { Constructor, Type } from "../Type/Type.js"
-import { StructOfNode } from "./StructNode.js"
-
-export type Fields = Record<string, Type>
-export type FieldTypes = Record<string, Constructor<Type>>
 
 export interface Struct<F extends FieldTypes = any>
   extends InstanceType<ReturnType<typeof Struct<F>>>
 {}
 
 export function Struct<F extends FieldTypes>(fieldTypes: F) {
-  return class extends Type.make("Struct", { fieldTypes })<StructNative<F>> {
-    static of<T extends Struct>(
-      this: new() => T,
-      fields: StructOfFields<F>,
-    ): T {
-      return new StructOfNode(this, fields).instance()
-    }
-  }
+  return Type.make("Struct", { fieldTypes })<StructNative<F>, Fields<F>>
 }
 
-export type StructOfFields<F extends FieldTypes> = {
+export type FieldTypes = Record<string, Constructor<Type>>
+
+export type Fields<F extends FieldTypes = any> = {
   [K in keyof F as F[K] extends Constructor<const_> ? never : K]: F[K] extends Constructor<Type>
     ? InstanceType<F[K]>
     : never
