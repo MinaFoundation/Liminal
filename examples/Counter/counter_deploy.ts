@@ -11,9 +11,8 @@ await L
       .from(new Uint8Array())
       .signer("contract")
       .deploy(new Counter(), {
-        deployer: L.sender,
         state: {
-          count: L.u256.from(0),
+          count: L.u256.from(1),
         },
       })
   })

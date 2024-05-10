@@ -1,9 +1,12 @@
 import { Type } from "../Type/Type.js"
 
-export interface constant<K extends keyof any = any>
+interface constant<K extends keyof any = any>
   extends InstanceType<ReturnType<typeof constant<K>>>
 {}
 
-export function constant<K extends keyof any>(value: K) {
+constant.name = "const"
+function constant<K extends keyof any>(value: K) {
   return Type.make("constant", { value })<K>
 }
+
+export { constant as const }

@@ -1,8 +1,7 @@
-import { constant } from "../Constant/Constant.js"
 import { Contract } from "../Contract.js"
 import { Effect } from "../Effect/Effect.js"
 import { u64 } from "../Int/Int.js"
-import { State } from "../State.js"
+import { State } from "../State/State.js"
 import { Type } from "../Type/Type.js"
 import { NullIdNode } from "./IdNode.js"
 
@@ -51,13 +50,12 @@ export function signer<K extends keyof any>(key: K) {
 }
 
 export interface DeployOptions<N> {
-  deployer?: signer<any>
+  deployer?: signer
   state: DeployState<N>
 }
 
 export type DeployState<N> = {
-  [K in keyof N as N[K] extends State<infer T> ? T extends constant ? never : K : never]:
-    N[K] extends State<infer T> ? T : never
+  [K in keyof N as N[K] extends State<infer _> ? K : never]: N[K] extends State<infer T> ? T : never
 }
 
 export interface SendProps {

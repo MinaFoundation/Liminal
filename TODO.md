@@ -36,8 +36,12 @@
 - all values are immutable / all methods pure
 - lots of methods in eth ecosystem interfaces return a boolean to indicate success. We don't need to
   do that, because we can observe events during the given execution locally
+- the `clone` method makes it clear that you're not operating on the original value. Your business
+  logic is pure.
 
 ———
+
+- yield vs. yield*
 
 - get min/max as instances, not methods
 - merkle map/list equality checks, slicing

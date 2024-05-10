@@ -73,6 +73,10 @@ export class Type<
     this: T,
     match: M,
   ): Effect<InstanceType<M>, Exclude<T, InstanceType<M>>>
+  unhandle<T extends Type, M extends Constructor<T>[]>(
+    this: T,
+    ...match: M
+  ): Effect<InstanceType<M[number]>, Exclude<T, InstanceType<M[number]>>>
   unhandle<T extends Type, M extends Constructor<T>, W extends Type>(
     this: T,
     match: M,
@@ -81,7 +85,8 @@ export class Type<
   unhandle(
     this: Type,
     match: Constructor<Type>,
-    with_?: Type,
+    maybeWith_?: Type | Constructor<Type>,
+    ...rest: Constructor<Type>[]
   ): Effect<Type, Type> {
     throw 0
   }
