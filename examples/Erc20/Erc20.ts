@@ -3,9 +3,9 @@ import * as L from "liminal"
 export class Balances extends L.MerkleMap(L.id, L.u256) {}
 export class Allowances extends L.MerkleMap(L.id, Balances) {}
 
-export const totalSupply_ = L.State(L.u256)
-export const balances_ = L.State(Balances)
-export const allowances_ = L.State(Allowances)
+export const totalSupply_ = L.u256.state()
+export const balances_ = Balances.state()
+export const allowances_ = Allowances.state()
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L16
 export class Transfer extends L.Struct({
@@ -66,10 +66,10 @@ export function* transfer(to: L.id, value: L.u256) {
   const newBalances = balances_
     .set(L.sender, newSenderBalance)
     .set(to, toNewBalance)
-  yield* L.setState(balances_, newBalances)
+  yield* balances_.assign(newBalances)
   yield* to.equals(L.id.null).if(function*() {
     const newTotalSupply = totalSupply_.subtract(value)
-    yield* L.setState(totalSupply_, newTotalSupply)
+    yield* totalSupply_.assign(newTotalSupply)
   })
   yield Transfer.of({ from: L.sender, to, value })
 }
@@ -107,7 +107,7 @@ export function* approve(spender: L.id, value: L.u256) {
     })
   const newOwnerApprovals = ownerApprovals.set(spender, newSpenderAllowance)
   const newAllowances = allowances_.set(L.sender, newOwnerApprovals)
-  yield* L.setState(allowances_, newAllowances)
+  yield* allowances_.assign(newAllowances)
 }
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L78
@@ -124,7 +124,7 @@ export function* transferFrom(from: L.id, to: L.id, value: L.u256) {
   const newSenderAllowance = senderAllowance.subtract(value)
   const newFromApprovals = fromApprovals.set(L.sender, newSenderAllowance)
   const newAllowances = allowances_.set(from, newFromApprovals)
-  yield* L.setState(allowances_, newAllowances)
+  yield* allowances_.assign(newAllowances)
   yield* assertHasBalanceGte(from, value)
   const fromBalance = yield* balances_.get(from).unhandle(L.None, InsufficientBalance.of({}))
   const newFromBalance = fromBalance.subtract(value)
@@ -139,7 +139,7 @@ export function* transferFrom(from: L.id, to: L.id, value: L.u256) {
   const newBalances = balances_
     .set(from, newFromBalance)
     .set(to, toNewBalance)
-  yield* L.setState(balances_, newBalances)
+  yield* balances_.assign(newBalances)
 }
 
 function* assertHasBalanceGte(inQuestion: L.id, value: L.u256) {

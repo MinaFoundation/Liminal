@@ -1,12 +1,12 @@
 import * as L from "liminal"
 
 export default class Counter {
-  count = L.State(L.u256);
+  count = L.u256.state();
 
   *increment() {
     const incremented = this.count.add(L.u256.from(1))
     yield IncrementedEvent.of({ from: this.count, to: incremented })
-    return yield* L.setState(this.count, incremented)
+    return yield* this.count.assign(incremented)
   }
 }
 

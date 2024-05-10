@@ -1,7 +1,7 @@
 import { bool } from "../Bool/Bool.js"
 import { Result, Yield } from "../Branch.js"
 import { Effect } from "../Effect/Effect.js"
-import { EqualsNode, From, Into } from "./TypeNode.js"
+import { EqualsNode, From, Into, StateNode } from "./TypeNode.js"
 
 export class Type<
   Name extends string = any,
@@ -30,6 +30,10 @@ export class Type<
     return new From(this, value).instance()
   }
 
+  static state<T extends Type>(this: new() => T) {
+    return new StateNode(this).instance()
+  }
+
   "": {
     name: Name
     native?: Native
@@ -53,6 +57,10 @@ export class Type<
 
   clone<This>(this: This): This {
     return Object.assign(Object.create(Object.getPrototypeOf(this)), this)
+  }
+
+  assign<This extends Type>(this: This, newValue: This): Effect<never, This> {
+    throw 0
   }
 
   match<

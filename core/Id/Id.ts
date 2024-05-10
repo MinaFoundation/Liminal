@@ -1,7 +1,7 @@
+import { const as const_ } from "../Constant/Constant.js"
 import { Contract } from "../Contract.js"
 import { Effect } from "../Effect/Effect.js"
 import { u64 } from "../Int/Int.js"
-import { State } from "../State/State.js"
 import { Type } from "../Type/Type.js"
 import { NullIdNode } from "./IdNode.js"
 
@@ -55,7 +55,7 @@ export interface DeployOptions<N> {
 }
 
 export type DeployState<N> = {
-  [K in keyof N as N[K] extends State<infer _> ? K : never]: N[K] extends State<infer T> ? T : never
+  [K in keyof N as N[K] extends Type ? N[K] extends const_ ? never : K : never]: N[K]
 }
 
 export interface SendProps {
