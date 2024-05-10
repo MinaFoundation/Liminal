@@ -1,5 +1,7 @@
 # TODO
 
+## Design thoughts
+
 - Should be able to plainly see which keys correspond to required signatures, hence the difference
   between the id and signer type
 - Complement the constructor factory inheritance pattern. Point to punchcard shapes. I first saw
@@ -45,30 +47,14 @@
 
 - merkle map/list equality checks, slicing
 
-do we want to parameterize the conversions?
-
 How do we deal with tipping within the tx generator? Ideally we could use different tips for
 different calls, no?
 
-Better anonymous types
-
-Ensure generator yields and outputs are constrained to be of Any.
-
-Liminal: A WIP TypeScript DSL for Authoring, Deploying and Interacting With Smart Contracts on Mina
-
 Private vs. public –– represent at type level
-
-Contract with generator
-
-Equivalent of destructuring on structs
-
-clean up story around struct initialization / non-nullary constructors
 
 Merkle list+map impls
 
-Rethink L.constant
-
-Can we do away with account updates
+Can we do away with account updates?
 
 Implicit type conversion in misc. methods
 

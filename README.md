@@ -2,28 +2,26 @@
 
 ![cover](./cover.webp)[^cover_convo]
 
-## [Getting Started _(Concept Docs)_ &rarr;](./manual/getting_started.md)
-
-A specification and library for describing programs that blend zero knowledge and runtime
+A WIP specification and library for describing programs that blend zero knowledge and runtime
 environments.
 
 ```ts
 import * as L from "liminal"
 
 // Declare a persistent state.
-const count = new L.state(L.u64)
+const count = new L.u64.state()
 
-const increment = L.f(function*() {
-  // Retrieve the current state.
-  const initial = yield* count
+function* increment() {
   // Lift a JavaScript value into Liminal.
-  const one = L.u64.of(1)
-  // Create a new value by adding the `one` to `initial`.
-  const next = initial.add(one)
+  const one = L.u64.from(1)
+  // Create a new value by adding the `one` to `count`.
+  const next = count.add(one)
   // yield the assignment.
-  yield* count.set(next)
-})
+  yield* count.assign(next)
+}
 ```
+
+<!--
 
 ## Code of Conduct
 
@@ -33,6 +31,8 @@ Everyone interacting in this repo is expected to follow the [code of conduct](CO
 
 Contributions are welcome and appreciated! Check out the [contributing guide](CONTRIBUTING.md)
 before you dive in.
+
+-->
 
 ## License
 
