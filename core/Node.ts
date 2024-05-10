@@ -1,5 +1,5 @@
 import { bool } from "./Bool/Bool.js"
-import { Constructor, Type } from "./Type/Type.js"
+import { Type } from "./Type/Type.js"
 
 export function TypeNode<K extends string>(tag: K) {
   return class<T extends Type> {
@@ -25,7 +25,7 @@ export function BinaryTypeNode<K extends string>(tag: K) {
 export function ConstructorNode<K extends string>(tag: K) {
   return class<T extends Type> {
     readonly tag = tag
-    constructor(readonly type: Constructor<T>) {}
+    constructor(readonly type: new() => T) {}
 
     instance(): T {
       const instance = new this.type()

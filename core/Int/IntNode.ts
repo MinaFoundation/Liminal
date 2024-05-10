@@ -1,26 +1,26 @@
 import { BinaryTypeNode, CompareNode, ConstructorNode, TypeNode } from "../Node.js"
 import { Type } from "../Type/Type.js"
 
-export class Min<T extends Type> extends ConstructorNode("Min")<T> {}
+export class MinNode<T extends Type = any> extends ConstructorNode("Min")<T> {}
 
-export class Max<T extends Type> extends ConstructorNode("Max")<T> {}
+export class MaxNode<T extends Type = any> extends ConstructorNode("Max")<T> {}
 
-export class Add<T extends Type> extends BinaryTypeNode("Add")<T> {}
+export class AddNode<T extends Type = any> extends BinaryTypeNode("Add")<T> {}
 
-export class Subtract<T extends Type> extends BinaryTypeNode("Subtract")<T> {}
+export class SubtractNode<T extends Type = any> extends BinaryTypeNode("Subtract")<T> {}
 
-export class Multiply<T extends Type> extends BinaryTypeNode("Multiply")<T> {}
+export class MultiplyNode<T extends Type = any> extends BinaryTypeNode("Multiply")<T> {}
 
-export class Divide<T extends Type> extends BinaryTypeNode("Divide")<T> {}
+export class DivideNode<T extends Type = any> extends BinaryTypeNode("Divide")<T> {}
 
-export class Square<T extends Type> extends TypeNode("Square")<T> {}
+export class SquareNode<T extends Type = any> extends TypeNode("Square")<T> {}
 
-export class Logarithm<T extends Type> extends BinaryTypeNode("Logarithm")<T> {}
+export class LogarithmNode<T extends Type = any> extends BinaryTypeNode("Logarithm")<T> {}
 
-export class Gt<T extends Type> extends CompareNode("Gt")<T> {}
+export class GtNode<T extends Type = any> extends CompareNode("Gt")<T> {}
 
-export class Gte<T extends Type> extends CompareNode("Gte")<T> {}
+export class GteNode<T extends Type = any> extends CompareNode("Gte")<T> {}
 
-export class Lt<T extends Type> extends CompareNode("Lt")<T> {}
+export class LtNode<T extends Type = any> extends CompareNode("Lt")<T> {}
 
-export class Lte<T extends Type> extends CompareNode("Lte")<T> {}
+export class LteNode<T extends Type = any> extends CompareNode("Lte")<T> {}

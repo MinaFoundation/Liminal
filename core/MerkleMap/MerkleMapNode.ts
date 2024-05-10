@@ -1,6 +1,6 @@
 import { u256 } from "../Int/Int.js"
 import { ConstructorNode, TypeNode } from "../Node.js"
-import { Constructor, Type } from "../Type/Type.js"
+import { Type } from "../Type/Type.js"
 import { MerkleMap } from "./MerkleMap.js"
 
 export class MerkleMapSize extends ConstructorNode("MerkleMapSize")<u256> {
@@ -12,7 +12,7 @@ export class MerkleMapSize extends ConstructorNode("MerkleMapSize")<u256> {
 export class MerkleMapGet<K extends Type = any, V extends Type = any>
   extends ConstructorNode("MerkleMapGet")<V>
 {
-  constructor(readonly map: MerkleMap<K, V>, readonly key: K, valueType: Constructor<V>) {
+  constructor(readonly map: MerkleMap<K, V>, readonly key: K, valueType: new() => V) {
     super(valueType)
   }
 }

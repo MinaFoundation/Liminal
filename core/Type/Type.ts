@@ -1,7 +1,7 @@
 import { bool } from "../Bool/Bool.js"
 import { Result, Yield } from "../Branch.js"
 import { Effect } from "../Effect/Effect.js"
-import { EqualsNode, From, Into, StateNode } from "./TypeNode.js"
+import { EqualsNode, FromNode, IntoNode, StateNode } from "./TypeNode.js"
 
 export class Type<
   Name extends string = any,
@@ -27,7 +27,7 @@ export class Type<
     this: new() => T,
     value: Type.Native<T> | Type.From<T>,
   ): T {
-    return new From(this, value).instance()
+    return new FromNode(this, value).instance()
   }
 
   static state<T extends Type>(this: new() => T) {
@@ -48,7 +48,7 @@ export class Type<
   }
 
   into<O extends Into>(into: new() => O): O {
-    return new Into(into, this).instance()
+    return new IntoNode(into, this).instance()
   }
 
   equals<T extends Type>(this: T, inQuestion: T): bool {
@@ -65,7 +65,7 @@ export class Type<
 
   match<
     T extends Type,
-    M extends Constructor<T>,
+    M extends new() => T,
     Y extends Yield,
     R extends Result,
     U extends Exclude<T, InstanceType<M>> | R,
@@ -77,24 +77,24 @@ export class Type<
     throw 0
   }
 
-  unhandle<T extends Type, M extends Constructor<T>>(
+  unhandle<T extends Type, M extends new() => T>(
     this: T,
     match: M,
   ): Effect<InstanceType<M>, Exclude<T, InstanceType<M>>>
-  unhandle<T extends Type, M extends Constructor<T>[]>(
+  unhandle<T extends Type, M extends (new() => T)[]>(
     this: T,
     ...match: M
   ): Effect<InstanceType<M[number]>, Exclude<T, InstanceType<M[number]>>>
-  unhandle<T extends Type, M extends Constructor<T>, W extends Type>(
+  unhandle<T extends Type, M extends new() => T, W extends Type>(
     this: T,
     match: M,
     with_: W,
   ): Effect<W, Exclude<T, InstanceType<M>>>
   unhandle(
     this: Type,
-    match: Constructor<Type>,
-    maybeWith_?: Type | Constructor<Type>,
-    ...rest: Constructor<Type>[]
+    match: new() => Type,
+    maybeWith_?: Type | (new() => Type),
+    ...rest: (new() => Type)[]
   ): Effect<Type, Type> {
     throw 0
   }
@@ -105,4 +105,3 @@ export namespace Type {
   export type From<T> = T extends Type<any, any, any, infer From> ? Exclude<From, undefined> : never
   export type Native<T> = T extends string ? T : T extends Type<any, infer Name> ? Name : never
 }
-export type Constructor<T = any> = new(...args: any) => T

@@ -1,5 +1,4 @@
 import { Result, Yield } from "../Branch.js"
-import { Constructor } from "../Type/Type.js"
 
 export class Effect<Y extends Yield, R extends Result> implements Generator<Y, R> {
   "" = {} as { node: unknown }
@@ -20,7 +19,7 @@ export class Effect<Y extends Yield, R extends Result> implements Generator<Y, R
     throw 0
   }
 
-  handle<M extends Constructor<Y>, Y2 extends Yield, R extends Result>(
+  handle<M extends new() => Y, Y2 extends Yield, R extends Result>(
     match: M,
     f: (value: InstanceType<M>) => Generator<Y2, R>,
   ): [Exclude<Y, InstanceType<M>> | Y2] extends [never] ? R
@@ -29,7 +28,7 @@ export class Effect<Y extends Yield, R extends Result> implements Generator<Y, R
     throw 0
   }
 
-  rehandle<M extends Constructor<Y>>(
+  rehandle<M extends new() => Y>(
     match: M,
   ): [Exclude<Y, InstanceType<M>>] extends [never] ? InstanceType<M> | R
     : Effect<Exclude<Y, InstanceType<M>>, R>

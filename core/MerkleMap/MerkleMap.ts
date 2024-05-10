@@ -2,7 +2,7 @@ import { Effect } from "core/Effect/Effect.js"
 import { MerkleMap as MerkleMapNative } from "../../lib/mod.js"
 import { u256 } from "../Int/Int.js"
 import { None } from "../None/None.js"
-import { Constructor, Type } from "../Type/Type.js"
+import { Type } from "../Type/Type.js"
 import { MerkleMapDelete, MerkleMapGet, MerkleMapSet, MerkleMapSize } from "./MerkleMapNode.js"
 
 export interface MerkleMap<K extends Type = Type, V extends Type = Type>
@@ -10,8 +10,8 @@ export interface MerkleMap<K extends Type = Type, V extends Type = Type>
 {}
 
 export function MerkleMap<K extends Type, V extends Type>(
-  keyType: Constructor<K>,
-  valueType: Constructor<V>,
+  keyType: new() => K,
+  valueType: new() => V,
 ) {
   return class extends Type.make("MerkleMap", { keyType, valueType })<
     MerkleMapNative<Type.Native<K>, Type.Native<V>>

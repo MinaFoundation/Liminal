@@ -1,7 +1,7 @@
-import { Constructor, Type } from "../Type/Type.js"
+import { Type } from "../Type/Type.js"
 
 export function Hash<T extends Type, A extends HashAlgorithm>(
-  targetType: Constructor<T>,
+  targetType: new() => T,
   algorithm: A,
 ) {
   return Type.make("Hash", { targetType, algorithm })<Uint8Array, never, never>

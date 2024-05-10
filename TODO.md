@@ -43,7 +43,6 @@
 
 - yield vs. yield*
 
-- get min/max as instances, not methods
 - merkle map/list equality checks, slicing
 
 do we want to parameterize the conversions?
