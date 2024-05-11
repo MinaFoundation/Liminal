@@ -1,6 +1,8 @@
 import { BinaryTypeNode, CompareNode, ConstructorNode, TypeNode } from "../Node.js"
 import { Type } from "../Type/Type.js"
 
+export class RandomNode<T extends Type = any> extends ConstructorNode("Random")<T> {}
+
 export class MinNode<T extends Type = any> extends ConstructorNode("Min")<T> {}
 
 export class MaxNode<T extends Type = any> extends ConstructorNode("Max")<T> {}

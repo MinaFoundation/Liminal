@@ -17,7 +17,11 @@ export interface MerkleList<T extends Type = Type>
 
 export function MerkleList<T extends Type>(elementType: new() => T) {
   return class
-    extends Type.make("MerkleList", { elementType })<MerkleListNative<Type.Native<T>>, never, never>
+    extends Type.make("MerkleList", { elementType })<
+      MerkleListNative<Type.Native<T>>,
+      undefined,
+      never
+    >
   {
     length: u256 = new MerkleListLength(this).instance()
     first = this.at(u256.new(1))

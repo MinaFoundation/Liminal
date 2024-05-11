@@ -51,7 +51,7 @@ export function* transfer(to: L.id, value: L.u256) {
   yield* assertHasBalanceGte(L.sender, value)
   const senderBalance = yield* balances_()
     .get(L.sender)
-    .unhandle(L.None, InsufficientBalance.new({}))
+    .unhandle(L.None, InsufficientBalance.new())
   const newSenderBalance = senderBalance.subtract(value)
   const toNewBalance = balances_()
     .get(to)
@@ -87,7 +87,7 @@ export function* approve(spender: L.id, value: L.u256) {
   yield* assertHasBalanceGte(spender, value)
   const ownerApprovals = allowances_()
     .get(L.sender)
-    .match(L.None, Balances.new({}))
+    .match(L.None, Balances.new())
   const newSpenderAllowance = ownerApprovals
     .get(spender)
     .match(L.u256, (prev) => prev.add(value))
@@ -103,11 +103,11 @@ export function* transferFrom(from: L.id, to: L.id, value: L.u256) {
   yield assertNotNullAddress(to)
   const fromApprovals = yield* allowances_()
     .get(from)
-    .unhandle(L.None, InsufficientAllowance.new({}))
+    .unhandle(L.None, InsufficientAllowance.new())
   const senderAllowance = yield* fromApprovals
     .get(L.sender)
-    .unhandle(L.None, InsufficientAllowance.new({}))
-  yield senderAllowance.gt(value).assert(InsufficientAllowance.new({}))
+    .unhandle(L.None, InsufficientAllowance.new())
+  yield senderAllowance.gt(value).assert(InsufficientAllowance.new())
   const newSenderAllowance = senderAllowance.subtract(value)
   const newFromApprovals = fromApprovals.set(L.sender, newSenderAllowance)
   const newAllowances = allowances_().set(from, newFromApprovals)
@@ -115,7 +115,7 @@ export function* transferFrom(from: L.id, to: L.id, value: L.u256) {
   yield* assertHasBalanceGte(from, value)
   const fromBalance = yield* balances_()
     .get(from)
-    .unhandle(L.None, InsufficientBalance.new({}))
+    .unhandle(L.None, InsufficientBalance.new())
   const newFromBalance = fromBalance.subtract(value)
   const toNewBalance = balances_()
     .get(to)
@@ -130,10 +130,10 @@ export function* transferFrom(from: L.id, to: L.id, value: L.u256) {
 function* assertHasBalanceGte(inQuestion: L.id, value: L.u256) {
   const inQuestionBalance = yield* balances_()
     .get(inQuestion)
-    .unhandle(L.None, InsufficientBalance.new({}))
+    .unhandle(L.None, InsufficientBalance.new())
   yield inQuestionBalance
     .gte(value)
-    .assert(InsufficientBalance.new({}))
+    .assert(InsufficientBalance.new())
 }
 
 function assertNotNullAddress(inQuestion: L.id) {

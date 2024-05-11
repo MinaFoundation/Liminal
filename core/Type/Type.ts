@@ -25,10 +25,7 @@ export class Type<
     }
   }
 
-  static new<T extends Type>(
-    this: new() => T,
-    ...[value]: Rest<Type.Native<T> | Type.From<T>>
-  ): T {
+  static new<T extends Type>(this: new() => T, ...[value]: Rest<Type.From<T>>): T {
     return new FromNode(this, value).instance()
   }
 

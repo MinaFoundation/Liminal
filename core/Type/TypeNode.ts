@@ -4,7 +4,7 @@ import { ConstructorNode } from "../Node.js"
 import { Type } from "./Type.js"
 
 export class FromNode<T extends Type = any> extends ConstructorNode("From")<T> {
-  constructor(type: new() => T, readonly value: Type.Native<T> | Type.From<T>) {
+  constructor(type: new() => T, readonly value?: Type.From<T>) {
     super(type)
   }
 }

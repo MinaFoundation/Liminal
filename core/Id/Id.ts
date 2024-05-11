@@ -4,7 +4,7 @@ import { State } from "../State/State.js"
 import { Type } from "../Type/Type.js"
 import { NullIdNode } from "./IdNode.js"
 
-export class id extends Type.make("id")<Uint8Array, never, never> {
+export class id extends Type.make("id")<Uint8Array, Uint8Array> {
   static null = new NullIdNode().instance()
 
   static fromHex(hex: string): id {

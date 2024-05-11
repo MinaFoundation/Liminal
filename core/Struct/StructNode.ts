@@ -1,6 +1,6 @@
 import { Constant } from "../Constant/Constant.js"
 import { Type } from "../Type/Type.js"
-import { FieldType, Struct } from "./Struct.js"
+import { FieldType } from "./Struct.js"
 
 export type StructField<T> = T extends keyof any ? Constant<T>
   : T extends (new() => Type) ? InstanceType<T>
@@ -8,7 +8,8 @@ export type StructField<T> = T extends keyof any ? Constant<T>
 
 export class StructFieldNode<T extends FieldType> {
   readonly type = "StructFieldNode"
-  constructor(readonly struct: Struct, readonly fieldType: T) {}
+  // TODO: is it worth narrowing `struct`?
+  constructor(readonly struct: Type, readonly fieldType: T) {}
 
   instance(): StructField<T> {
     let instance: Type

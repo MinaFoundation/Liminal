@@ -11,9 +11,12 @@ import {
   MaxNode,
   MinNode,
   MultiplyNode,
+  RandomNode,
   SquareNode,
   SubtractNode,
 } from "./IntNode.js"
+
+// TODO: absolute, bit manipulation, floor/ceil, power ...
 
 export class u8 extends Int("u8", false)<never, u16 | u32 | u64 | u128 | u256> {
   min = new MinNode(u8).instance()
@@ -77,8 +80,12 @@ export class i256 extends Int("i256", true)<i8 | i16 | i32 | i64 | i256, never> 
 
 function Int<Name extends string, Signed extends boolean>(name: Name, signed: Signed) {
   return class<From extends Type, Into extends Type>
-    extends Type.make(name, { signed })<number, From, Into>
+    extends Type.make(name, { signed })<number, number | From, Into>
   {
+    static random<This extends new() => Type>(this: This) {
+      return new RandomNode(this).instance()
+    }
+
     add(value: this): this {
       return new AddNode(this, value).instance()
     }

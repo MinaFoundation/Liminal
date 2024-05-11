@@ -14,7 +14,8 @@ export function MerkleMap<K extends Type, V extends Type>(
   valueType: new() => V,
 ) {
   return class extends Type.make("MerkleMap", { keyType, valueType })<
-    MerkleMapNative<Type.Native<K>, Type.Native<V>>
+    MerkleMapNative<Type.Native<K>, Type.Native<V>>,
+    undefined
   > {
     size: u256 = new MerkleMapSize(this).instance()
 
