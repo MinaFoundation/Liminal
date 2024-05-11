@@ -15,7 +15,7 @@ import {
   SubtractNode,
 } from "./IntNode.js"
 
-export class u8 extends Int("u18", false)<never, u16 | u32 | u64 | u128 | u256> {
+export class u8 extends Int("u8", false)<never, u16 | u32 | u64 | u128 | u256> {
   min = new MinNode(u8).instance()
   max = new MaxNode(u8).instance()
 }
@@ -45,7 +45,7 @@ export class u256 extends Int("u256", false)<u8 | u16 | u32 | u64 | u128, never>
   max = new MaxNode(u256).instance()
 }
 
-export class i8 extends Int("i18", true)<never, i16 | i32 | i64 | i128 | i256> {
+export class i8 extends Int("i8", true)<never, i16 | i32 | i64 | i128 | i256> {
   min = new MinNode(i8).instance()
   max = new MaxNode(i8).instance()
 }

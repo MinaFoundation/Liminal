@@ -1,14 +1,10 @@
 import * as L from "liminal"
 
-declare const a: L.u8 | L.None
-
 declare const maybe: L.u8 | L.None
 
 {
   // Matching values: we match the `None` case and return a new value.
-  const value = maybe.match(L.None, function*() {
-    return L.u8.from(0)
-  })
+  const value = maybe.match(L.None, L.u8.new(0))
   value satisfies L.u8
 }
 
@@ -29,7 +25,7 @@ declare const maybe: L.u8 | L.None
 
   // Handle values that were yielded from the call that produced the effect.
   const handled = effect.handle(L.None, function*() {
-    return L.u8.from(0)
+    return L.u8.new(0)
   })
   handled satisfies L.u8
 

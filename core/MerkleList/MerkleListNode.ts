@@ -12,16 +12,16 @@ export class MerkleListLength extends ConstructorNode("MerkleListLength")<u256> 
 export class MerkleListPrepend<T extends Type = any>
   extends TypeNode("MerkleListPrepend")<MerkleList<T>>
 {
-  constructor(target: MerkleList<T>, readonly value: T) {
-    super(target)
+  constructor(list: MerkleList<T>, readonly element: T) {
+    super(list)
   }
 }
 
 export class MerkleListAppend<T extends Type = any>
   extends TypeNode("MerkleListAppend")<MerkleList<T>>
 {
-  constructor(target: MerkleList<T>, readonly value: T) {
-    super(target)
+  constructor(list: MerkleList<T>, readonly element: T) {
+    super(list)
   }
 }
 

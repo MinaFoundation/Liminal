@@ -20,8 +20,8 @@ export function MerkleList<T extends Type>(elementType: new() => T) {
     extends Type.make("MerkleList", { elementType })<MerkleListNative<Type.Native<T>>, never, never>
   {
     length: u256 = new MerkleListLength(this).instance()
-    first = this.at(u256.from(1))
-    last = this.at(this.length.subtract(u256.from(1)))
+    first = this.at(u256.new(1))
+    last = this.at(this.length.subtract(u256.new(1)))
 
     prepend(value: T): MerkleList<T> {
       return new MerkleListPrepend(this, value).instance()

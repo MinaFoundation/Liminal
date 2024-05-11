@@ -43,6 +43,8 @@
 
 ———
 
+tag -> type
+
 - yield vs. yield*
 
 - merkle map/list equality checks, slicing

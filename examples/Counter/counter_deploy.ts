@@ -1,21 +1,21 @@
 import * as L from "liminal"
 import { signer } from "liminal/test"
-import Counter from "./Counter.js"
+import { Counter } from "./Counter.js"
 
 const client = await L.Client()
 const [contract, sender] = signer(2)
 
-await L
-  .tx(function*() {
-    yield* L.id
-      .from(new Uint8Array())
-      .signer("contract")
-      .deploy(new Counter(), {
-        state: {
-          count: L.u256.from(1),
-        },
-      })
+const deploy = L.id
+  .fromBytes(contract.publicKey)
+  .signer("contract")
+  .deploy(new Counter(), {
+    state: {
+      count: L.u256.new(1),
+    },
   })
+
+await L
+  .tx(deploy)
   .sign(sender, { contract })
   .run()
   .commit(client)

@@ -28,6 +28,7 @@ export class Effect<Y extends Yield, R extends Result> implements Generator<Y, R
     throw 0
   }
 
+  // TODO: fix this
   rehandle<M extends new() => Y>(
     match: M,
   ): [Exclude<Y, InstanceType<M>>] extends [never] ? InstanceType<M> | R

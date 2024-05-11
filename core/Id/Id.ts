@@ -1,12 +1,19 @@
-import { const as const_ } from "../Constant/Constant.js"
-import { Contract } from "../Contract.js"
 import { Effect } from "../Effect/Effect.js"
 import { u64 } from "../Int/Int.js"
+import { State } from "../State/State.js"
 import { Type } from "../Type/Type.js"
 import { NullIdNode } from "./IdNode.js"
 
 export class id extends Type.make("id")<Uint8Array, never, never> {
   static null = new NullIdNode().instance()
+
+  static fromHex(hex: string): id {
+    throw 0
+  }
+
+  static fromBytes(bytes: Uint8Array): id {
+    throw 0
+  }
 
   bind<N>(namespace: N): Contract<N> {
     throw 0
@@ -55,10 +62,13 @@ export interface DeployOptions<N> {
 }
 
 export type DeployState<N> = {
-  [K in keyof N as N[K] extends Type ? N[K] extends const_ ? never : K : never]: N[K]
+  [K in keyof N as N[K] extends State ? K : never]: N[K] extends State<infer T> ? T : never
 }
 
 export interface SendProps {
   to: id
   amount: u64
 }
+
+// TODO
+export type Contract<T> = id & T

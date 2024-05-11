@@ -1,17 +1,20 @@
 import * as L from "liminal"
 
-export default class Counter {
+export class Counter {
   count = L.u256.state();
 
   *increment() {
-    const incremented = this.count.add(L.u256.from(1))
-    yield IncrementedEvent.from({ from: this.count, to: incremented })
-    return yield* this.count.assign(incremented)
+    const incremented = this.count().add(L.u256.new(1))
+    yield IncrementedEvent.new({
+      from: this.count(),
+      to: incremented,
+    })
+    return yield* this.count(incremented)
   }
 }
 
 export class IncrementedEvent extends L.Struct({
-  tag: L.const("Incremented"),
+  type: "Incremented",
   from: L.u256,
   to: L.u256,
 }) {}
