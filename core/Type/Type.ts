@@ -1,3 +1,4 @@
+import { Rest } from "../../util/Rest.js"
 import { bool } from "../Bool/Bool.js"
 import { Result, Yield } from "../Branch.js"
 import { Effect } from "../Effect/Effect.js"
@@ -26,7 +27,7 @@ export class Type<
 
   static new<T extends Type>(
     this: new() => T,
-    value: Type.Native<T> | Type.From<T>,
+    ...[value]: Rest<Type.Native<T> | Type.From<T>>
   ): T {
     return new FromNode(this, value).instance()
   }

@@ -17,11 +17,17 @@ export function Struct<const F extends FieldTypes>(fieldTypes: F) {
 export type FieldType = keyof any | (new() => Type)
 export type FieldTypes = Record<string, FieldType>
 
-export type Fields<F extends FieldTypes = any> = {
-  -readonly [K in keyof F as F[K] extends new() => Type ? K : never]: F[K] extends
-    (new() => infer T extends Type) ? T | Type.Native<T>
-    : never
-}
+type MaybeNoFields<F extends FieldTypes> = [
+  keyof { [K in keyof F as F[K] extends new() => Type ? K : never]: any },
+] extends [never] ? undefined : never
+
+export type Fields<F extends FieldTypes = any> =
+  | MaybeNoFields<F>
+  | {
+    -readonly [K in keyof F as F[K] extends new() => Type ? K : never]: F[K] extends
+      (new() => infer T extends Type) ? T | Type.Native<T>
+      : never
+  }
 
 type StructNativeField<T> = T extends (new() => infer U extends Type) ? Type.Native<U> : T
 export type StructNative<F extends FieldTypes> = Flatten<

@@ -38,7 +38,7 @@ export class InsufficientAllowance extends L.Struct({
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L22
 export function totalSupply() {
-  return totalSupply_
+  return totalSupply_()
 }
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L32
@@ -63,7 +63,7 @@ export function* transfer(to: L.id, value: L.u256) {
   balances_(newBalances)
   yield* to.equals(L.id.null).if(function*() {
     const newTotalSupply = totalSupply_().subtract(value)
-    yield* totalSupply_(newTotalSupply)
+    totalSupply_(newTotalSupply)
   })
   yield Transfer.new({
     from: L.sender,
@@ -140,5 +140,5 @@ function assertNotNullAddress(inQuestion: L.id) {
   return inQuestion
     .equals(L.id.null)
     .not()
-    .assert(CannotTargetNullAddress.new({}))
+    .assert(CannotTargetNullAddress.new())
 }
