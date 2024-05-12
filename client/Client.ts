@@ -12,21 +12,21 @@ export interface Client extends Disposable {
 }
 
 export interface TxBroadcast {
-  type: "Broadcasted"
+  tag: "Broadcasted"
   peers: string[]
 }
 export interface TxInclusion<R> {
-  type: "Included"
+  tag: "Included"
   block: string
   result: R
 }
 export interface TxFinalization<R> {
-  type: "Finalized"
+  tag: "Finalized"
   block: string
   result: R
 }
 export interface TxRejection {
-  type: "Rejected"
+  tag: "Rejected"
   reason: TxRejectionReason
 }
 
@@ -34,10 +34,10 @@ export type TxStatus<R> = TxBroadcast | TxInclusion<R> | TxFinalization<R> | TxR
 
 // TODO
 export type TxRejectionReason =
-  | { type: "SeeingAnotherTx" }
-  | { type: "LackingRizz" }
-  | { type: "Impossible" }
+  | { tag: "SeeingAnotherTx" }
+  | { tag: "LackingRizz" }
+  | { tag: "Impossible" }
   | {
-    type: "SystemError"
+    tag: "SystemError"
     value: "A" | "B" | "C"
   }

@@ -14,7 +14,7 @@ export class Counter {
 }
 
 export class IncrementedEvent extends L.Struct({
-  type: "Incremented",
+  tag: "Incremented",
   from: L.u256,
   to: L.u256,
 }) {}

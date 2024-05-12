@@ -17,7 +17,7 @@ export function Struct<const F extends FieldTypes>(fieldTypes: F) {
 export type FieldType = keyof any | (new() => Type)
 export type FieldTypes = Record<string, FieldType>
 
-export type Fields<F extends FieldTypes = any> = F extends Record<keyof any, keyof any> ? undefined
+export type Fields<F extends FieldTypes = any> = F extends Record<string, keyof any> ? undefined
   : {
     -readonly [K in keyof F as F[K] extends new() => Type ? K : never]: F[K] extends
       (new() => infer T extends Type) ? T | Type.Native<T>

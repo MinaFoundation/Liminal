@@ -43,8 +43,6 @@
 
 ———
 
-tag -> type
-
 - yield vs. yield*
 
 - merkle map/list equality checks, slicing
@@ -52,13 +50,17 @@ tag -> type
 How do we deal with tipping within the tx generator? Ideally we could use different tips for
 different calls, no?
 
-Private vs. public –– represent at type level
-
 Merkle list+map impls
 
 Can we do away with account updates?
 
-Implicit type conversion in misc. methods
+Implicit type conversion in misc. methods. Ie.
+
+```ts
+add(value: this | Type.From<this>): this {
+  return new AddNode(this, value).instance()
+}
+```
 
 <!--
 

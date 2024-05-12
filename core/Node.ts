@@ -1,9 +1,9 @@
 import { bool } from "./Bool/Bool.js"
 import { Type } from "./Type/Type.js"
 
-export function TypeNode<K extends string>(type: K) {
+export function TypeNode<K extends string>(tag: K) {
   return class<T extends Type> {
-    readonly type = type
+    readonly tag = tag
     constructor(readonly instance_: T) {}
 
     instance(): T {
@@ -14,17 +14,17 @@ export function TypeNode<K extends string>(type: K) {
   }
 }
 
-export function BinaryTypeNode<K extends string>(type: K) {
-  return class<T extends Type> extends TypeNode(type)<T> {
+export function BinaryTypeNode<K extends string>(tag: K) {
+  return class<T extends Type> extends TypeNode(tag)<T> {
     constructor(left: T, readonly right: T) {
       super(left)
     }
   }
 }
 
-export function ConstructorNode<K extends string>(type: K) {
+export function ConstructorNode<K extends string>(tag: K) {
   return class<T extends Type> {
-    readonly type = type
+    readonly tag = tag
     constructor(readonly ctor: new() => T) {}
 
     instance(): T {
@@ -35,8 +35,8 @@ export function ConstructorNode<K extends string>(type: K) {
   }
 }
 
-export function CompareNode<K extends string>(type: K) {
-  return class<T> extends ConstructorNode(type)<bool> {
+export function CompareNode<K extends string>(tag: K) {
+  return class<T> extends ConstructorNode(tag)<bool> {
     constructor(readonly left: T, readonly right: T) {
       super(bool)
     }

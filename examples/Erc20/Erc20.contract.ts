@@ -9,7 +9,7 @@ export const allowances_ = Allowances.state()
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L16
 export class Transfer extends L.Struct({
-  type: "Transfer",
+  tag: "Transfer",
   from: L.id,
   to: L.id,
   value: L.u256,
@@ -17,23 +17,23 @@ export class Transfer extends L.Struct({
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L22
 export class Approval extends L.Struct({
-  type: "Approval",
+  tag: "Approval",
   owner: L.id,
   spender: L.id,
   value: L.u256,
 }) {}
 
 export class AlreadyInitialized extends L.Struct({
-  type: "AlreadyInitialized",
+  tag: "AlreadyInitialized",
 }) {}
 export class InsufficientBalance extends L.Struct({
-  type: "InsufficientBalance",
+  tag: "InsufficientBalance",
 }) {}
 export class CannotTargetNullAddress extends L.Struct({
-  type: "CannotTargetNullAddress",
+  tag: "CannotTargetNullAddress",
 }) {}
 export class InsufficientAllowance extends L.Struct({
-  type: "InsufficientAllowance",
+  tag: "InsufficientAllowance",
 }) {}
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L22

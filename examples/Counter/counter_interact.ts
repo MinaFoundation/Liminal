@@ -1,6 +1,6 @@
 import * as L from "liminal"
 import { signer } from "liminal/test"
-import { Counter } from "./Counter.js"
+import { Counter } from "./Counter.contract.js"
 
 using client = await L.Client()
 const sender = signer()
