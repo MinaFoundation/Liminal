@@ -54,17 +54,12 @@ export class Type<
     return new IntoNode(into, this).instance()
   }
 
-  // TODO: generatorify
   equals<T extends Type>(this: T, inQuestion: T): bool {
     return new EqualsNode(this, inQuestion).instance()
   }
 
   clone<This>(this: This): This {
     return Object.assign(Object.create(Object.getPrototypeOf(this)), this)
-  }
-
-  assign<This extends Type>(this: This, newValue: This): Effect<never, This> {
-    throw 0
   }
 
   match<

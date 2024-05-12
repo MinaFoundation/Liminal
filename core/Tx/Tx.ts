@@ -1,7 +1,7 @@
 import { SignalOptions } from "util/AbortController.js"
 import { Client, TxBroadcast, TxFinalization, TxInclusion, TxStatus } from "../../client/Client.js"
 import { Subscription } from "../../util/Subscription.js"
-import { Result, Yield } from "../Branch.js"
+import { CommandLike, Result, Yield } from "../Branch.js"
 import { SignerRequirement } from "../Id/Id.js"
 import { Type } from "../Type/Type.js"
 
@@ -12,12 +12,6 @@ export function tx<Y extends Yield, R extends Result>(f: () => Generator<Y, R>):
 export function tx<Y extends Yield, R extends Result>(value: CommandLike<Y, R>): Tx<Yield, Result> {
   return new Tx(value)
 }
-
-export type CommandLike<Y extends Yield, R extends Result> =
-  | R
-  | (() => R)
-  | Generator<Y, R>
-  | (() => Generator<Y, R>)
 
 export class Tx<Y extends Yield, R extends Result> {
   constructor(readonly f: CommandLike<Y, R>) {}
