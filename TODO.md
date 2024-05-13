@@ -10,17 +10,9 @@
 - Standardize a constrained/sandboxable interface for L2s and wallets to implement against
 - It’s clear to yield effects bc effects cannot be passed to builtins. If you do not yield an
   effect, you’ll get a compilation error.
-- Difference between how you can use different definitions depending on the environment in which
-  you’re using it. Hence the `this` reference within tx and contract code (which are effectively the
-  same env).
-- Types must be defined ahead of time for now. This will simplify implementation of a migrations DX.
 - Just a description. Not the execution. We want to compile this into a minimal metadata format from
-  which we can derive circuits. I believe we’ll want to create a registry for this.
-- We need access to sender in the context of a transaction
-- Benefit of generators is two-fold: 1. Functional effects. 2. this/context
+  which we can derive circuits.
 - Doc comments flow through the experience
-- Use `set` but ultimately derive a “reducer”, which can be used to preserve commutativity in most
-  cases
 - State update preconditions are derived from assertions
 - Generators are quite nice, as they establish a secondary channel (the yield channel). This enables
   type safe modeling of functional effects.
@@ -28,24 +20,22 @@
   propagated through to callers. This means that you can utilize a contract that has unknown signer
   requirements, and get static type errors.
 - Establish rules around conversions. To + from
-- No `exhaustive` method because if you don’t match all variants, you’ll get an Option instead of
-  the given value, so any place where you would use that value will produce a type error anyways.
+- No `exhaustive` method because if you don’t match all variants – any place where you would use the
+  partially-matched-on value will produce a type error if it hasn't been dealt with properly.
 - Deploy method chaining off of signer
-- Inside of a tx, we have different context from inside of a contract method.
-- Generators are a risk
+- Maybe describe why using generators is not a common path
 - `signer` is assignable to `id`, but contains methods such as `deploy` and `send`.
-- default values
 - all values are immutable / all methods pure
 - lots of methods in eth ecosystem interfaces return a boolean to indicate success. We don't need to
   do that, because we can observe events during the given execution locally
-- the `clone` method makes it clear that you're not operating on the original value. Your business
-  logic is pure.
 - the tx block can take in a generator function or a generator. This is really nice for developing
   pattern libraries that interact with the on-chain world.
 
 ———
 
-- yield vs. yield*
+- default values
+
+- make everything `yield*`able
 
 - merkle map/list equality checks, slicing
 
