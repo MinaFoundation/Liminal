@@ -1,4 +1,4 @@
-import { Result, Yield } from "../Branch.js"
+import { Result, Yield } from "../CommandLike.js"
 
 export class Effect<Y extends Yield, R extends Result> implements Generator<Y, R> {
   "" = {} as { node: unknown }
@@ -19,6 +19,7 @@ export class Effect<Y extends Yield, R extends Result> implements Generator<Y, R
     throw 0
   }
 
+  // TODO: fix this
   handle<M extends new() => Y, Y2 extends Yield, R extends Result>(
     match: M,
     f: (value: InstanceType<M>) => Generator<Y2, R>,

@@ -65,11 +65,7 @@ export function* transfer(to: L.id, value: L.u256) {
     const newTotalSupply = totalSupply_().subtract(value)
     totalSupply_(newTotalSupply)
   })
-  yield Transfer.new({
-    from: L.sender,
-    to,
-    value,
-  })
+  yield Transfer.new({ from: L.sender, to, value })
 }
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L50
@@ -82,8 +78,8 @@ export function allowance(owner: L.id, spender: L.id) {
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L67
 export function* approve(spender: L.id, value: L.u256) {
-  yield assertNotNullAddress(L.sender)
-  yield assertNotNullAddress(spender)
+  yield* assertNotNullAddress(L.sender)
+  yield* assertNotNullAddress(spender)
   yield* assertHasBalanceGte(spender, value)
   const ownerApprovals = allowances_()
     .get(L.sender)
@@ -99,8 +95,8 @@ export function* approve(spender: L.id, value: L.u256) {
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L78
 export function* transferFrom(from: L.id, to: L.id, value: L.u256) {
-  yield assertNotNullAddress(from)
-  yield assertNotNullAddress(to)
+  yield* assertNotNullAddress(from)
+  yield* assertNotNullAddress(to)
   const fromApprovals = yield* allowances_()
     .get(from)
     .unhandle(L.None, InsufficientAllowance.new())
@@ -136,7 +132,7 @@ function* assertHasBalanceGte(inQuestion: L.id, value: L.u256) {
     .assert(InsufficientBalance.new())
 }
 
-function assertNotNullAddress(inQuestion: L.id) {
+function* assertNotNullAddress(inQuestion: L.id) {
   return inQuestion
     .equals(L.id.null)
     .not()

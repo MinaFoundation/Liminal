@@ -15,7 +15,7 @@ const finalization = await L
   })
   .sign(sender)
   .run((event) => {
-    if (event.type === "Incremented") {
+    if (event.tag === "Incremented") {
       const { from, to } = event
       console.log(`Incremented from ${from} to ${to}.`)
     }

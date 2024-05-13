@@ -40,6 +40,8 @@
   do that, because we can observe events during the given execution locally
 - the `clone` method makes it clear that you're not operating on the original value. Your business
   logic is pure.
+- the tx block can take in a generator function or a generator. This is really nice for developing
+  pattern libraries that interact with the on-chain world.
 
 ———
 

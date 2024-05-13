@@ -16,71 +16,76 @@ import {
   SubtractNode,
 } from "./IntNode.js"
 
-// TODO: absolute, bit manipulation, floor/ceil, power ...
+// TODO: bit manipulation, floats, floor/ceil, power ...
 
-export class u8 extends Int("u8", false)<never, u16 | u32 | u64 | u128 | u256> {
+export type SignedInt = i8 | i16 | i32 | i64 | i256
+export type UnsignedInt = u8 | u16 | u32 | u64 | u256
+
+export class u8 extends Int(false, 8)<never, u16 | u32 | u64 | u128 | u256> {
   min = new MinNode(u8).instance()
   max = new MaxNode(u8).instance()
 }
 
-export class u16 extends Int("u16", false)<u8, u32 | u64 | u128 | u256> {
+export class u16 extends Int(false, 16)<u8, u32 | u64 | u128 | u256> {
   min = new MinNode(u16).instance()
   max = new MaxNode(u16).instance()
 }
 
-export class u32 extends Int("u32", false)<u8 | u16, u64 | u128 | u256> {
+export class u32 extends Int(false, 32)<u8 | u16, u64 | u128 | u256> {
   min = new MinNode(u32).instance()
   max = new MaxNode(u32).instance()
 }
 
-export class u64 extends Int("u64", false)<u8 | u16 | u32, u128 | u256> {
+export class u64 extends Int(false, 64)<u8 | u16 | u32, u128 | u256> {
   min = new MinNode(u64).instance()
   max = new MaxNode(u64).instance()
 }
 
-export class u128 extends Int("u128", false)<u8 | u16 | u32 | u64, u256> {
+export class u128 extends Int(false, 128)<u8 | u16 | u32 | u64, u256> {
   min = new MinNode(u128).instance()
   max = new MaxNode(u128).instance()
 }
 
-export class u256 extends Int("u256", false)<u8 | u16 | u32 | u64 | u128, never> {
+export class u256 extends Int(false, 256)<u8 | u16 | u32 | u64 | u128, never> {
   min = new MinNode(u256).instance()
   max = new MaxNode(u256).instance()
 }
 
-export class i8 extends Int("i8", true)<never, i16 | i32 | i64 | i128 | i256> {
+export class i8 extends Int(true, 8)<never, i16 | i32 | i64 | i128 | i256> {
   min = new MinNode(i8).instance()
   max = new MaxNode(i8).instance()
 }
 
-export class i16 extends Int("i16", true)<i8, i32 | i64 | i128 | i256> {
+export class i16 extends Int(true, 16)<i8, i32 | i64 | i128 | i256> {
   min = new MinNode(i16).instance()
   max = new MaxNode(i16).instance()
 }
 
-export class i32 extends Int("i32", true)<i8 | i16, i64 | i128 | i256> {
+export class i32 extends Int(true, 32)<i8 | i16, i64 | i128 | i256> {
   min = new MinNode(i32).instance()
   max = new MaxNode(i32).instance()
 }
 
-export class i64 extends Int("i64", true)<i8 | i16 | i32, i128 | i256> {
+export class i64 extends Int(true, 64)<i8 | i16 | i32, i128 | i256> {
   min = new MinNode(i64).instance()
   max = new MaxNode(i64).instance()
 }
 
-export class i128 extends Int("i128", true)<i8 | i16 | i32 | i64, i256> {
+export class i128 extends Int(true, 128)<i8 | i16 | i32 | i64, i256> {
   min = new MinNode(i128).instance()
   max = new MaxNode(i128).instance()
 }
 
-export class i256 extends Int("i256", true)<i8 | i16 | i32 | i64 | i256, never> {
+export class i256 extends Int(true, 256)<i8 | i16 | i32 | i64 | i256, never> {
   min = new MinNode(i256).instance()
   max = new MaxNode(i256).instance()
 }
 
-function Int<Name extends string, Signed extends boolean>(name: Name, signed: Signed) {
+export type IntSize = 8 | 16 | 32 | 64 | 128 | 256
+
+function Int<Signed extends boolean, Size extends IntSize>(signed: Signed, size: Size) {
   return class<From extends Type, Into extends Type>
-    extends Type.make(name, { signed })<number, number | From, Into>
+    extends Type.make(`${signed ? "i" : "u"}${size}`, { signed })<number, number | From, Into>
   {
     static random<This extends new() => Type>(this: This) {
       return new RandomNode(this).instance()

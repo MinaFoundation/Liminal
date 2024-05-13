@@ -1,9 +1,9 @@
 import { Rest } from "../../util/Rest.js"
 import { bool } from "../Bool/Bool.js"
-import { Result, Yield } from "../Branch.js"
+import { Result, Yield } from "../CommandLike.js"
 import { Effect } from "../Effect/Effect.js"
 import { State } from "../State/State.js"
-import { EqualsNode, FromNode, IntoNode, StateNode } from "./TypeNode.js"
+import { EqualsNode, FromNode, IntoNode } from "./TypeNode.js"
 
 export class Type<
   Name extends string = any,
@@ -36,18 +36,14 @@ export class Type<
   "": {
     name: Name
     metadata: Metadata
-    node: unknown
+    node?: unknown
     native?: [Native]
     from?: [From]
     into?: [Into]
   }
 
   constructor(name: Name, metadata: Metadata) {
-    this[""] = {
-      name,
-      metadata,
-      node: null!,
-    }
+    this[""] = { name, metadata }
   }
 
   into<O extends Into>(into: new() => O): O {

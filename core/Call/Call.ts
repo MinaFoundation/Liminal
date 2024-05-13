@@ -1,4 +1,4 @@
-import { CommandLike, Result, Yield } from "../Branch.js"
+import { CommandLike, Result, Yield } from "../CommandLike.js"
 import { Effect } from "../Effect/Effect.js"
 
 // TODO: non-gen-related overloads are likely useless... but do we keep them for consistency?

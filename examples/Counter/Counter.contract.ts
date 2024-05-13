@@ -9,7 +9,7 @@ export class Counter {
       from: this.count(),
       to: incremented,
     })
-    return yield* this.count(incremented)
+    return this.count(incremented)
   }
 }
 

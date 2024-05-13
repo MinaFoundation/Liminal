@@ -1,7 +1,7 @@
 import { SignalOptions } from "util/AbortController.js"
 import { Client, TxBroadcast, TxFinalization, TxInclusion, TxStatus } from "../../client/Client.js"
 import { Subscription } from "../../util/Subscription.js"
-import { CommandLike, Result, Yield } from "../Branch.js"
+import { CommandLike, Result, Yield } from "../CommandLike.js"
 import { SignerRequirement } from "../Id/Id.js"
 import { Type } from "../Type/Type.js"
 

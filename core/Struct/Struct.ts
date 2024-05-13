@@ -9,7 +9,9 @@ export interface Struct<F extends FieldTypes = any>
 export function Struct<const F extends FieldTypes>(fieldTypes: F) {
   return class extends Type.make("Struct", { fieldTypes })<StructNative<F>, Fields<F>> {
     fields = Object.fromEntries(
-      Object.entries(fieldTypes).map(([key, type]) => [key, new StructFieldNode(this, type)]),
+      Object.entries(fieldTypes).map((
+        [key, type],
+      ) => [key, new StructFieldNode(this, type).instance()]),
     ) as Fields<F>
   }
 }
