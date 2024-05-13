@@ -11,11 +11,11 @@ const count = new L.u64.state()
 
 function* increment() {
   // Lift a JavaScript value into Liminal.
-  const one = L.u64.from(1)
+  const one = L.u64.new(1)
   // Create a new value by adding the `one` to `count`.
-  const next = count.add(one)
-  // yield the assignment.
-  yield* count.assign(next)
+  const next = count().add(one)
+  // Set `count` to the new value.
+  count(next)
 }
 ```
 
