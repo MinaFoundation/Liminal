@@ -12,6 +12,7 @@ bkase
 blakejs
 bools
 browsable
+builtins
 camelcase
 caml
 canonicalize
@@ -42,6 +43,7 @@ graphqlrc
 graphviz
 hardfork
 hashable
+impls
 incentivized
 inet
 influxdata
@@ -90,12 +92,14 @@ preprocess
 privkey
 pubkey
 publickey
+punchcard
 qanet
 rampup
 rizz
 rocksdb
 runtimes
 rustup
+sandboxable
 schnorr
 secp
 seqp
