@@ -1,7 +1,6 @@
 # Liminal
 
-A WIP specification and library for describing programs that blend zero knowledge and runtime
-environments.
+A WIP concept DX for describing programs that blend zero knowledge and runtime environments.
 
 ```ts
 import * as L from "liminal"
