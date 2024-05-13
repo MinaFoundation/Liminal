@@ -1,2 +1,2 @@
-export * from "./MerkleList.js"
-export * from "./MerkleMap.js"
+export * from "./MerkleList.ts"
+export * from "./MerkleMap.ts"

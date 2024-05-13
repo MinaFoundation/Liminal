@@ -30,8 +30,15 @@
   do that, because we can observe events during the given execution locally
 - the tx block can take in a generator function or a generator. This is really nice for developing
   pattern libraries that interact with the on-chain world.
+- In T6's words: "the yield* indicates 'hey, an effect is being used here'"
+- should `Struct` instead be `Event`? We'll never opt to use a `Struct` if we don't have to / would
+  prefer TS interfaces / JS objects
 
 ———
+
+- tsconfig paths mapping. Swc register does this, but esm sourcemapping is broken. Meanwhile
+  ts-node's accompanying tsconfig-paths lib is incompatible with --import approach. Seemingly
+  unmaintained.
 
 - default values
 
@@ -47,6 +54,10 @@ Merkle list+map impls
 Can we do away with account updates?
 
 Implicit type conversion in misc. methods. Ie.
+
+Custom inspect
+
+Fallible from? For instance a u16 to a u8, where there is a runtime check for overflowing
 
 ```ts
 add(value: this | Type.From<this>): this {

@@ -1,5 +1,5 @@
-import { bool } from "./Bool/Bool.js"
-import { Type } from "./Type/Type.js"
+import { bool } from "./Bool.ts"
+import { Type } from "./Type.ts"
 
 export function TypeNode<K extends string>(tag: K) {
   return class<T extends Type> {

@@ -1,0 +1,9 @@
+{
+  "scopes": {
+    "examples/": {
+      "liminal": "./mod.ts",
+      "liminal/lib": "./lib/mod.ts",
+      "liminal/test": "./test/mod.ts"
+    }
+  }
+}

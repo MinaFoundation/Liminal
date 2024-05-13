@@ -1,5 +1,5 @@
 import crypto from "node:crypto"
-import { ArrayOfLength } from "util/ArrayOfLength.js"
+import { ArrayOfLength } from "../util/ArrayOfLength.ts"
 
 export function signer(): TestSigner
 export function signer(count: 1): TestSigner

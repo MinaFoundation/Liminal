@@ -1,6 +1,6 @@
-import { Result, Type } from "../core/mod.js"
-import { SignalOptions } from "../util/AbortController.js"
-import { Subscription } from "../util/Subscription.js"
+import { Result, Type } from "../core/mod.ts"
+import { SignalOptions } from "../util/AbortController.ts"
+import { Subscription } from "../util/Subscription.ts"
 
 export declare function Client(...bootNodes: string[]): Promise<Client>
 

@@ -1,17 +1,18 @@
 import * as L from "liminal"
 import { signer } from "liminal/test"
-import { Counter } from "./Counter.contract.js"
+import { Counter } from "./Counter.contract.ts"
 
 using client = await L.Client()
 const sender = signer()
 
 const finalization = await L
   .tx(function*() {
-    const counter = L.id.fromHex(process.env.COUNTER_ID!).bind(new Counter())
+    const counter = L.id.fromHex(Deno.env.get("COUNTER_ID")!).bind(new Counter())
+    const initial = yield* counter.count()
     yield* counter.increment()
     yield* counter.increment()
     yield* counter.increment()
-    return counter.count()
+    return initial
   })
   .sign(sender)
   .run((event) => {
