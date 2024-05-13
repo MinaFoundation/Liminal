@@ -9,7 +9,7 @@ import * as L from "liminal"
 // Declare a persistent state.
 const count = new L.u64.state()
 
-function* increment() {
+function increment() {
   // Lift a JavaScript value into Liminal.
   const one = L.u64.new(1)
   // Create a new value by adding the `one` to `count`.
