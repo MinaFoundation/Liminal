@@ -1,4 +1,7 @@
 {
+  "imports": {
+    "@std/assert": "jsr:@std/assert@^0.225.1"
+  },
   "scopes": {
     "examples/": {
       "liminal": "./mod.ts",

@@ -1,2 +1,2 @@
-import * as ERC20 from "../examples/Erc20/Erc20.contract.ts"
-import * as L from "../mod.ts"
+import * as _ERC20 from "../examples/Erc20/Erc20.contract.ts"
+import * as _L from "../mod.ts"

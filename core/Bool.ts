@@ -14,7 +14,7 @@ export class bool extends Type.make("bool")<BoolSource, boolean, never, never> {
     return new bool(new BoolSource.Not({ not: this }))
   }
 
-  assert<E extends Type>(error: E): Effect<E, never> {
+  assert<E extends Type>(_error: E): Effect<E, never> {
     unimplemented()
   }
 }
@@ -27,7 +27,7 @@ export class If<Y extends Yield, R extends Result> extends Effect<Y, R | None> {
     super()
   }
 
-  else<Y2 extends Yield>(f: () => Generator<Y2, R>): Effect<Y | Y2, R> {
+  else<Y2 extends Yield>(_f: () => Generator<Y2, R>): Effect<Y | Y2, R> {
     unimplemented()
   }
 }

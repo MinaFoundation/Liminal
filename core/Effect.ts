@@ -5,7 +5,7 @@ import { Factory } from "./Type.ts"
 export class Effect<Y extends Yield, R extends Result> implements Generator<Y, R> {
   "" = {} as { node: unknown }
 
-  pipe<R2 extends Result>(f: (value: R) => R2): Effect<Y, R2> {
+  pipe<R2 extends Result>(_f: (value: R) => R2): Effect<Y, R2> {
     unimplemented()
   }
 
