@@ -1,3 +1,4 @@
+import { unimplemented } from "../util/unimplemented.ts"
 import { CommandLike, Result, Yield } from "./CommandLike.ts"
 import { Effect } from "./Effect.ts"
 
@@ -7,7 +8,7 @@ export function call<Y extends Yield, R extends Result>(g: Generator<Y, R>): Eff
 export function call<R extends Result>(f: () => R): Effect<never, R>
 export function call<Y extends Yield, R extends Result>(f: () => Generator<Y, R>): Effect<Y, R>
 export function call<Y extends Yield, R extends Result>(
-  value: CommandLike<Y, R>,
+  _value: CommandLike<Y, R>,
 ): Effect<Yield, Result> {
-  throw 0
+  unimplemented()
 }

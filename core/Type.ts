@@ -1,5 +1,6 @@
 import { Rest } from "../util/Rest.ts"
 import { Tagged } from "../util/Tagged.ts"
+import { unimplemented } from "../util/unimplemented.ts"
 import { bool, BoolSource } from "./Bool.ts"
 import { Result, Yield } from "./CommandLike.ts"
 import { Effect } from "./Effect.ts"
@@ -9,21 +10,17 @@ export type Factory<T extends Type = any> = new(source: any) => T
 
 export class Type<
   Name extends string = any,
-  Metadata = any,
   Source = any,
   Native = any,
   From = any,
   Into extends Type = any,
 > {
-  static make<Name extends string, Metadata = undefined>(
-    name: Name,
-    metadata: Metadata = undefined!,
-  ) {
+  static make<Name extends string>(name: Name) {
     return class<Source, Native, From = Native, Into extends Type = never>
-      extends this<Name, Metadata, Source, Native, From, Into>
+      extends this<Name, Source, Native, From, Into>
     {
       constructor(source: Source | TypeSource) {
-        super(name, metadata, source)
+        super(name, source)
       }
     }
   }
@@ -33,12 +30,11 @@ export class Type<
   }
 
   static state<T extends Type>(this: Factory<T>): State<T> {
-    throw 0
+    unimplemented()
   }
 
   "": {
     name: Name
-    metadata: Metadata
     source: Source | TypeSource
     native?: [Native]
     from?: [From]
@@ -47,8 +43,8 @@ export class Type<
 
   protected ctor = this.constructor as any
 
-  constructor(name: Name, metadata: Metadata, source: Source | TypeSource) {
-    this[""] = { name, metadata, source }
+  constructor(name: Name, source: Source | TypeSource) {
+    this[""] = { name, source }
   }
 
   into<O extends Into>(into: Factory<O>): O {
@@ -85,8 +81,8 @@ export class Type<
     match: M,
     f: (matched: InstanceType<M>) => R | Generator<Y, R>,
   ): Effect<Y, U>
-  match(match: any, f: any): any {
-    throw 0
+  match(_match: any, _f: any): any {
+    unimplemented()
   }
 
   unhandle<T extends Type, M extends Factory<T>>(
@@ -104,17 +100,17 @@ export class Type<
   ): Effect<W, Exclude<T, InstanceType<M>>>
   unhandle(
     this: Type,
-    match: Factory,
-    maybeWith_?: Type | Factory,
-    ...rest: Factory[]
+    _match: Factory,
+    _maybeWith_?: Type | Factory,
+    ..._rest: Factory[]
   ): Effect<Type, Type> {
-    throw 0
+    unimplemented()
   }
 }
 
 export declare namespace Type {
-  export type From<T> = T extends Type<any, any, any, any, infer From> ? From : never
-  export type Native<T extends Type | void> = T extends Type<any, any, any, infer N> ? N : undefined
+  export type From<T> = T extends Type<any, any, any, infer From> ? From : never
+  export type Native<T extends Type | void> = T extends Type<any, any, infer N> ? N : undefined
 }
 
 export type TypeSource = TypeSource.New | TypeSource.Into | TypeSource.StructField

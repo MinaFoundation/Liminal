@@ -1,4 +1,5 @@
 import { Tagged } from "../util/Tagged.ts"
+import { unimplemented } from "../util/unimplemented.ts"
 import { Result, Yield } from "./CommandLike.ts"
 import { Effect } from "./Effect.ts"
 import { None } from "./None.ts"
@@ -14,8 +15,7 @@ export class bool extends Type.make("bool")<BoolSource, boolean, never, never> {
   }
 
   assert<E extends Type>(error: E): Effect<E, never> {
-    throw 0
-    // return new AssertNode(this, error).instance()
+    unimplemented()
   }
 }
 
@@ -28,7 +28,7 @@ export class If<Y extends Yield, R extends Result> extends Effect<Y, R | None> {
   }
 
   else<Y2 extends Yield>(f: () => Generator<Y2, R>): Effect<Y | Y2, R> {
-    throw 0
+    unimplemented()
   }
 }
 

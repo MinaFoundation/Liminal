@@ -5,7 +5,9 @@ export interface Constant<T extends keyof any>
 {}
 
 export function Constant<T extends keyof any>(value: T) {
-  return class extends Type.make("Constant", { value })<ConstantSource, T> {}
+  return class extends Type.make("Constant")<ConstantSource, T> {
+    value = value
+  }
 }
 
 export type ConstantSource = never

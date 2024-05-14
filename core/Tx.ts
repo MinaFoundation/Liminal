@@ -1,6 +1,7 @@
 import { Client, TxBroadcast, TxFinalization, TxInclusion, TxStatus } from "../client/Client.ts"
 import { SignalOptions } from "../util/AbortController.ts"
 import { Subscription } from "../util/Subscription.ts"
+import { unimplemented } from "../util/unimplemented.ts"
 import { CommandLike, Result, Yield } from "./CommandLike.ts"
 import { SignerRequirement } from "./Id.ts"
 import { Type } from "./Type.ts"
@@ -36,7 +37,7 @@ export class SignedTx<Y extends Yield, R extends Result> {
     this.signers = signers
   }
 
-  run(handler?: TxHandler<Y>): TxRun<Y, R> {
+  run(_handler?: TxHandler<Y>): TxRun<Y, R> {
     return new TxRun(this)
   }
 }
@@ -46,8 +47,8 @@ export type TxHandler<Y extends Yield> = (value: Type.Native<Exclude<Y, SignerRe
 export class TxRun<Y extends Yield, R extends Result> {
   constructor(readonly signedTx: SignedTx<Y, R>) {}
 
-  commit(chain: Client, options?: CommitOptions): Commit<Type.Native<R>> {
-    throw 0
+  commit(_chain: Client, _options?: CommitOptions): Commit<Type.Native<R>> {
+    unimplemented()
   }
 }
 
