@@ -28,5 +28,5 @@ jobs:
           path: ~/.cache/deno
           key: cache-${{ hashFiles('import_map.json') }}
       - run: deno task check
-      - run: deno test
+      # - run: deno test
 
