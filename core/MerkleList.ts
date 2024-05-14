@@ -1,41 +1,44 @@
 import { MerkleList as MerkleListNative } from "../lib/mod.ts"
+import { Tagged } from "../util/Tagged.ts"
 import { Effect } from "./Effect.ts"
-import { u256 } from "./Int.ts"
-import { ConstructorNode, TypeNode } from "./Node.ts"
-import { Type } from "./Type.ts"
+import { u256, U256Source } from "./Int.ts"
+import { Factory, Type } from "./Type.ts"
 
 export interface MerkleList<T extends Type = Type>
   extends InstanceType<ReturnType<typeof MerkleList<T>>>
 {}
 
-export function MerkleList<T extends Type>(elementType: new() => T) {
+export function MerkleList<T extends Type>(elementType: Factory<T>) {
   return class extends Type.make("MerkleList", { elementType })<
+    MerkleListSource,
     MerkleListNative<Type.Native<T>>,
     undefined,
     never
   > {
-    length: u256 = new MerkleListLength(this).instance()
+    length: u256 = new u256(new U256Source.MerkleListSize(this))
+
     first = this.at(u256.new(1))
+
     last = this.at(this.length.subtract(u256.new(1)))
 
     prepend(value: T): MerkleList<T> {
-      return new MerkleListPrepend(this, value).instance()
+      return new this.ctor(new MerkleListSource.Prepend({ list: this, value }))
     }
 
     append(value: T): MerkleList<T> {
-      return new MerkleListAppend(this, value).instance()
+      return new this.ctor(new MerkleListSource.Append({ list: this, value }))
     }
 
     shift(): MerkleList<T> {
-      return new MerkleListShift(this).instance()
+      return new this.ctor(new MerkleListSource.Shift(this))
     }
 
     pop(): MerkleList<T> {
-      return new MerkleListPop(this).instance()
+      return new this.ctor(new MerkleListSource.Pop(this))
     }
 
     at(index: u256): T {
-      return new MerkleListAt(this, index, elementType).instance()
+      return new this.ctor(new MerkleListSource.At({ list: this, index }))
     }
 
     reduceKeys<R extends Type, Y extends Type>(
@@ -47,36 +50,16 @@ export function MerkleList<T extends Type>(elementType: new() => T) {
   }
 }
 
-export class MerkleListLength extends ConstructorNode("MerkleListLength")<u256> {
-  constructor(readonly list: MerkleList) {
-    super(u256)
-  }
-}
-
-export class MerkleListPrepend<T extends Type = any>
-  extends TypeNode("MerkleListPrepend")<MerkleList<T>>
-{
-  constructor(list: MerkleList<T>, readonly element: T) {
-    super(list)
-  }
-}
-
-export class MerkleListAppend<T extends Type = any>
-  extends TypeNode("MerkleListAppend")<MerkleList<T>>
-{
-  constructor(list: MerkleList<T>, readonly element: T) {
-    super(list)
-  }
-}
-
-export class MerkleListShift<T extends Type = any>
-  extends TypeNode("MerkleListShift")<MerkleList<T>>
-{}
-
-export class MerkleListPop<T extends Type = any> extends TypeNode("MerkleListPop")<MerkleList<T>> {}
-
-export class MerkleListAt<T extends Type = any> extends ConstructorNode("MerkleListAt")<T> {
-  constructor(readonly list: MerkleList, readonly index: u256, type: new() => T) {
-    super(type)
-  }
+export type MerkleListSource =
+  | MerkleListSource.Prepend
+  | MerkleListSource.Append
+  | MerkleListSource.Shift
+  | MerkleListSource.Pop
+  | MerkleListSource.At
+export namespace MerkleListSource {
+  export class Prepend extends Tagged("Prepend")<{ list: MerkleList; value: Type }> {}
+  export class Append extends Tagged("Append")<{ list: MerkleList; value: Type }> {}
+  export class Shift extends Tagged("Shift")<MerkleList> {}
+  export class Pop extends Tagged("Pop")<MerkleList> {}
+  export class At extends Tagged("At")<{ list: MerkleList; index: u256 }> {}
 }

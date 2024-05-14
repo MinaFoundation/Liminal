@@ -1,9 +1,12 @@
-import { bool } from "./Bool.ts"
-import { BinaryTypeNode, CompareNode, ConstructorNode, TypeNode } from "./Node.ts"
-import { Type } from "./Type.ts"
+import { Tagged } from "../util/Tagged.ts"
+import type { bool } from "./Bool.ts"
+import type { MerkleList } from "./MerkleList.ts"
+import type { MerkleMap } from "./MerkleMap.ts"
+import { Factory, Type } from "./Type.ts"
 
 // TODO: bit manipulation, floats, floor/ceil, power ...
 
+export type Int = SignedInt | UnsignedInt
 export type SignedInt = i8 | i16 | i32 | i64 | i256
 export type UnsignedInt = u8 | u16 | u32 | u64 | u256
 
@@ -13,7 +16,8 @@ export class u16 extends Int(false, 16)<u8, u32 | u64 | u128 | u256> {}
 export class u32 extends Int(false, 32)<u8 | u16, u64 | u128 | u256> {}
 export class u64 extends Int(false, 64)<u8 | u16 | u32, u128 | u256> {}
 export class u128 extends Int(false, 128)<u8 | u16 | u32 | u64, u256> {}
-export class u256 extends Int(false, 256)<u8 | u16 | u32 | u64 | u128, never> {}
+export class u256 extends Int(false, 256)<u8 | u16 | u32 | u64 | u128, never, U256Source> {}
+
 export class i8 extends Int(true, 8)<never, i16 | i32 | i64 | i128 | i256> {}
 export class i16 extends Int(true, 16)<i8, i32 | i64 | i128 | i256> {}
 export class i32 extends Int(true, 32)<i8 | i16, i64 | i128 | i256> {}
@@ -24,87 +28,100 @@ export class i256 extends Int(true, 256)<i8 | i16 | i32 | i64 | i256, never> {}
 export type IntSize = 8 | 16 | 32 | 64 | 128 | 256
 
 function Int<Signed extends boolean, Size extends IntSize>(signed: Signed, size: Size) {
-  return class<From extends Type, Into extends Type>
-    extends Type.make(`${signed ? "i" : "u"}${size}`, { signed })<number, number | From, Into>
+  return class<From extends Type, Into extends Type, ExtraSource = never>
+    extends Type.make(`${signed ? "i" : "u"}${size}`, { signed })<
+      IntSource | ExtraSource,
+      number,
+      number | From,
+      Into
+    >
   {
-    static min<This extends new() => Type>(this: This) {
-      return new IntNode.MinNode(this).instance()
+    static min<This extends Factory>(this: This) {
+      return new this(new IntSource.Min())
     }
 
-    static max<This extends new() => Type>(this: This) {
-      return new IntNode.MaxNode(u16).instance()
+    static max<This extends Factory>(this: This) {
+      return new this(new IntSource.Max())
     }
 
-    static random<This extends new() => Type>(this: This) {
-      return new IntNode.RandomNode(this).instance()
+    static random<This extends Factory>(this: This) {
+      return new this(new IntSource.Random())
     }
 
     add(value: this): this {
-      return new IntNode.AddNode(this, value).instance()
+      return new this.ctor(new IntSource.Add({ left: this, right: value }))
     }
 
     subtract(value: this): this {
-      return new IntNode.SubtractNode(this, value).instance()
+      return new this.ctor(new IntSource.Subtract({ left: this, right: value }))
     }
 
     multiply(value: this): this {
-      return new IntNode.MultiplyNode(this, value).instance()
+      return new this.ctor(new IntSource.Multiply({ left: this, right: value }))
     }
 
     divide(value: this): this {
-      return new IntNode.DivideNode(this, value).instance()
+      return new this.ctor(new IntSource.Divide({ left: this, right: value }))
     }
 
     square(): this {
-      return new IntNode.SquareNode(this).instance()
+      return new this.ctor(new IntSource.Square(this))
     }
 
     logarithm(value: this): this {
-      return new IntNode.LogarithmNode(this, value).instance()
+      return new this.ctor(new IntSource.Logarithm({ left: this, right: value }))
     }
 
     gt(value: this): bool {
-      return new IntNode.GtNode(this, value).instance()
+      return new this.ctor(new IntSource.Gt({ left: this, right: value }))
     }
 
     gte(value: this): bool {
-      return new IntNode.GteNode(this, value).instance()
+      return new this.ctor(new IntSource.Gte({ left: this, right: value }))
     }
 
     lt(value: this): bool {
-      return new IntNode.LtNode(this, value).instance()
+      return new this.ctor(new IntSource.Lt({ left: this, right: value }))
     }
 
     lte(value: this): bool {
-      return new IntNode.LteNode(this, value).instance()
+      return new this.ctor(new IntSource.Lte({ left: this, right: value }))
     }
   }
 }
 
-export namespace IntNode {
-  export class RandomNode<T extends Type = any> extends ConstructorNode("Random")<T> {}
+export type IntSource =
+  | IntSource.Random
+  | IntSource.Min
+  | IntSource.Max
+  | IntSource.Add
+  | IntSource.Subtract
+  | IntSource.Multiply
+  | IntSource.Divide
+  | IntSource.Square
+  | IntSource.Logarithm
+  | IntSource.Gt
+  | IntSource.Gte
+  | IntSource.Lt
+  | IntSource.Lte
+export namespace IntSource {
+  export class Random extends Tagged("Random") {}
+  export class Min extends Tagged("Min") {}
+  export class Max extends Tagged("Max") {}
+  export class Add extends Tagged("Add")<{ left: Type; right: Type }> {}
+  export class Subtract extends Tagged("Subtract")<{ left: Type; right: Type }> {}
+  export class Multiply extends Tagged("Multiply")<{ left: Type; right: Type }> {}
+  export class Divide extends Tagged("Divide")<{ left: Type; right: Type }> {}
+  export class Square extends Tagged("Square")<Type> {}
+  export class Logarithm extends Tagged("Logarithm")<{ left: Type; right: Type }> {}
+  export class Gt extends Tagged("Gt")<{ left: Type; right: Type }> {}
+  export class Gte extends Tagged("Gte")<{ left: Type; right: Type }> {}
+  export class Lt extends Tagged("Lt")<{ left: Type; right: Type }> {}
+  export class Lte extends Tagged("Lte")<{ left: Type; right: Type }> {}
+}
 
-  export class MinNode<T extends Type = any> extends ConstructorNode("Min")<T> {}
-
-  export class MaxNode<T extends Type = any> extends ConstructorNode("Max")<T> {}
-
-  export class AddNode<T extends Type = any> extends BinaryTypeNode("Add")<T> {}
-
-  export class SubtractNode<T extends Type = any> extends BinaryTypeNode("Subtract")<T> {}
-
-  export class MultiplyNode<T extends Type = any> extends BinaryTypeNode("Multiply")<T> {}
-
-  export class DivideNode<T extends Type = any> extends BinaryTypeNode("Divide")<T> {}
-
-  export class SquareNode<T extends Type = any> extends TypeNode("Square")<T> {}
-
-  export class LogarithmNode<T extends Type = any> extends BinaryTypeNode("Logarithm")<T> {}
-
-  export class GtNode<T extends Type = any> extends CompareNode("Gt")<T> {}
-
-  export class GteNode<T extends Type = any> extends CompareNode("Gte")<T> {}
-
-  export class LtNode<T extends Type = any> extends CompareNode("Lt")<T> {}
-
-  export class LteNode<T extends Type = any> extends CompareNode("Lte")<T> {}
+export type U256Source = U256Source.MerkleMapSize | U256Source.MerkleListSize
+export namespace U256Source {
+  export class MerkleMapSize extends Tagged("MerkleMapSize")<MerkleMap> {}
+  export class MerkleListSize extends Tagged("MerkleMapSize")<MerkleList> {}
 }

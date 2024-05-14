@@ -1,4 +1,5 @@
 import { Result, Yield } from "./CommandLike.ts"
+import { Factory } from "./Type.ts"
 
 export class Effect<Y extends Yield, R extends Result> implements Generator<Y, R> {
   "" = {} as { node: unknown }
@@ -23,8 +24,11 @@ export class Effect<Y extends Yield, R extends Result> implements Generator<Y, R
     throw 0
   }
 
-  // TODO: fix this
-  handle<M extends new() => Y, Y2 extends Yield, R extends Result>(
+  handle<M extends Factory<Y>, R extends Result>(
+    match: M,
+    f: R | ((matched: InstanceType<M>) => R),
+  ): [Exclude<Y, InstanceType<M>>] extends [never] ? R : Effect<Exclude<Y, InstanceType<M>>, R>
+  handle<M extends Factory<Y>, Y2 extends Yield, R extends Result>(
     match: M,
     f: (value: InstanceType<M>) => Generator<Y2, R>,
   ): [Exclude<Y, InstanceType<M>> | Y2] extends [never] ? R
@@ -34,7 +38,7 @@ export class Effect<Y extends Yield, R extends Result> implements Generator<Y, R
   }
 
   // TODO: fix this
-  rehandle<M extends new() => Y>(
+  rehandle<M extends Factory<Y>>(
     match: M,
   ): [Exclude<Y, InstanceType<M>>] extends [never] ? InstanceType<M> | R
     : Effect<Exclude<Y, InstanceType<M>>, R>

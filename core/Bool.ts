@@ -1,36 +1,16 @@
+import { Tagged } from "../util/Tagged.ts"
 import { Result, Yield } from "./CommandLike.ts"
 import { Effect } from "./Effect.ts"
-import { ConstructorNode, TypeNode } from "./Node.ts"
 import { None } from "./None.ts"
 import { Type } from "./Type.ts"
 
-export class TrueNode extends ConstructorNode("true")<bool> {
-  constructor() {
-    super(bool)
-  }
-}
-
-export class FalseNode extends ConstructorNode("false")<bool> {
-  constructor() {
-    super(bool)
-  }
-}
-
-export class NotNode extends TypeNode("not")<bool> {}
-
-export class AssertNode<E extends Type> extends TypeNode("Assert")<E> {
-  constructor(readonly truthy: bool, readonly error: E) {
-    super(error)
-  }
-}
-
-export class bool extends Type.make("bool")<boolean, never, never> {
+export class bool extends Type.make("bool")<BoolSource, boolean, never, never> {
   if<Y extends Yield, R extends Result>(f: () => Generator<Y, R>): If<Y, R> {
     return new If(this, f)
   }
 
   not(): bool {
-    return new NotNode(this).instance()
+    return new bool(new BoolSource.Not({ not: this }))
   }
 
   assert<E extends Type>(error: E): Effect<E, never> {
@@ -52,7 +32,16 @@ export class If<Y extends Yield, R extends Result> extends Effect<Y, R | None> {
   }
 }
 
-const true_ = new TrueNode().instance()
+export type BoolSource = BoolSource.True | BoolSource.False | BoolSource.Not | BoolSource.Equals
+export namespace BoolSource {
+  export class True extends Tagged("True") {}
+  export class False extends Tagged("False") {}
+  export class Not extends Tagged("Not")<{ not: bool }> {}
+  export class Equals extends Tagged("Equals")<{ left: Type; right: Type }> {}
+}
+
+const true_ = new bool(new BoolSource.True())
 export { true_ as true }
-const false_ = new FalseNode().instance()
+
+const false_ = new bool(new BoolSource.False())
 export { false_ as false }

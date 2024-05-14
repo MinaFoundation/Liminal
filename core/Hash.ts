@@ -1,10 +1,10 @@
-import { Type } from "./Type.ts"
+import { Factory, Type } from "./Type.ts"
 
 export function Hash<T extends Type, A extends HashAlgorithm>(
-  targetType: new() => T,
+  targetType: Factory<T>,
   algorithm: A,
 ) {
-  return Type.make("Hash", { targetType, algorithm })<Uint8Array, never, never>
+  return Type.make("Hash", { targetType, algorithm })<HashSource, Uint8Array, never, never>
 }
 
 export type HashAlgorithm =
@@ -16,3 +16,5 @@ export type HashAlgorithm =
   | "SHA3_256"
   | "SHA3_384"
   | "SHA3_512"
+
+export type HashSource = never

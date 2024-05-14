@@ -1,34 +1,35 @@
 import { MerkleMap as MerkleMapNative } from "../lib/mod.ts"
+import { Tagged } from "../util/Tagged.ts"
 import { Effect } from "./Effect.ts"
-import { u256 } from "./Int.ts"
-import { ConstructorNode, TypeNode } from "./Node.ts"
+import { u256, U256Source } from "./Int.ts"
 import { None } from "./None.ts"
-import { Type } from "./Type.ts"
+import { Factory, Type } from "./Type.ts"
 
 export interface MerkleMap<K extends Type = Type, V extends Type = Type>
   extends InstanceType<ReturnType<typeof MerkleMap<K, V>>>
 {}
 
 export function MerkleMap<K extends Type, V extends Type>(
-  keyType: new() => K,
-  valueType: new() => V,
+  keyType: Factory<K>,
+  valueType: Factory<V>,
 ) {
   return class extends Type.make("MerkleMap", { keyType, valueType })<
+    MerkleMapSource,
     MerkleMapNative<Type.Native<K>, Type.Native<V>>,
     undefined
   > {
-    size: u256 = new MerkleMapSize(this).instance()
+    size: u256 = new u256(new U256Source.MerkleMapSize(this))
 
     set(key: K, value: V): MerkleMap<K, V> {
-      return new MerkleMapSet(this, key, value).instance()
+      return new this.ctor(new MerkleMapSource.Set({ map: this, key, value }))
     }
 
     delete(key: K): MerkleMap<K, V> {
-      return new MerkleMapDelete(this, key).instance()
+      return new this.ctor(new MerkleMapSource.Delete({ map: this, key }))
     }
 
     get(key: K): V | None {
-      return new MerkleMapGet(this, key, valueType).instance()
+      return new this.ctor(new MerkleMapSource.Get({ map: this, key }))
     }
 
     reduceKeys<R extends Type, Y extends Type>(
@@ -54,32 +55,9 @@ export function MerkleMap<K extends Type, V extends Type>(
   }
 }
 
-export class MerkleMapSize extends ConstructorNode("MerkleMapSize")<u256> {
-  constructor(readonly list: MerkleMap) {
-    super(u256)
-  }
-}
-
-export class MerkleMapGet<K extends Type = any, V extends Type = any>
-  extends ConstructorNode("MerkleMapGet")<V>
-{
-  constructor(readonly map: MerkleMap<K, V>, readonly key: K, valueType: new() => V) {
-    super(valueType)
-  }
-}
-
-export class MerkleMapDelete<K extends Type = any, V extends Type = any>
-  extends TypeNode("MerkleMapSet")<MerkleMap<K, V>>
-{
-  constructor(map: MerkleMap<K, V>, readonly key: K) {
-    super(map)
-  }
-}
-
-export class MerkleMapSet<K extends Type = any, V extends Type = any>
-  extends TypeNode("MerkleMapSet")<MerkleMap<K, V>>
-{
-  constructor(map: MerkleMap<K, V>, readonly key: K, readonly value: V) {
-    super(map)
-  }
+export type MerkleMapSource = MerkleMapSource.Get | MerkleMapSource.Set | MerkleMapSource.Delete
+export namespace MerkleMapSource {
+  export class Get extends Tagged("Get")<{ map: MerkleMap; key: Type }> {}
+  export class Delete extends Tagged("Delete")<{ map: MerkleMap; key: Type }> {}
+  export class Set extends Tagged("Set")<{ map: MerkleMap; key: Type; value: Type }> {}
 }

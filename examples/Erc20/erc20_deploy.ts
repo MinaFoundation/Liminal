@@ -19,8 +19,8 @@ await L
         state: {
           // For ERC20
           totalSupply_,
-          balances_: new Erc20.Balances().set(L.sender, totalSupply_),
-          allowances_: new Erc20.Allowances(),
+          balances_: Erc20.Balances.new().set(L.sender, totalSupply_),
+          allowances_: Erc20.Allowances.new(),
           // For the ERC20 metadata extension
           name_: L.String.new("Liminal Coin"),
           symbol_: L.String.new("LMN"),
