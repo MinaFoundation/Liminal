@@ -4,7 +4,10 @@ export function Hash<T extends Type, A extends HashAlgorithm>(
   targetType: Factory<T>,
   algorithm: A,
 ) {
-  return Type.make("Hash", { targetType, algorithm })<HashSource, Uint8Array, never, never>
+  return class extends Type.make("Hash")<HashSource, Uint8Array, never, never> {
+    targetType = targetType
+    algorithm = algorithm
+  }
 }
 
 export type HashAlgorithm =

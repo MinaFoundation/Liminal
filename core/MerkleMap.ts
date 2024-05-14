@@ -1,5 +1,6 @@
 import { MerkleMap as MerkleMapNative } from "../lib/mod.ts"
 import { Tagged } from "../util/Tagged.ts"
+import { unimplemented } from "../util/unimplemented.ts"
 import { Effect } from "./Effect.ts"
 import { u256, U256Source } from "./Int.ts"
 import { None } from "./None.ts"
@@ -13,11 +14,14 @@ export function MerkleMap<K extends Type, V extends Type>(
   keyType: Factory<K>,
   valueType: Factory<V>,
 ) {
-  return class extends Type.make("MerkleMap", { keyType, valueType })<
+  return class extends Type.make("MerkleMap")<
     MerkleMapSource,
     MerkleMapNative<Type.Native<K>, Type.Native<V>>,
     undefined
   > {
+    keyType = keyType
+    valueType = valueType
+
     size: u256 = new u256(new U256Source.MerkleMapSize(this))
 
     set(key: K, value: V): MerkleMap<K, V> {
@@ -33,24 +37,24 @@ export function MerkleMap<K extends Type, V extends Type>(
     }
 
     reduceKeys<R extends Type, Y extends Type>(
-      initial: R,
-      f: (acc: R, cur: K) => Generator<Y, R>,
+      _initial: R,
+      _f: (acc: R, cur: K) => Generator<Y, R>,
     ): Effect<R, Y> {
-      throw 0
+      unimplemented()
     }
 
     reduceValues<R extends Type, Y extends Type>(
-      initial: R,
-      f: (acc: R, cur: V) => Generator<Y, R>,
+      _initial: R,
+      _f: (acc: R, cur: V) => Generator<Y, R>,
     ): Effect<R, Y> {
-      throw 0
+      unimplemented()
     }
 
     reduceEntries<R extends Type, Y extends Type>(
-      initial: R,
-      f: (acc: R, cur: [K, V]) => Generator<Y, R>,
+      _initial: R,
+      _f: (acc: R, cur: [K, V]) => Generator<Y, R>,
     ): Effect<R, Y> {
-      throw 0
+      unimplemented()
     }
   }
 }

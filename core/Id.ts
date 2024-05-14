@@ -1,4 +1,5 @@
 import { Tagged } from "../util/Tagged.ts"
+import { unimplemented } from "../util/unimplemented.ts"
 import { Effect } from "./Effect.ts"
 import { u64 } from "./Int.ts"
 import { State } from "./State.ts"
@@ -15,29 +16,29 @@ export namespace IdSource {
 }
 
 export class id extends Type.make("id")<IdSource, Uint8Array, Uint8Array> {
-  static fromHex(hex: string): id {
-    throw 0
+  static fromHex(_hex: string): id {
+    unimplemented()
   }
 
-  static fromBytes(bytes: Uint8Array): id {
-    throw 0
+  static fromBytes(_bytes: Uint8Array): id {
+    unimplemented()
   }
 
-  bind<N>(namespace: N): Contract<N> {
-    throw 0
+  bind<N>(_namespace: N): Contract<N> {
+    unimplemented()
   }
 
-  signer<K extends string>(key: K): SignerEffect<K> {
-    throw 0
+  signer<K extends string>(_key: K): SignerEffect<K> {
+    unimplemented()
   }
 }
 
 export class SignerEffect<K extends string> extends Effect<SignerRequirement<K>, signer<K>> {
   deploy<N>(
-    namespace: N,
-    deployOptions: DeployOptions<N>,
+    _namespace: N,
+    _deployOptions: DeployOptions<N>,
   ): Generator<SignerRequirement<K>, Contract<N>> {
-    throw 0
+    unimplemented()
   }
 }
 
@@ -57,12 +58,15 @@ export function signer<K extends keyof any>(key: K) {
   return class extends id {
     readonly key = key
 
-    deploy<N>(namespace: N, deployOptions: DeployOptions<N>): Generator<never, Contract<N>> {
-      throw 0
+    deploy<N>(
+      _namespace: N,
+      _deployOptions: DeployOptions<N>,
+    ): Generator<never, Contract<N>> {
+      unimplemented()
     }
 
-    send(props: SendProps): Effect<never, never> {
-      throw 0
+    send(_props: SendProps): Effect<never, never> {
+      unimplemented()
     }
   }
 }

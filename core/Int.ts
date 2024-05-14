@@ -29,13 +29,15 @@ export type IntSize = 8 | 16 | 32 | 64 | 128 | 256
 
 function Int<Signed extends boolean, Size extends IntSize>(signed: Signed, size: Size) {
   return class<From extends Type, Into extends Type, ExtraSource = never>
-    extends Type.make(`${signed ? "i" : "u"}${size}`, { signed })<
+    extends Type.make(`${signed ? "i" : "u"}${size}`)<
       IntSource | ExtraSource,
       number,
       number | From,
       Into
     >
   {
+    signed = signed
+
     static min<This extends Factory>(this: This) {
       return new this(new IntSource.Min())
     }

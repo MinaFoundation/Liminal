@@ -22,11 +22,11 @@ jobs:
       - uses: denoland/setup-deno@v1
         with:
           deno-version: v1.x
-      # - run: deno lint
+      - run: deno lint
       - uses: actions/cache@v3
         with:
           path: ~/.cache/deno
           key: cache-${{ hashFiles('import_map.json') }}
       - run: deno task check
-      # - run: deno test
+      - run: deno test
 

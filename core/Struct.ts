@@ -8,9 +8,9 @@ export interface Struct<F extends FieldTypes = any>
 {}
 
 export function Struct<const F extends FieldTypes>(fieldTypes: F) {
-  return class
-    extends Type.make("Struct", { fieldTypes })<StructSource, StructNative<F>, Fields<F>>
-  {
+  return class extends Type.make("Struct")<StructSource, StructNative<F>, Fields<F>> {
+    fieldTypes = fieldTypes
+
     fields = Object.fromEntries(
       Object.entries(fieldTypes).map(([key, type]) => [
         key,

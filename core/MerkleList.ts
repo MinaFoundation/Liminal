@@ -1,5 +1,6 @@
 import { MerkleList as MerkleListNative } from "../lib/mod.ts"
 import { Tagged } from "../util/Tagged.ts"
+import { unimplemented } from "../util/unimplemented.ts"
 import { Effect } from "./Effect.ts"
 import { u256, U256Source } from "./Int.ts"
 import { Factory, Type } from "./Type.ts"
@@ -9,12 +10,14 @@ export interface MerkleList<T extends Type = Type>
 {}
 
 export function MerkleList<T extends Type>(elementType: Factory<T>) {
-  return class extends Type.make("MerkleList", { elementType })<
+  return class extends Type.make("MerkleList")<
     MerkleListSource,
     MerkleListNative<Type.Native<T>>,
     undefined,
     never
   > {
+    elementType = elementType
+
     length: u256 = new u256(new U256Source.MerkleListSize(this))
 
     first = this.at(u256.new(1))
@@ -42,10 +45,10 @@ export function MerkleList<T extends Type>(elementType: Factory<T>) {
     }
 
     reduceKeys<R extends Type, Y extends Type>(
-      initial: R,
-      f: (acc: R, cur: T) => Generator<Y, R>,
+      _initial: R,
+      _f: (acc: R, cur: T) => Generator<Y, R>,
     ): Effect<R, Y> {
-      throw 0
+      unimplemented()
     }
   }
 }
