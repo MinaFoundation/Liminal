@@ -2,7 +2,7 @@ import * as L from "liminal"
 import { signer } from "liminal/test"
 import { Counter } from "./Counter.contract.ts"
 
-using client = await L.Client()
+using client = await L.client()
 const sender = signer()
 
 const finalization = await L

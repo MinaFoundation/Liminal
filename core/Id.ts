@@ -34,6 +34,10 @@ export class id extends Type.make("id")<IdSource, Uint8Array, Uint8Array> {
 }
 
 export class SignerEffect<K extends string> extends Effect<SignerRequirement<K>, signer<K>> {
+  constructor(readonly key: K) {
+    super()
+  }
+
   deploy<N>(
     _namespace: N,
     _deployOptions: DeployOptions<N>,
@@ -43,10 +47,10 @@ export class SignerEffect<K extends string> extends Effect<SignerRequirement<K>,
 }
 
 export class SignerRequirement<K extends string = any>
-  extends Type.make("SignerRequirement")<{ key: K }, never>
+  extends Type.make("SignerRequirement")<K, never>
 {
   constructor(readonly key: K) {
-    super({ key })
+    super(key)
   }
 }
 

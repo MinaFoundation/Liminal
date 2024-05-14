@@ -6,7 +6,7 @@ import * as Erc20 from "./Erc20.contract.ts"
 // An optional extension of the ERC20 spec
 import * as Erc20Metadata from "./extensions/Erc20Metadata.contract.ts"
 
-const client = await L.Client()
+const client = await L.client()
 const [contract, sender] = signer(2)
 
 await L

@@ -1,14 +1,19 @@
 import { Result, Type } from "../core/mod.ts"
 import { SignalOptions } from "../util/AbortController.ts"
 import { Subscription } from "../util/Subscription.ts"
+import { unimplemented } from "../util/unimplemented.ts"
 
-export declare function Client(...bootNodes: string[]): Promise<Client>
+export declare function client(...bootNodes: string[]): Promise<Client>
 
-export interface Client extends Disposable {
+export class Client implements Disposable {
   send<R extends Result>(
-    tx: () => Generator<unknown, R>,
-    options: SignalOptions,
-  ): Subscription<TxStatus<Type.Native<R>>>
+    _tx: () => Generator<unknown, R>,
+    _options: SignalOptions,
+  ): Subscription<TxStatus<Type.Native<R>>> {
+    unimplemented()
+  }
+
+  [Symbol.dispose]() {}
 }
 
 export interface TxBroadcast {

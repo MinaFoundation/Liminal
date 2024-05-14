@@ -5,6 +5,7 @@ export class Counter {
 
   *increment() {
     const from = yield* this.count()
+    console.log({ from })
     const to = from.add(L.u256.new(1))
     yield IncrementedEvent.new({ from, to })
     return yield* this.count(to)

@@ -30,7 +30,7 @@ export class Type<
   }
 
   static state<T extends Type>(this: Factory<T>): State<T> {
-    unimplemented()
+    return State(this)
   }
 
   "": {
