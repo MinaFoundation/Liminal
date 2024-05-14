@@ -1,5 +1,6 @@
 addrs
 alcotest
+anson
 approvable
 auro
 autocompletes
@@ -107,9 +108,12 @@ snarked
 snarkers
 softfork
 softwork
+sourcemapping
 steckler
+struct
 stumptown
 syntastic
+tamasfe
 tarfile
 tokenbase
 tokenomics
@@ -121,6 +125,7 @@ unvalidated
 urql
 vimbufsync
 vimrc
+yzhang
 zkapp
 zkapps
 zkprogram
