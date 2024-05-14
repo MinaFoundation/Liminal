@@ -6,27 +6,27 @@ on:
     branches:
       - main
 jobs:
-  cspell:
-    name: Ensure correct spelling
+  spellcheck:
+    name: Spellcheck
     runs-on: ubuntu-latest
+    timeout-minutes: 1
     steps:
       - uses: actions/checkout@v4
       - uses: streetsidesoftware/cspell-action@v6
-  fmt:
-    name: Ensure correct formatting
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dprint/check@v2.2
   test:
-    name: Ensure typechecks
+    name: Test
     runs-on: ubuntu-latest
+    timeout-minutes: 2
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: denoland/setup-deno@v1
         with:
-          cache: npm
-          cache-dependency-path: package-lock.json
-          node-version: 21.x
-      - run: npm ci
-      - run: npm run check
+          deno-version: v1.x
+      # - run: deno lint
+      - uses: actions/cache@v3
+        with:
+          path: ~/.cache/deno
+          key: cache-${{ hashFiles('import_map.json') }}
+      - run: deno task check
+      # - run: deno test
+

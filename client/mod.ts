@@ -1,2 +1,1 @@
-export * from "../core/Tx/Tx.js"
-export * from "./Client.js"
+export * from "./Client.ts"

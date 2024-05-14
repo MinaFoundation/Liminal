@@ -24,6 +24,9 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
   "cSpell.enabled": true,
+  "deno.codeLens.testArgs": ["-A", "-L=info"],
+  "deno.enable": true,
+  "deno.unstable": true,
   "editor.formatOnSave": true,
   "editor.tabSize": 2
 }

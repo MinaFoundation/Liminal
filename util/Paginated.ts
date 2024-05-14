@@ -1,4 +1,4 @@
-import { SignalOptions } from "./AbortController.js"
+import { SignalOptions } from "./AbortController.ts"
 
 export interface Paginated<K, V> {
   page(options: PageOptions<K>): AsyncIterable<V>

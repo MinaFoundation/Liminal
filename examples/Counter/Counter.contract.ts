@@ -4,12 +4,10 @@ export class Counter {
   count = L.u256.state();
 
   *increment() {
-    const incremented = this.count().add(L.u256.new(1))
-    yield IncrementedEvent.new({
-      from: this.count(),
-      to: incremented,
-    })
-    return this.count(incremented)
+    const from = yield* this.count()
+    const to = from.add(L.u256.new(1))
+    yield IncrementedEvent.new({ from, to })
+    return yield* this.count(to)
   }
 }
 

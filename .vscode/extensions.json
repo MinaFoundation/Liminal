@@ -3,6 +3,7 @@
     "DavidAnson.vscode-markdownlint",
     "EditorConfig.EditorConfig",
     "GitHub.vscode-github-actions",
+    "denoland.vscode-deno",
     "dprint.dprint",
     "esbenp.prettier-vscode",
     "streetsidesoftware.code-spell-checker",
