@@ -5,17 +5,22 @@ A WIP concept DX for describing programs that blend zero knowledge and runtime e
 ```ts
 import * as L from "liminal"
 
-// Declare a persistent state.
-const count = new L.u64.state()
+export class Counter {
+  count = L.u256.state();
 
-function increment() {
-  // Lift a JavaScript value into Liminal.
-  const one = L.u64.new(1)
-  // Create a new value by adding the `one` to `count`.
-  const next = count().add(one)
-  // Set `count` to the new value.
-  count(next)
+  *increment() {
+    const from = yield* this.count()
+    const to = from.add(L.u256.new(1))
+    yield IncrementedEvent.new({ from, to })
+    return yield* this.count(to)
+  }
 }
+
+export class IncrementedEvent extends L.Struct({
+  tag: "Incremented",
+  from: L.u256,
+  to: L.u256,
+}) {}
 ```
 
 <!--

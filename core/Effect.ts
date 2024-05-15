@@ -1,8 +1,11 @@
+import { Inspectable } from "../util/inspect.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { Result, Yield } from "./CommandLike.ts"
 import { Factory } from "./Type.ts"
 
-export abstract class Effect<Y extends Yield, R extends Result> implements Generator<Y, R> {
+export abstract class Effect<Y extends Yield, R extends Result> extends Inspectable
+  implements Generator<Y, R>
+{
   abstract result: R
 
   pipe<R2 extends Result>(_f: (value: R) => R2): Effect<Y, R2> {

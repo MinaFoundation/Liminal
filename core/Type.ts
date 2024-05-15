@@ -1,3 +1,4 @@
+import { Inspect, Inspectable } from "../util/inspect.ts"
 import { Rest } from "../util/Rest.ts"
 import { Tagged } from "../util/Tagged.ts"
 import { unimplemented } from "../util/unimplemented.ts"
@@ -14,7 +15,7 @@ export class Type<
   Native = any,
   From = any,
   Into extends Type = any,
-> {
+> extends Inspectable {
   static make<Name extends string>(name: Name) {
     return class<Source, Native, From = Native, Into extends Type = never>
       extends this<Name, Source, Native, From, Into>
@@ -33,18 +34,16 @@ export class Type<
     return State(this)
   }
 
-  "": {
-    name: Name
-    source: Source | TypeSource
-    native?: [Native]
-    from?: [From]
-    into?: [Into]
+  ""?: {
+    native: [Native]
+    from: [From]
+    into: [Into]
   }
 
   protected ctor = this.constructor as any
 
-  constructor(name: Name, source: Source | TypeSource) {
-    this[""] = { name, source }
+  constructor(readonly typeName: Name, readonly source: Source | TypeSource) {
+    super()
   }
 
   into<O extends Into>(into: Factory<O>): O {
@@ -105,6 +104,10 @@ export class Type<
     ..._rest: Factory[]
   ): Effect<Type, Type> {
     unimplemented()
+  }
+
+  protected inspect(_inspect: Inspect): string {
+    return this.typeName
   }
 }
 
