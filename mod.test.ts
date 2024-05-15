@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert"
 
-Deno.test("noop", () => {
+Deno.test("TODO", () => {
   assertEquals(true, true)
 })

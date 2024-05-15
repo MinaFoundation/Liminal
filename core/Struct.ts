@@ -8,7 +8,7 @@ export interface Struct<F extends FieldTypes = any>
 {}
 
 export function Struct<const F extends FieldTypes>(fieldTypes: F) {
-  return class extends Type.make("Struct")<StructSource, StructNative<F>, Fields<F>> {
+  return class extends Type.make("Struct")<StructSource, StructNative<F>, StructFrom<F>> {
     fieldTypes = fieldTypes
 
     fields = Object.fromEntries(
@@ -25,7 +25,13 @@ export function Struct<const F extends FieldTypes>(fieldTypes: F) {
 export type FieldType = keyof any | Factory
 export type FieldTypes = Record<string, FieldType>
 
-export type Fields<F extends FieldTypes = any> = F extends Record<string, keyof any> ? undefined
+export type Fields<F extends FieldTypes = any> = {
+  -readonly [K in keyof F]: F[K] extends keyof any ? Constant<F[K]>
+    : F[K] extends Factory ? InstanceType<F[K]>
+    : never
+}
+
+export type StructFrom<F extends FieldTypes = any> = F extends Record<string, keyof any> ? undefined
   : {
     -readonly [K in keyof F as F[K] extends Factory ? K : never]: F[K] extends Factory<infer T>
       ? T | Type.Native<T>

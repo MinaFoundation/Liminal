@@ -1,13 +1,17 @@
 import { Tagged } from "../util/Tagged.ts"
 import { unimplemented } from "../util/unimplemented.ts"
-import { Result, Yield } from "./CommandLike.ts"
+import { CommandLike, Result, Yield } from "./CommandLike.ts"
 import { Effect } from "./Effect.ts"
 import { None } from "./None.ts"
 import { Type } from "./Type.ts"
 
 export class bool extends Type.make("bool")<BoolSource, boolean, never, never> {
-  if<Y extends Yield, R extends Result>(f: () => Generator<Y, R>): If<Y, R> {
-    return new If(this, f)
+  if<R extends Result>(command: R | (() => R)): If<never, R>
+  if<Y extends Yield, R extends Result>(
+    command: Generator<Y, R> | (() => Generator<Y, R>),
+  ): If<Y, R>
+  if(command: any) {
+    return new If(this, command)
   }
 
   not(): bool {
@@ -20,11 +24,17 @@ export class bool extends Type.make("bool")<BoolSource, boolean, never, never> {
 }
 
 export class If<Y extends Yield, R extends Result> extends Effect<Y, R | None> {
+  yields
+  result
+
   constructor(
     readonly self: bool,
-    readonly f: () => Generator<Y, R>,
+    readonly command: CommandLike<Y, R>,
   ) {
     super()
+    const [yields, result] = CommandLike.normalize(command)
+    this.yields = yields
+    this.result = result
   }
 
   else<Y2 extends Yield>(_f: () => Generator<Y2, R>): Effect<Y | Y2, R> {

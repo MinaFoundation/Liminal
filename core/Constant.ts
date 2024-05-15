@@ -7,6 +7,14 @@ export interface Constant<T extends keyof any>
 export function Constant<T extends keyof any>(value: T) {
   return class extends Type.make("Constant")<ConstantSource, T> {
     value = value
+
+    // protected override inspect(_inspect: Inspect) {
+    //   return ({
+    //     string: () => `"${value as string}"`,
+    //     number: () => value,
+    //     symbol: () => value.toString(),
+    //   } as Record<string, () => string>)[typeof value]!()
+    // }
   }
 }
 

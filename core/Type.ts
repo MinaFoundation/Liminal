@@ -30,22 +30,18 @@ export class Type<
   }
 
   static state<T extends Type>(this: Factory<T>): State<T> {
-    unimplemented()
+    return State(this)
   }
 
-  "": {
-    name: Name
-    source: Source | TypeSource
-    native?: [Native]
-    from?: [From]
-    into?: [Into]
+  ""?: {
+    native: [Native]
+    from: [From]
+    into: [Into]
   }
 
   protected ctor = this.constructor as any
 
-  constructor(name: Name, source: Source | TypeSource) {
-    this[""] = { name, source }
-  }
+  constructor(readonly typeName: Name, readonly source: Source | TypeSource) {}
 
   into<O extends Into>(into: Factory<O>): O {
     return new into(new TypeSource.Into({ from: this }))
