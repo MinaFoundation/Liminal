@@ -34,6 +34,9 @@ export class id extends Type.make("id")<IdSource, Uint8Array, Uint8Array> {
 }
 
 export class SignerEffect<K extends string> extends Effect<SignerRequirement<K>, signer<K>> {
+  yields = null!
+  result = null!
+
   constructor(readonly key: K) {
     super()
   }

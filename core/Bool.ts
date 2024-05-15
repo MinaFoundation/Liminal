@@ -9,7 +9,8 @@ export class bool extends Type.make("bool")<BoolSource, boolean, never, never> {
   if<R extends Result>(command: R | (() => R)): If<never, R>
   if<Y extends Yield, R extends Result>(
     command: Generator<Y, R> | (() => Generator<Y, R>),
-  ): If<Y, R> {
+  ): If<Y, R>
+  if(command: any) {
     return new If(this, command)
   }
 
