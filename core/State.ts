@@ -20,6 +20,7 @@ export function State<T extends Type>(type: Factory<T>): State<T> {
 }
 
 export class GetState<T extends Type> extends Effect<never, T> {
+  yields = []
   result
   constructor(readonly state: State<T>, readonly valueOrF?: ValueOrF<T>) {
     super()

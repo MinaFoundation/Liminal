@@ -1,5 +1,4 @@
 import { Flatten } from "../util/Flatten.ts"
-import { Inspect } from "../util/inspect.ts"
 import { isKey } from "../util/isKey.ts"
 import { Constant } from "./Constant.ts"
 import { Factory, Type, TypeSource } from "./Type.ts"
@@ -20,15 +19,6 @@ export function Struct<const F extends FieldTypes>(fieldTypes: F) {
         ),
       ]),
     ) as Fields<F>
-
-    protected override inspect(inspect: Inspect) {
-      if (this.fields) { // TODO: delete this check
-        return "Struct {\n  " + Object.entries(this.fields).map(([key, field]) => {
-          return `  ${key}: ${inspect(field)}`
-        }).join(",\n  ") + "  \n  }"
-      }
-      return null!
-    }
   }
 }
 

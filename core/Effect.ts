@@ -1,4 +1,4 @@
-import { Inspectable } from "../util/inspect.ts"
+import { Inspect, Inspectable } from "../util/inspect.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { Result, Yield } from "./CommandLike.ts"
 import { Factory } from "./Type.ts"
@@ -6,6 +6,7 @@ import { Factory } from "./Type.ts"
 export abstract class Effect<Y extends Yield, R extends Result> extends Inspectable
   implements Generator<Y, R>
 {
+  abstract yields: Y[]
   abstract result: R
 
   pipe<R2 extends Result>(_f: (value: R) => R2): Effect<Y, R2> {
@@ -48,5 +49,9 @@ export abstract class Effect<Y extends Yield, R extends Result> extends Inspecta
     : Effect<Exclude<Y, InstanceType<M[number]>>, R>
   rehandle(..._match: any): any {
     unimplemented()
+  }
+
+  protected override inspect(inspect: Inspect): string {
+    return `GetState(${inspect(this.result)})`
   }
 }

@@ -13,6 +13,7 @@ export class Client implements Disposable {
     unimplemented()
   }
 
+  // TODO
   [Symbol.dispose]() {}
 }
 
