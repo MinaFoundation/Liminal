@@ -1,16 +1,10 @@
 import * as L from "liminal"
 
 export class Balances extends L.MerkleMap(L.id, L.u256) {}
-export class Reserves extends L.MerkleMap(L.id, Balances) {}
 
-export const totalSupply_ = L.u256.state()
 export const balances_ = Balances.state()
-export const reserves_ = Reserves.state()
 
-export function* transfer({ to, amount }: {
-  to: L.id
-  amount: L.u256
-}) {
+export function* transfer(to: L.id, amount: L.u256) {
   const balances = yield* balances_()
   const updatedSenderBalance = yield* balances
     .get(L.sender)
@@ -24,7 +18,7 @@ export function* transfer({ to, amount }: {
   const updatedToBalance = balances
     .get(to)
     .match(L.u256, (value) => value.add(amount))
-    .match(L.None, L.u256.new(0))
+    .match(L.None, amount)
   yield* balances_(
     balances
       .set(L.sender, updatedSenderBalance)
