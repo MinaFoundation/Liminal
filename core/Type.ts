@@ -15,6 +15,8 @@ export class Type<
   From = any,
   Into extends Type = any,
 > {
+  ""?: [Native, From, Into]
+
   static make<Name extends string>(name: Name) {
     return class<Source, Native, From = Native, Into extends Type = never>
       extends this<Name, Source, Native, From, Into>
@@ -31,12 +33,6 @@ export class Type<
 
   static state<T extends Type>(this: Factory<T>): State<T> {
     return State(this)
-  }
-
-  ""?: {
-    native: [Native]
-    from: [From]
-    into: [Into]
   }
 
   protected ctor = this.constructor as any

@@ -1,3 +1,4 @@
+import { Store } from "../client/mod.ts"
 import { Tagged } from "../util/Tagged.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { Effect } from "./Effect.ts"
@@ -98,4 +99,6 @@ export interface SendProps {
 }
 
 // TODO
-export type Contract<T> = id & T
+export type Contract<T> = id & T & {
+  store(store: Store): Contract<T>
+}

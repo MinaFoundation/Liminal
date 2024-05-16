@@ -1,6 +1,8 @@
+import { Flatten } from "../util/Flatten.ts"
 import { Inspect, Inspectable } from "../util/inspect.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { Result, Yield } from "./CommandLike.ts"
+import { Dependencies, ExtractDependencies } from "./Dependencies.ts"
 import { Factory } from "./Type.ts"
 
 export abstract class Effect<Y extends Yield, R extends Result> extends Inspectable
@@ -54,4 +56,19 @@ export abstract class Effect<Y extends Yield, R extends Result> extends Inspecta
   protected override inspect(inspect: Inspect): string {
     return `GetState(${inspect(this.result)})`
   }
+}
+
+export function gen<
+  Y extends Yield,
+  R extends Result,
+  D extends Partial<ExtractDependencies<Y>>,
+  F extends Omit<ExtractDependencies<Y>, keyof D>,
+>(
+  _command: Generator<Y, R> | (() => Generator<Y, R>),
+  _dependencies: D,
+): Effect<
+  Exclude<Y, Dependencies> | [keyof F] extends [never] ? never : Dependencies<Flatten<F>>,
+  R
+> {
+  unimplemented()
 }
