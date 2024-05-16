@@ -51,6 +51,7 @@ influxdata
 inspectable
 intf
 keccak
+keyof
 keypair
 leaderboard
 libname
@@ -87,6 +88,7 @@ omnifunc
 opam
 peaceiris
 pendings
+permissionless
 pkgconfig
 posix
 preimage

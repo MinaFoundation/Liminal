@@ -52,7 +52,7 @@ export function* balanceOf(account: L.id) {
 export function* transfer(to: L.id, value: L.u256) {
   yield* assertHasBalanceGte(L.sender, value)
   const balances = yield* balances_()
-  const senderBalance = yield* balances.get(L.sender).unhandle(L.None, InsufficientBalance.new())
+  const senderBalance = yield* balances.get(L.sender)["?"](L.None, InsufficientBalance.new())
   const newSenderBalance = senderBalance.subtract(value)
   const toNewBalance = balances
     .get(to)
@@ -98,10 +98,10 @@ export function* transferFrom(from: L.id, to: L.id, value: L.u256) {
   const allowances = yield* allowances_()
   const fromApprovals = yield* allowances
     .get(from)
-    .unhandle(L.None, InsufficientAllowance.new())
+    ["?"](L.None, InsufficientAllowance.new())
   const senderAllowance = yield* fromApprovals
     .get(L.sender)
-    .unhandle(L.None, InsufficientAllowance.new())
+    ["?"](L.None, InsufficientAllowance.new())
   yield senderAllowance.gt(value).assert(InsufficientAllowance.new())
   const newSenderAllowance = senderAllowance.subtract(value)
   const newFromApprovals = fromApprovals.set(L.sender, newSenderAllowance)
@@ -111,7 +111,7 @@ export function* transferFrom(from: L.id, to: L.id, value: L.u256) {
   const balances = yield* balances_()
   const fromBalance = yield* balances
     .get(from)
-    .unhandle(L.None, InsufficientBalance.new())
+    ["?"](L.None, InsufficientBalance.new())
   const newFromBalance = fromBalance.subtract(value)
   const toNewBalance = balances
     .get(to)
@@ -124,7 +124,7 @@ export function* transferFrom(from: L.id, to: L.id, value: L.u256) {
 function* assertHasBalanceGte(inQuestion: L.id, value: L.u256) {
   const inQuestionBalance = yield* (yield* balances_())
     .get(inQuestion)
-    .unhandle(L.None, InsufficientBalance.new())
+    ["?"](L.None, InsufficientBalance.new())
   yield inQuestionBalance.gte(value).assert(InsufficientBalance.new())
 }
 
