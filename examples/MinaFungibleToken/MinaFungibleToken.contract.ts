@@ -41,7 +41,10 @@ export class Transfer extends L.Struct({
   amount: L.u256,
 }) {}
 
-export function* reserve(for_: L.id, amount: L.u256 | L.None) {}
+export function* reserve({}: {
+  for_: L.id
+  amount: L.u256 | L.None
+}) {}
 
 export class Reserve extends L.Struct({
   tag: "Reserve",
@@ -49,7 +52,11 @@ export class Reserve extends L.Struct({
   amount: L.u256,
 }) {}
 
-export function* withdraw(from: L.id, to: L.id, amount: L.u256 | L.None) {}
+export function* withdraw({}: {
+  from: L.id
+  to: L.id
+  amount: L.u256 | L.None
+}) {}
 
 export class Withdraw extends L.Struct({
   tag: "Withdraw",
