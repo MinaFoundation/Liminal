@@ -81,20 +81,20 @@ export class Type<
     unimplemented()
   }
 
-  unhandle<T extends Type, M extends Factory<T>>(
+  "?"<T extends Type, M extends Factory<T>>(
     this: T,
     match: M,
   ): Effect<InstanceType<M>, Exclude<T, InstanceType<M>>>
-  unhandle<T extends Type, M extends (Factory<T>)[]>(
+  "?"<T extends Type, M extends (Factory<T>)[]>(
     this: T,
     ...match: M
   ): Effect<InstanceType<M[number]>, Exclude<T, InstanceType<M[number]>>>
-  unhandle<T extends Type, M extends Factory<T>, W extends Type>(
+  "?"<T extends Type, M extends Factory<T>, W extends Type>(
     this: T,
     match: M,
     with_: W,
   ): Effect<W, Exclude<T, InstanceType<M>>>
-  unhandle(
+  "?"(
     this: Type,
     _match: Factory,
     _maybeWith_?: Type | Factory,

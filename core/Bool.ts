@@ -37,8 +37,14 @@ export class If<Y extends Yield, R extends Result> extends Effect<Y, R | None> {
     this.result = result
   }
 
-  else<Y2 extends Yield>(_f: () => Generator<Y2, R>): Effect<Y | Y2, R> {
-    unimplemented()
+  else<R2 extends Result>(
+    command: R2 | (() => R2),
+  ): [Y] extends [never] ? R | R2 : Effect<Y, R | R2>
+  else<Y2 extends Yield, R2 extends Result>(
+    command: Generator<Y2, R2> | (() => Generator<Y2, R2>),
+  ): Effect<Y | Y2, R | R2>
+  else(_command: any) {
+    return unimplemented()
   }
 }
 

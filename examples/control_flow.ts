@@ -11,7 +11,7 @@ declare const maybe: L.u8 | L.None
 {
   // Unhandling values: if `None` is matched, Liminal yields to the caller of `unhandle`.
   function* unhandle() {
-    const value = yield* maybe.unhandle(L.None)
+    const value = yield* maybe["?"](L.None)
     value satisfies L.u8
     return value
   }
@@ -20,7 +20,7 @@ declare const maybe: L.u8 | L.None
 
 {
   // Create an effect, without yielding.
-  const effect = maybe.unhandle(L.None)
+  const effect = maybe["?"](L.None)
   effect satisfies L.Effect<L.None, L.u8>
 
   // Handle values that were yielded from the call that produced the effect.
