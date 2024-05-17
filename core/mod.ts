@@ -1,9 +1,8 @@
 // moderate
 
 export * from "./Bool.ts"
+export * from "./Branch.ts"
 export * from "./Bytes.ts"
-export * from "./CommandLike.ts"
-export * from "./Dependencies.ts"
 export * from "./Effect.ts"
 export * from "./Hash.ts"
 export * from "./Id.ts"
@@ -16,3 +15,4 @@ export * from "./State.ts"
 export * from "./String.ts"
 export * from "./Struct.ts"
 export * from "./Type.ts"
+export * from "./Use.ts"

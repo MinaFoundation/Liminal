@@ -2,7 +2,7 @@ import { Rest } from "../util/Rest.ts"
 import { Tagged } from "../util/Tagged.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { bool, BoolSource } from "./Bool.ts"
-import { Result, Yield } from "./CommandLike.ts"
+import { GenBranch, Result, ValueBranch, Yield } from "./Branch.ts"
 import { Effect } from "./Effect.ts"
 import { State } from "./State.ts"
 
@@ -18,7 +18,7 @@ export class Type<
   ""?: [Native, From, Into]
 
   static make<Name extends string>(name: Name) {
-    return class<Source, Native, From = Native, Into extends Type = never>
+    return class<Source, Native = never, From = Native, Into extends Type = never>
       extends this<Name, Source, Native, From, Into>
     {
       constructor(source: Source | TypeSource) {
@@ -60,7 +60,7 @@ export class Type<
   >(
     this: T,
     match: M,
-    f: R | ((matched: InstanceType<M>) => R),
+    f: ValueBranch<R, [InstanceType<M>]>,
   ): U
   match<
     T extends Type,
@@ -71,7 +71,7 @@ export class Type<
   >(
     this: T,
     match: M,
-    f: (matched: InstanceType<M>) => R | Generator<Y, R>,
+    f: GenBranch<Y, R, [InstanceType<M>]>,
   ): Effect<Y, U>
   match(_match: any, _f: any): any {
     unimplemented()

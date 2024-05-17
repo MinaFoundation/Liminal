@@ -1,6 +1,6 @@
 import { Tagged } from "../util/Tagged.ts"
 import { unimplemented } from "../util/unimplemented.ts"
-import { CommandLike, Result, Yield } from "./CommandLike.ts"
+import { Branch, Result, Yield } from "./Branch.ts"
 import { Effect } from "./Effect.ts"
 import { None } from "./None.ts"
 import { Type } from "./Type.ts"
@@ -29,10 +29,10 @@ export class If<Y extends Yield, R extends Result> extends Effect<Y, R | None> {
 
   constructor(
     readonly self: bool,
-    readonly command: CommandLike<Y, R>,
+    readonly command: Branch<Y, R>,
   ) {
     super()
-    const [yields, result] = CommandLike.normalize(command)
+    const [yields, result] = Branch.collect(command)
     this.yields = yields
     this.result = result
   }
