@@ -25,23 +25,28 @@ export function MerkleList<T extends Type>(elementType: Factory<T>) {
     last = this.at(this.length.subtract(u256.new(1)))
 
     prepend(value: T): MerkleList<T> {
-      return new this.ctor(new MerkleListSource.Prepend({ list: this, value }))
+      // @ts-ignore .
+      return new this.constructor(new MerkleListSource.Prepend({ list: this, value }))
     }
 
     append(value: T): MerkleList<T> {
-      return new this.ctor(new MerkleListSource.Append({ list: this, value }))
+      // @ts-ignore .
+      return new this.constructor(new MerkleListSource.Append({ list: this, value }))
     }
 
     shift(): MerkleList<T> {
-      return new this.ctor(new MerkleListSource.Shift(this))
+      // @ts-ignore .
+      return new this.constructor(new MerkleListSource.Shift(this))
     }
 
     pop(): MerkleList<T> {
-      return new this.ctor(new MerkleListSource.Pop(this))
+      // @ts-ignore .
+      return new this.constructor(new MerkleListSource.Pop(this))
     }
 
     at(index: u256): T {
-      return new this.ctor(new MerkleListSource.At({ list: this, index }))
+      // @ts-ignore .
+      return new this.constructor(new MerkleListSource.At({ list: this, index }))
     }
 
     reduceKeys<R extends Type, Y extends Type>(
@@ -60,9 +65,29 @@ export type MerkleListSource =
   | MerkleListSource.Pop
   | MerkleListSource.At
 export namespace MerkleListSource {
-  export class Prepend extends Tagged("Prepend")<{ list: MerkleList; value: Type }> {}
-  export class Append extends Tagged("Append")<{ list: MerkleList; value: Type }> {}
-  export class Shift extends Tagged("Shift")<MerkleList> {}
-  export class Pop extends Tagged("Pop")<MerkleList> {}
-  export class At extends Tagged("At")<{ list: MerkleList; index: u256 }> {}
+  export class Prepend extends Tagged("Prepend") {
+    constructor(readonly self: MerkleList, readonly value: Type) {
+      super()
+    }
+  }
+  export class Append extends Tagged("Append") {
+    constructor(readonly self: MerkleList, readonly value: Type) {
+      super()
+    }
+  }
+  export class Shift extends Tagged("Shift") {
+    constructor(readonly self: MerkleList) {
+      super()
+    }
+  }
+  export class Pop extends Tagged("Pop") {
+    constructor(readonly self: MerkleList) {
+      super()
+    }
+  }
+  export class At extends Tagged("At") {
+    constructor(readonly list: MerkleList, readonly index: u256) {
+      super()
+    }
+  }
 }

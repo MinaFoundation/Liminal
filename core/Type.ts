@@ -15,7 +15,7 @@ export class Type<
   From = any,
   Into extends Type = any,
 > {
-  ""?: [Native, From, Into]
+  declare ""?: [Native, From, Into]
 
   static make<Name extends string>(name: Name) {
     return class<Source, Native = never, From = Native, Into extends Type = never>
@@ -35,8 +35,6 @@ export class Type<
     return State(this)
   }
 
-  protected ctor = this.constructor as any
-
   constructor(readonly typeName: Name, readonly source: Source | TypeSource) {}
 
   into<O extends Into>(into: Factory<O>): O {
@@ -44,12 +42,7 @@ export class Type<
   }
 
   equals<T extends Type>(this: T, inQuestion: T): bool {
-    return new bool(
-      new BoolSource.Equals({
-        left: this,
-        right: inQuestion,
-      }),
-    )
+    return new bool(new BoolSource.Equals(this, inQuestion))
   }
 
   match<
@@ -90,12 +83,12 @@ export class Type<
     match: M,
     with_: W,
   ): Effect<W, Exclude<T, InstanceType<M>>>
-  "?"(
-    this: Type,
-    _match: Factory,
-    _maybeWith_?: Type | Factory,
-    ..._rest: Factory[]
-  ): Effect<Type, Type> {
+  "?"<T extends Type>(
+    this: T,
+    _match: Factory<T>,
+    _maybeWith_?: Type | Factory<T>,
+    ..._rest: Factory<T>[]
+  ) {
     unimplemented()
   }
 }
@@ -107,7 +100,19 @@ export declare namespace Type {
 
 export type TypeSource = TypeSource.New | TypeSource.Into | TypeSource.StructField
 export namespace TypeSource {
-  export class New extends Tagged("New")<{ from: unknown }> {}
-  export class Into extends Tagged("Into")<{ from: unknown }> {}
-  export class StructField extends Tagged("StructField")<{ struct: Type; key: keyof any }> {}
+  export class New extends Tagged("New") {
+    constructor(readonly from: unknown) {
+      super()
+    }
+  }
+  export class Into extends Tagged("Into") {
+    constructor(readonly from: unknown) {
+      super()
+    }
+  }
+  export class StructField extends Tagged("StructField") {
+    constructor(readonly self: Type, readonly key: keyof any) {
+      super()
+    }
+  }
 }

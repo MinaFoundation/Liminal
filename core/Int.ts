@@ -51,43 +51,53 @@ function Int<Signed extends boolean, Size extends IntSize>(signed: Signed, size:
     }
 
     add(value: this): this {
-      return new this.ctor(new IntSource.Add({ left: this, right: value }))
+      // @ts-ignore .
+      return new this.constructor(new IntSource.Add(this, value))
     }
 
     subtract(value: this): this {
-      return new this.ctor(new IntSource.Subtract({ left: this, right: value }))
+      // @ts-ignore .
+      return new this.constructor(new IntSource.Subtract(this, value))
     }
 
     multiply(value: this): this {
-      return new this.ctor(new IntSource.Multiply({ left: this, right: value }))
+      // @ts-ignore .
+      return new this.constructor(new IntSource.Multiply(this, value))
     }
 
     divide(value: this): this {
-      return new this.ctor(new IntSource.Divide({ left: this, right: value }))
+      // @ts-ignore .
+      return new this.constructor(new IntSource.Divide(this, value))
     }
 
     square(): this {
-      return new this.ctor(new IntSource.Square(this))
+      // @ts-ignore .
+      return new this.constructor(new IntSource.Square(this))
     }
 
     logarithm(value: this): this {
-      return new this.ctor(new IntSource.Logarithm({ left: this, right: value }))
+      // @ts-ignore .
+      return new this.constructor(new IntSource.Logarithm(this, value))
     }
 
     gt(value: this): bool {
-      return new this.ctor(new IntSource.Gt({ left: this, right: value }))
+      // @ts-ignore .
+      return new this.constructor(new IntSource.Gt(this, value))
     }
 
     gte(value: this): bool {
-      return new this.ctor(new IntSource.Gte({ left: this, right: value }))
+      // @ts-ignore .
+      return new this.constructor(new IntSource.Gte(this, value))
     }
 
     lt(value: this): bool {
-      return new this.ctor(new IntSource.Lt({ left: this, right: value }))
+      // @ts-ignore .
+      return new this.constructor(new IntSource.Lt(this, value))
     }
 
     lte(value: this): bool {
-      return new this.ctor(new IntSource.Lte({ left: this, right: value }))
+      // @ts-ignore .
+      return new this.constructor(new IntSource.Lte(this, value))
     }
   }
 }
@@ -110,20 +120,68 @@ export namespace IntSource {
   export class Random extends Tagged("Random") {}
   export class Min extends Tagged("Min") {}
   export class Max extends Tagged("Max") {}
-  export class Add extends Tagged("Add")<{ left: Type; right: Type }> {}
-  export class Subtract extends Tagged("Subtract")<{ left: Type; right: Type }> {}
-  export class Multiply extends Tagged("Multiply")<{ left: Type; right: Type }> {}
-  export class Divide extends Tagged("Divide")<{ left: Type; right: Type }> {}
-  export class Square extends Tagged("Square")<Type> {}
-  export class Logarithm extends Tagged("Logarithm")<{ left: Type; right: Type }> {}
-  export class Gt extends Tagged("Gt")<{ left: Type; right: Type }> {}
-  export class Gte extends Tagged("Gte")<{ left: Type; right: Type }> {}
-  export class Lt extends Tagged("Lt")<{ left: Type; right: Type }> {}
-  export class Lte extends Tagged("Lte")<{ left: Type; right: Type }> {}
+  export class Add extends Tagged("Add") {
+    constructor(readonly left: Type, readonly right: Type) {
+      super()
+    }
+  }
+  export class Subtract extends Tagged("Subtract") {
+    constructor(readonly left: Type, readonly right: Type) {
+      super()
+    }
+  }
+  export class Multiply extends Tagged("Multiply") {
+    constructor(readonly left: Type, readonly right: Type) {
+      super()
+    }
+  }
+  export class Divide extends Tagged("Divide") {
+    constructor(readonly left: Type, readonly right: Type) {
+      super()
+    }
+  }
+  export class Square extends Tagged("Square") {
+    constructor(readonly self: Type) {
+      super()
+    }
+  }
+  export class Logarithm extends Tagged("Logarithm") {
+    constructor(readonly left: Type, readonly right: Type) {
+      super()
+    }
+  }
+  export class Gt extends Tagged("Gt") {
+    constructor(readonly left: Type, readonly right: Type) {
+      super()
+    }
+  }
+  export class Gte extends Tagged("Gte") {
+    constructor(readonly left: Type, readonly right: Type) {
+      super()
+    }
+  }
+  export class Lt extends Tagged("Lt") {
+    constructor(readonly left: Type, readonly right: Type) {
+      super()
+    }
+  }
+  export class Lte extends Tagged("Lte") {
+    constructor(readonly left: Type, readonly right: Type) {
+      super()
+    }
+  }
 }
 
 export type U256Source = U256Source.MerkleMapSize | U256Source.MerkleListSize
 export namespace U256Source {
-  export class MerkleMapSize extends Tagged("MerkleMapSize")<MerkleMap> {}
-  export class MerkleListSize extends Tagged("MerkleMapSize")<MerkleList> {}
+  export class MerkleMapSize extends Tagged("MerkleMapSize") {
+    constructor(readonly self: MerkleMap) {
+      super()
+    }
+  }
+  export class MerkleListSize extends Tagged("MerkleMapSize") {
+    constructor(readonly self: MerkleList) {
+      super()
+    }
+  }
 }

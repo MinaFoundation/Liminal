@@ -25,15 +25,18 @@ export function MerkleMap<K extends Type, V extends Type>(
     size: u256 = new u256(new U256Source.MerkleMapSize(this))
 
     set(key: K, value: V): MerkleMap<K, V> {
-      return new this.ctor(new MerkleMapSource.Set({ map: this, key, value }))
+      // @ts-ignore .
+      return new this.constructor(new MerkleMapSource.Set({ map: this, key, value }))
     }
 
     delete(key: K): MerkleMap<K, V> {
-      return new this.ctor(new MerkleMapSource.Delete({ map: this, key }))
+      // @ts-ignore .
+      return new this.constructor(new MerkleMapSource.Delete({ map: this, key }))
     }
 
     get(key: K): V | None {
-      return new this.ctor(new MerkleMapSource.Get({ map: this, key }))
+      // @ts-ignore .
+      return new this.constructor(new MerkleMapSource.Get({ map: this, key }))
     }
 
     reduceKeys<R extends Type, Y extends Type>(
@@ -61,7 +64,23 @@ export function MerkleMap<K extends Type, V extends Type>(
 
 export type MerkleMapSource = MerkleMapSource.Get | MerkleMapSource.Set | MerkleMapSource.Delete
 export namespace MerkleMapSource {
-  export class Get extends Tagged("Get")<{ map: MerkleMap; key: Type }> {}
-  export class Delete extends Tagged("Delete")<{ map: MerkleMap; key: Type }> {}
-  export class Set extends Tagged("Set")<{ map: MerkleMap; key: Type; value: Type }> {}
+  export class Get extends Tagged("Get") {
+    constructor(readonly map: MerkleMap, readonly key: Type) {
+      super()
+    }
+  }
+  export class Delete extends Tagged("Delete") {
+    constructor(readonly map: MerkleMap, readonly key: Type) {
+      super()
+    }
+  }
+  export class Set extends Tagged("Set") {
+    constructor(
+      readonly map: MerkleMap,
+      readonly key: Type,
+      readonly value: Type,
+    ) {
+      super()
+    }
+  }
 }

@@ -1,4 +1,4 @@
 // TODO
 export class MerkleMap<K, V> {
-  ""?: [K, V]
+  declare ""?: [K, V]
 }

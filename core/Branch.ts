@@ -25,7 +25,7 @@ export namespace Branch {
     if (typeof branch === "function") {
       const maybeGen = branch()
       if (typeof maybeGen === "object" && Symbol.iterator in maybeGen) {
-        return collect(maybeGen)
+        return G.collect(maybeGen)
       } else {
         return [[], maybeGen]
       }
