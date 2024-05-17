@@ -1,2 +1,4 @@
 // TODO
-export class MerkleMap<K, V> {}
+export class MerkleMap<K, V> {
+  ""?: [K, V]
+}

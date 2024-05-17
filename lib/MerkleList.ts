@@ -1,2 +1,4 @@
 // TODO
-export class MerkleList<T> {}
+export class MerkleList<T> {
+  ""?: [T]
+}

@@ -1,13 +1,10 @@
 import { Flatten } from "../util/Flatten.ts"
-import { Inspect, Inspectable } from "../util/inspect.ts"
 import { unimplemented } from "../util/unimplemented.ts"
-import { Result, Yield } from "./CommandLike.ts"
-import { Dependencies, ExtractDependencies } from "./Dependencies.ts"
+import { GenBranch, Result, ValueBranch, Yield } from "./Branch.ts"
 import { Factory } from "./Type.ts"
+import { ExtractUse, Use } from "./Use.ts"
 
-export abstract class Effect<Y extends Yield, R extends Result> extends Inspectable
-  implements Generator<Y, R>
-{
+export abstract class Effect<Y extends Yield, R extends Result> implements Generator<Y, R> {
   abstract yields: Y[]
   abstract result: R
 
@@ -34,11 +31,11 @@ export abstract class Effect<Y extends Yield, R extends Result> extends Inspecta
 
   handle<M extends Factory<Y>, R extends Result>(
     match: M,
-    f: R | ((matched: InstanceType<M>) => R),
+    f: ValueBranch<R, [value: InstanceType<M>]>,
   ): [Exclude<Y, InstanceType<M>>] extends [never] ? R : Effect<Exclude<Y, InstanceType<M>>, R>
   handle<M extends Factory<Y>, Y2 extends Yield, R extends Result>(
     match: M,
-    f: Generator<Y2, R> | ((value: InstanceType<M>) => Generator<Y2, R>),
+    f: GenBranch<Y2, R, [value: InstanceType<M>]>,
   ): [Exclude<Y, InstanceType<M>> | Y2] extends [never] ? R
     : Effect<Exclude<Y, InstanceType<M>> | Y2, R>
   handle(_match: any, _f: any): any {
@@ -46,28 +43,25 @@ export abstract class Effect<Y extends Yield, R extends Result> extends Inspecta
   }
 
   rehandle<M extends Factory[]>(
-    ...match: M
-  ): [Exclude<Y, InstanceType<M[number]>>] extends [never] ? InstanceType<M[number]> | R
+    ..._match: M
+  ): [Exclude<Y, InstanceType<M[number]>>] extends [never] ? Extract<Y, InstanceType<M[number]>> | R
     : Effect<Exclude<Y, InstanceType<M[number]>>, R>
-  rehandle(..._match: any): any {
+  {
     unimplemented()
-  }
-
-  protected override inspect(inspect: Inspect): string {
-    return `GetState(${inspect(this.result)})`
   }
 }
 
-export function gen<
+export function branch<
   Y extends Yield,
   R extends Result,
-  D extends Partial<ExtractDependencies<Y>>,
-  F extends Omit<ExtractDependencies<Y>, keyof D>,
+  D extends ExtractUse<Y>,
+  A extends Partial<D>,
+  N extends Omit<D, keyof A>,
 >(
-  _command: Generator<Y, R> | (() => Generator<Y, R>),
-  _dependencies: D,
+  _branch: Generator<Y, R> | (() => Generator<Y, R>),
+  _uses: A,
 ): Effect<
-  Exclude<Y, Dependencies> | [keyof F] extends [never] ? never : Dependencies<Flatten<F>>,
+  Exclude<Y, Use> | [keyof N] extends [never] ? never : Use<Flatten<N>>,
   R
 > {
   unimplemented()

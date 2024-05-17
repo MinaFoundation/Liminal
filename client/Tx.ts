@@ -1,4 +1,4 @@
-import { CommandLike, Result, Yield } from "../core/CommandLike.ts"
+import { Branch, Result, Yield } from "../core/Branch.ts"
 import { SignerRequirement } from "../core/Id.ts"
 import { Type } from "../core/Type.ts"
 import { SignalOptions } from "../util/AbortController.ts"
@@ -6,16 +6,16 @@ import { Subscription } from "../util/Subscription.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { Client, TxBroadcast, TxFinalization, TxInclusion, TxStatus } from "./Client.ts"
 
-export function tx<R extends Result>(f: R): Tx<never, R>
-export function tx<Y extends Yield, R extends Result>(g: Generator<Y, R>): Tx<Y, R>
-export function tx<R extends Result>(f: () => R): Tx<never, R>
-export function tx<Y extends Yield, R extends Result>(f: () => Generator<Y, R>): Tx<Y, R>
-export function tx<Y extends Yield, R extends Result>(value: CommandLike<Y, R>): Tx<Yield, Result> {
+export function tx<R extends Type>(f: R | (() => R)): Tx<never, R>
+export function tx<Y extends Yield, R extends Result>(
+  f: Generator<Y, R> | (() => Generator<Y, R>),
+): Tx<Y, R>
+export function tx(value: any) {
   return new Tx(value)
 }
 
 export class Tx<Y extends Yield, R extends Result> {
-  constructor(readonly f: CommandLike<Y, R>) {}
+  constructor(readonly f: Branch<Y, R>) {}
 
   sign(senderSigner: SignBytes, ...maybeSigners: MaybeTxSigners<Y>): SignedTx<Y, R> {
     return new SignedTx(this, senderSigner, ...maybeSigners)
