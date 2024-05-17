@@ -1,6 +1,5 @@
 export function Tagged<K extends keyof any>(tag: K) {
-  return class<M extends unknown = undefined> {
+  return class {
     readonly tag = tag
-    constructor(readonly props: M = null!) {}
   }
 }

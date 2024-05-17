@@ -5,10 +5,10 @@ import { Factory } from "./Type.ts"
 import { ExtractUse, Use } from "./Use.ts"
 
 export abstract class Effect<Y extends Yield, R extends Result> implements Generator<Y, R> {
-  abstract yields: Y[]
-  abstract result: R
+  declare yields?: Y[]
+  declare result?: R
 
-  pipe<R2 extends Result>(_f: (value: R) => R2): Effect<Y, R2> {
+  map<R2 extends Result>(_f: (value: R) => R2): Effect<Y, R2> {
     unimplemented()
   }
 
@@ -25,8 +25,13 @@ export abstract class Effect<Y extends Yield, R extends Result> implements Gener
   }
 
   *[Symbol.iterator](): Generator<Y, R> {
-    yield this as never
-    return this.result
+    while (this.yields?.length) {
+      yield this.yields.shift()!
+    }
+    delete this.yields
+    const result = this.result!
+    delete this.result
+    return result
   }
 
   handle<M extends Factory<Y>, R extends Result>(

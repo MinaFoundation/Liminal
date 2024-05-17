@@ -15,7 +15,7 @@ export class bool extends Type.make("bool")<BoolSource, boolean, never, never> {
   }
 
   not(): bool {
-    return new bool(new BoolSource.Not({ not: this }))
+    return new bool(new BoolSource.Not(this))
   }
 
   assert<E extends Type>(_error: E): Effect<E, never> {
@@ -24,13 +24,7 @@ export class bool extends Type.make("bool")<BoolSource, boolean, never, never> {
 }
 
 export class If<Y extends Yield, R extends Result> extends Effect<Y, R | None> {
-  yields
-  result
-
-  constructor(
-    readonly self: bool,
-    readonly command: Branch<Y, R>,
-  ) {
+  constructor(readonly self: bool, readonly command: Branch<Y, R>) {
     super()
     const [yields, result] = Branch.collect(command)
     this.yields = yields
@@ -52,8 +46,16 @@ export type BoolSource = BoolSource.True | BoolSource.False | BoolSource.Not | B
 export namespace BoolSource {
   export class True extends Tagged("True") {}
   export class False extends Tagged("False") {}
-  export class Not extends Tagged("Not")<{ not: bool }> {}
-  export class Equals extends Tagged("Equals")<{ left: Type; right: Type }> {}
+  export class Not extends Tagged("Not") {
+    constructor(readonly not: bool) {
+      super()
+    }
+  }
+  export class Equals extends Tagged("Equals") {
+    constructor(readonly left: Type, readonly right: Type) {
+      super()
+    }
+  }
 }
 
 const true_ = new bool(new BoolSource.True())
