@@ -37,6 +37,8 @@ export class Type<
 
   constructor(readonly typeName: Name, readonly source: Source | TypeSource) {}
 
+  ctor = this.constructor as never as new(source: Source | TypeSource) => this
+
   into<O extends Into>(into: Factory<O>): O {
     return new into(new TypeSource.Into({ from: this }))
   }
@@ -89,13 +91,14 @@ export class Type<
     _maybeWith_?: Type | Factory<T>,
     ..._rest: Factory<T>[]
   ) {
-    unimplemented()
+    return unimplemented()
   }
 }
 
 export declare namespace Type {
   export type From<T> = T extends Type<any, any, any, infer From> ? From : never
   export type Native<T extends Type | void> = T extends Type<any, any, infer N> ? N : undefined
+  export type Source<T extends Type> = T extends Type<any, infer S> ? S : never
 }
 
 export type TypeSource = TypeSource.New | TypeSource.Into | TypeSource.StructField
