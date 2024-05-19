@@ -5,6 +5,7 @@ import { Effect } from "./Effect.ts"
 import { u256, U256Source } from "./Int.ts"
 import { None } from "./None.ts"
 import { Factory, Type } from "./Type.ts"
+import { Union } from "./Union.ts"
 
 export interface MerkleMap<K extends Type = Type, V extends Type = Type>
   extends InstanceType<ReturnType<typeof MerkleMap<K, V>>>
@@ -25,18 +26,15 @@ export function MerkleMap<K extends Type, V extends Type>(
     size: u256 = new u256(new U256Source.MerkleMapSize(this))
 
     set(key: K, value: V): MerkleMap<K, V> {
-      // @ts-ignore .
-      return new this.constructor(new MerkleMapSource.Set({ map: this, key, value }))
+      return new this.ctor(new MerkleMapSource.Set(this, key, value))
     }
 
     delete(key: K): MerkleMap<K, V> {
-      // @ts-ignore .
-      return new this.constructor(new MerkleMapSource.Delete({ map: this, key }))
+      return new this.ctor(new MerkleMapSource.Delete(this, key))
     }
 
     get(key: K): V | None {
-      // @ts-ignore .
-      return new this.constructor(new MerkleMapSource.Get({ map: this, key }))
+      return new (Union([None, this.keyType]))(new MerkleMapSource.Get(this, key)) as never
     }
 
     reduceKeys<R extends Type, Y extends Type>(

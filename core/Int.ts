@@ -51,53 +51,43 @@ function Int<Signed extends boolean, Size extends IntSize>(signed: Signed, size:
     }
 
     add(value: this): this {
-      // @ts-ignore .
-      return new this.constructor(new IntSource.Add(this, value))
+      return new this.ctor(new IntSource.Add(this, value))
     }
 
     subtract(value: this): this {
-      // @ts-ignore .
-      return new this.constructor(new IntSource.Subtract(this, value))
+      return new this.ctor(new IntSource.Subtract(this, value))
     }
 
     multiply(value: this): this {
-      // @ts-ignore .
-      return new this.constructor(new IntSource.Multiply(this, value))
+      return new this.ctor(new IntSource.Multiply(this, value))
     }
 
     divide(value: this): this {
-      // @ts-ignore .
-      return new this.constructor(new IntSource.Divide(this, value))
+      return new this.ctor(new IntSource.Divide(this, value))
     }
 
     square(): this {
-      // @ts-ignore .
-      return new this.constructor(new IntSource.Square(this))
+      return new this.ctor(new IntSource.Square(this))
     }
 
     logarithm(value: this): this {
-      // @ts-ignore .
-      return new this.constructor(new IntSource.Logarithm(this, value))
+      return new this.ctor(new IntSource.Logarithm(this, value))
     }
 
     gt(value: this): bool {
-      // @ts-ignore .
-      return new this.constructor(new IntSource.Gt(this, value))
+      return new this.ctor(new IntSource.Gt(this, value)) as never
     }
 
     gte(value: this): bool {
-      // @ts-ignore .
-      return new this.constructor(new IntSource.Gte(this, value))
+      return new this.ctor(new IntSource.Gte(this, value)) as never
     }
 
     lt(value: this): bool {
-      // @ts-ignore .
-      return new this.constructor(new IntSource.Lt(this, value))
+      return new this.ctor(new IntSource.Lt(this, value)) as never
     }
 
     lte(value: this): bool {
-      // @ts-ignore .
-      return new this.constructor(new IntSource.Lte(this, value))
+      return new this.ctor(new IntSource.Lte(this, value)) as never
     }
   }
 }

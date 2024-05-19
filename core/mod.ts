@@ -1,4 +1,4 @@
-// moderate
+// moderate --exclude Union.ts
 
 export * from "./Bool.ts"
 export * from "./Branch.ts"
