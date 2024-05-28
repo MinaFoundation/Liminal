@@ -1,4 +1,4 @@
-import { Branch, Result, Yield } from "../core/Branch.ts"
+import { Call, Result, Yield } from "../core/Call.ts"
 import { SignerRequirement } from "../core/Id.ts"
 import { Type } from "../core/Type.ts"
 import { SignalOptions } from "../util/AbortController.ts"
@@ -15,7 +15,7 @@ export function tx(value: any) {
 }
 
 export class Tx<Y extends Yield, R extends Result> {
-  constructor(readonly f: Branch<Y, R>) {}
+  constructor(readonly f: Call<Y, R>) {}
 
   sign(senderSigner: SignBytes, ...maybeSigners: MaybeTxSigners<Y>): SignedTx<Y, R> {
     return new SignedTx(this, senderSigner, ...maybeSigners)

@@ -2,17 +2,21 @@ import { Flatten } from "../util/Flatten.ts"
 import { Tagged } from "../util/Tagged.ts"
 import { U2I } from "../util/U2I.ts"
 import { unimplemented } from "../util/unimplemented.ts"
-import { Yield } from "./Branch.ts"
-import { Fields, FieldTypes } from "./Struct.ts"
-import { Type } from "./Type.ts"
+import { Yield } from "./Call.ts"
+import { Factory, Type } from "./Type.ts"
 
-export function use<F extends FieldTypes>(
-  _fields: F,
-): Generator<Use<Flatten<Fields<F>>>, Flatten<Fields<F>>> {
+export type UseField = Factory
+export type UseFieldTypes = Record<string, UseField>
+export type UseFields<F extends UseFieldTypes = any> = { [K in keyof F]: InstanceType<F[K]> }
+
+// TODO: defaults?
+export function use<F extends UseFieldTypes>(_fields: F): Generator<
+  Use<Flatten<UseFields<F>>>
+> {
   unimplemented()
 }
 
-export class Use<F extends Fields = any> extends Type.make("Dependencies")<UseSource> {
+export class Use<F extends UseFields = any> extends Type.make("Dependencies")<UseSource> {
   constructor(readonly fields: F) {
     super(new UseSource())
   }

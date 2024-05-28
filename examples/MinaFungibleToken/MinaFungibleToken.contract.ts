@@ -8,12 +8,12 @@ export function* transfer(to: L.id, amount: L.u256) {
   const balances = yield* balances_()
   const updatedSenderBalance = yield* balances
     .get(L.sender)
-    .match(L.None, InsufficientBalanceError.new())
     .match(L.u256, (balance) =>
       balance
         .gte(amount)
         .if(balance.subtract(amount))
         .else(InsufficientBalanceError.new()))
+    .match(L.None, InsufficientBalanceError.new())
     ["?"](InsufficientBalanceError)
   const updatedToBalance = balances
     .get(to)

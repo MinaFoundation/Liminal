@@ -1,6 +1,6 @@
 import { Flatten } from "../util/Flatten.ts"
 import { unimplemented } from "../util/unimplemented.ts"
-import { GenBranch, Result, ValueBranch, Yield } from "./Branch.ts"
+import { GenCall, Result, ValueCall, Yield } from "./Call.ts"
 import { Factory } from "./Type.ts"
 import { ExtractUse, Use } from "./Use.ts"
 
@@ -36,11 +36,11 @@ export abstract class Effect<Y extends Yield, R extends Result> implements Gener
 
   handle<M extends Factory<Y>, R extends Result>(
     match: M,
-    f: ValueBranch<R, [value: InstanceType<M>]>,
+    f: ValueCall<R, [value: InstanceType<M>]>,
   ): [Exclude<Y, InstanceType<M>>] extends [never] ? R : Effect<Exclude<Y, InstanceType<M>>, R>
   handle<M extends Factory<Y>, Y2 extends Yield, R extends Result>(
     match: M,
-    f: GenBranch<Y2, R, [value: InstanceType<M>]>,
+    f: GenCall<Y2, R, [value: InstanceType<M>]>,
   ): [Exclude<Y, InstanceType<M>> | Y2] extends [never] ? R
     : Effect<Exclude<Y, InstanceType<M>> | Y2, R>
   handle(_match: any, _f: any): any {
@@ -56,14 +56,14 @@ export abstract class Effect<Y extends Yield, R extends Result> implements Gener
   }
 }
 
-export function branch<
+export function call<
   Y extends Yield,
   R extends Result,
   D extends ExtractUse<Y>,
   A extends Partial<D>,
   N extends Omit<D, keyof A>,
 >(
-  _branch: Generator<Y, R> | (() => Generator<Y, R>),
+  _call: Generator<Y, R> | (() => Generator<Y, R>),
   _uses: A,
 ): Effect<
   Exclude<Y, Use> | [keyof N] extends [never] ? never : Use<Flatten<N>>,

@@ -21,10 +21,6 @@ export class id extends Type.make("id")<IdSource, Uint8Array, Uint8Array> {
     unimplemented()
   }
 
-  static fromBytes(_bytes: Uint8Array): id {
-    unimplemented()
-  }
-
   bind<N>(_namespace: N): Contract<N> {
     unimplemented()
   }
