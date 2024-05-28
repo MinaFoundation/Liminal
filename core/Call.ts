@@ -4,35 +4,35 @@ import { Type } from "./Type.ts"
 export type Yield = Type
 export type Result = Type | void
 
-export type ValueBranch<R, A extends unknown[]> = R | ((...args: A) => R)
+export type ValueCall<R, A extends unknown[]> = R | ((...args: A) => R)
 
-export type GenBranch<
+export type GenCall<
   Y extends Yield = any,
   R extends Result = any,
   A extends unknown[] = any,
 > = Generator<Y, R> | ((...args: A) => Generator<Y, R>)
 
-export type Branch<
+export type Call<
   Y extends Yield = any,
   R extends Result = any,
   A extends unknown[] = any,
-> = ValueBranch<R, A> | GenBranch<Y, R, A>
+> = ValueCall<R, A> | GenCall<Y, R, A>
 
-export namespace Branch {
+export namespace Call {
   export function collect<Y extends Yield, R extends Result>(
-    branch: Branch<Y, R>,
+    call: Call<Y, R>,
   ): G.Collected<Y, R> {
-    if (typeof branch === "function") {
-      const maybeGen = branch()
+    if (typeof call === "function") {
+      const maybeGen = call()
       if (typeof maybeGen === "object" && Symbol.iterator in maybeGen) {
         return G.collect(maybeGen)
       } else {
         return [[], maybeGen]
       }
-    } else if (typeof branch === "object" && Symbol.iterator in branch) {
-      return G.collect(branch)
+    } else if (typeof call === "object" && Symbol.iterator in call) {
+      return G.collect(call)
     } else {
-      return [[], branch]
+      return [[], call]
     }
   }
 }

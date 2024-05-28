@@ -8,12 +8,10 @@ const [contract, sender] = signer(2)
 await L
   .tx(
     L.id
-      .fromBytes(contract.publicKey)
+      .new(contract.publicKey)
       .signer("contract")
       .deploy(new Counter(), {
-        state: {
-          count: L.u256.new(1),
-        },
+        state: { count: L.u256.new(1) },
       }),
   )
   .sign(sender, { contract })

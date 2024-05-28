@@ -2,7 +2,7 @@ import { Rest } from "../util/Rest.ts"
 import { Tagged } from "../util/Tagged.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { bool, BoolSource } from "./Bool.ts"
-import { GenBranch, Result, ValueBranch, Yield } from "./Branch.ts"
+import { GenCall, Result, ValueCall, Yield } from "./Call.ts"
 import { Effect } from "./Effect.ts"
 import { State } from "./State.ts"
 
@@ -55,7 +55,7 @@ export class Type<
   >(
     this: T,
     match: M,
-    f: ValueBranch<R, [InstanceType<M>]>,
+    f: ValueCall<R, [InstanceType<M>]>,
   ): U
   match<
     T extends Type,
@@ -66,7 +66,7 @@ export class Type<
   >(
     this: T,
     match: M,
-    f: GenBranch<Y, R, [InstanceType<M>]>,
+    f: GenCall<Y, R, [InstanceType<M>]>,
   ): Effect<Y, U>
   match(_match: any, _f: any): any {
     unimplemented()

@@ -14,7 +14,7 @@ add satisfies () => Generator<
   unknown
 >
 
-const partial = L.branch(add, {
+const partial = L.call(add, {
   a: L.u256.new(0),
 })
 
@@ -27,7 +27,7 @@ partial satisfies L.Effect<
   L.u256
 >
 
-const final = L.branch(partial, {
+const final = L.call(partial, {
   b: L.u256.new(0),
 })
 
