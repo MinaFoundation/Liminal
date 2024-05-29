@@ -51,6 +51,8 @@ different calls, no?
 
 Merkle list+map impls
 
+Batch set
+
 Can we do away with account updates?
 
 Implicit type conversion in misc. methods. Ie.
