@@ -1,5 +1,4 @@
 import * as L from "liminal"
-import { InsufficientAllowance } from "../Erc20/Erc20.contract.ts"
 
 /** The amount of the given token held by a given id. */
 export class Balances extends L.MerkleMap(L.id, L.u256) {}
@@ -11,6 +10,36 @@ export class Allocatee extends L.id {}
 export class Allocated extends L.MerkleMap(Allocatee, L.u256) {}
 /** The lookup of all allocators' allocations. */
 export class Allocations extends L.MerkleMap(Allocator, Allocated) {}
+
+export class Transfer extends L.Struct({
+  tag: "Transfer",
+  to: L.id,
+  amount: L.u256,
+}) {}
+
+export class Allocate extends L.Struct({
+  tag: "Allocate",
+  from: L.id,
+  for: L.id,
+  amount: L.u256,
+}) {}
+
+export class Deallocate extends L.Struct({
+  tag: "Deallocate",
+  from: L.id,
+  for: L.id,
+  amount: L.u256,
+}) {}
+
+export class Withdraw extends L.Struct({
+  tag: "Withdraw",
+  from: L.id,
+  to: L.id,
+  amount: L.u256,
+}) {}
+
+export class InsufficientBalance extends L.Struct({ tag: "InsufficientBalance" }) {}
+export class InsufficientAllowance extends L.Struct({ tag: "InsufficientAllowance" }) {}
 
 export const balances_ = Balances.state()
 export const allocations_ = Allocations.state()
@@ -24,9 +53,9 @@ export function* transfer() {
       balance
         .gte(amount)
         .if(balance.subtract(amount))
-        .else(InsufficientBalanceError.new()))
-    .match(L.None, InsufficientBalanceError.new())
-    ["?"](InsufficientBalanceError)
+        .else(InsufficientBalance.new()))
+    .match(L.None, InsufficientBalance.new())
+    ["?"](InsufficientBalance)
   const updatedToBalance = balances
     .get(to)
     .match(L.u256, (value) => value.add(amount))
@@ -39,19 +68,12 @@ export function* transfer() {
   yield Transfer.new({ to, amount })
 }
 
-export class InsufficientBalanceError extends L.Struct({ tag: "InsufficientBalanceError" }) {}
-
-export class Transfer extends L.Struct({
-  tag: "Transfer",
-  to: L.id,
-  amount: L.u256,
-}) {}
-
 export function* allocate() {
   const { for_, amount } = yield* L.use({
     for_: Allocatee,
     amount: L.u256,
   })
+
   const balances = yield* balances_()
   const newSenderBalance = yield* balances
     .get(L.sender)
@@ -59,9 +81,9 @@ export function* allocate() {
       v
         .gte(amount)
         .if(v.subtract(amount))
-        .else(InsufficientBalanceError.new()))
-    .match(L.None, InsufficientBalanceError.new())
-    ["?"](InsufficientBalanceError)
+        .else(InsufficientBalance.new()))
+    .match(L.None, InsufficientBalance.new())
+    ["?"](InsufficientBalance)
   yield* balances_(balances.set(L.sender, newSenderBalance))
   const allocations = yield* allocations_()
   const allocatorAllocated = allocations
@@ -75,32 +97,42 @@ export function* allocate() {
     })
     .match(L.None, Allocated.new().set(for_, amount))
   yield* allocations_(allocations.set(L.sender, allocatorAllocated))
+  yield Allocate.new({ from: L.sender, for: for_, amount })
 }
 
-export class Reserve extends L.Struct({
-  tag: "Reserve",
-  for: L.id,
-  amount: L.u256,
-}) {}
+// TODO: enable not specifying `amount`
+export function* withdraw() {
+  const { from, amount } = yield* L.use({
+    from: L.id,
+    amount: L.u256,
+  })
 
-export function* withdraw({}: {
-  from: L.id
-  to: L.id
-  amount: L.u256 | L.None
-}) {}
-
-export class Withdraw extends L.Struct({
-  tag: "Withdraw",
-  from: L.id,
-  to: L.id,
-  amount: L.u256,
-}) {}
+  const balances = yield* balances_()
+  const balanceSender = balances.get(L.sender).match(L.None, L.u256.new(0))
+  const allocations = yield* allocations_()
+  const allocationsFromFrom = yield* allocations
+    .get(from)
+    ["?"](L.None, InsufficientAllowance.new())
+  const allocationFromFromToSender = yield* allocationsFromFrom
+    .get(L.sender)
+    ["?"](L.None, InsufficientAllowance.new())
+  yield* allocationFromFromToSender.gte(amount).not().assert(InsufficientAllowance.new())
+  yield* allocations_(
+    allocations.set(
+      from,
+      allocationsFromFrom.set(L.sender, allocationFromFromToSender.subtract(amount)),
+    ),
+  )
+  yield* balances_(balances.set(L.sender, balanceSender.add(amount)))
+  yield Withdraw.new({ from, to: L.sender, amount })
+}
 
 export function* deallocate() {
   const { for_, amount } = yield* L.use({
     for_: Allocatee,
     amount: L.u256,
   })
+
   const allocations = yield* allocations_()
   const allocatorAllocated = yield* allocations
     .get(L.sender)
@@ -119,10 +151,10 @@ export function* deallocate() {
   yield* allocations_(allocations.set(L.sender, allocatorAllocated))
 
   const balances = yield* balances_()
-  const newSenderBalance = balances.get(L.sender)
+  const newSenderBalance = balances
+    .get(L.sender)
     .match(L.u256, (v) => v.add(amount))
-    // This really shouldn't happen: there is no way for the sender
-    // to have allocated funds if they never had a balance
     .match(L.None, amount)
   yield* balances_(balances.set(L.sender, newSenderBalance))
+  yield Deallocate.new({ from: L.sender, for: for_, amount })
 }
