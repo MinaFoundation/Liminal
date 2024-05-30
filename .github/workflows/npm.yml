@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: 21.x
           registry-url: 'https://registry.npmjs.org'
-      - run: deno task dnt --version ${{steps.get_tag_version.outputs.tag_version}} --server ${{steps.get_tag_version.outputs.tag_version}}
-      - run: npm publish
+      - run: deno run -A _tasks/dnt --version ${{steps.get_tag_version.outputs.tag_version}}
+      - run: cd target/npm && npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
