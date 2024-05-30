@@ -1,8 +1,6 @@
-import { Flatten } from "../util/Flatten.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { GenCall, Result, ValueCall, Yield } from "./Call.ts"
 import { Factory, Type } from "./Type.ts"
-import { ExtractUse, Use } from "./Use.ts"
 
 export abstract class Effect<Y extends Yield, R extends Result> implements Generator<Y, R> {
   declare yields?: Y[]
@@ -68,20 +66,4 @@ export abstract class Effect<Y extends Yield, R extends Result> implements Gener
   {
     unimplemented()
   }
-}
-
-export function call<
-  Y extends Yield,
-  R extends Result,
-  D extends ExtractUse<Y>,
-  A extends Partial<D>,
-  N extends Omit<D, keyof A>,
->(
-  _call: Generator<Y, R> | (() => Generator<Y, R>),
-  _uses: A,
-): Effect<
-  Exclude<Y, Use> | [keyof N] extends [never] ? never : Use<Flatten<N>>,
-  R
-> {
-  unimplemented()
 }
