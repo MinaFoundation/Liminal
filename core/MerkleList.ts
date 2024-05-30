@@ -5,7 +5,7 @@ import { Effect } from "./Effect.ts"
 import { u256, U256Source } from "./Int.ts"
 import { None } from "./None.ts"
 import { Factory, Type } from "./Type.ts"
-import { union } from "./Union.ts"
+import { Union } from "./Union.ts"
 
 export interface MerkleList<T extends Type = Type>
   extends InstanceType<ReturnType<typeof MerkleList<T>>>
@@ -43,7 +43,9 @@ export function MerkleList<T extends Type>(elementType: Factory<T>) {
     }
 
     at(index: u256): T | None {
-      return union([None, this.elementType], new MerkleListSource.At(this, index))
+      return new (Union(None, this.elementType))(
+        new MerkleListSource.At(this, index),
+      ) as never as T | None
     }
 
     reduceKeys<R extends Type, Y extends Type>(

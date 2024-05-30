@@ -31,3 +31,11 @@ declare const maybe: L.u8 | L.None
   const rehandled = effect.rehandle(L.None)
   rehandled satisfies L.u8 | L.None
 }
+
+{
+  // Chained unhandling.
+  const chained = maybe
+    ["?"](L.u8)
+    ["?"](L.None)
+  chained satisfies L.Effect<L.u8 | L.None, never>
+}

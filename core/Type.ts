@@ -76,10 +76,6 @@ export class Type<
     this: T,
     match: M,
   ): Effect<InstanceType<M>, Exclude<T, InstanceType<M>>>
-  "?"<T extends Type, M extends (Factory<T>)[]>(
-    this: T,
-    ...match: M
-  ): Effect<InstanceType<M[number]>, Exclude<T, InstanceType<M[number]>>>
   "?"<T extends Type, M extends Factory<T>, W extends Type>(
     this: T,
     match: M,
@@ -88,8 +84,7 @@ export class Type<
   "?"<T extends Type>(
     this: T,
     _match: Factory<T>,
-    _maybeWith_?: Type | Factory<T>,
-    ..._rest: Factory<T>[]
+    _maybeWith_?: Type,
   ) {
     return unimplemented()
   }

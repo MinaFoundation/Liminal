@@ -1,7 +1,7 @@
 import { Flatten } from "../util/Flatten.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { GenCall, Result, ValueCall, Yield } from "./Call.ts"
-import { Factory } from "./Type.ts"
+import { Factory, Type } from "./Type.ts"
 import { ExtractUse, Use } from "./Use.ts"
 
 export abstract class Effect<Y extends Yield, R extends Result> implements Generator<Y, R> {
@@ -32,6 +32,20 @@ export abstract class Effect<Y extends Yield, R extends Result> implements Gener
     const result = this.result!
     delete this.result
     return result
+  }
+
+  "?"<M extends Factory<Exclude<R, void>>>(
+    match: M,
+  ): Effect<Y | InstanceType<M>, Exclude<R, InstanceType<M>>>
+  "?"<M extends Factory<Exclude<R, void>>, W extends Type>(
+    match: M,
+    with_: W,
+  ): Effect<Y | W, Exclude<R, InstanceType<M>>>
+  "?"(
+    _match: Factory<Exclude<R, void>>,
+    _maybeWith_?: Type,
+  ) {
+    return unimplemented()
   }
 
   handle<M extends Factory<Y>, R extends Result>(
