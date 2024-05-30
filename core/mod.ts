@@ -1,4 +1,4 @@
-// moderate --exclude Union.ts
+// moderate
 
 export * from "./Bool.ts"
 export * from "./Bytes.ts"
@@ -15,4 +15,5 @@ export * from "./State.ts"
 export * from "./String.ts"
 export * from "./Struct.ts"
 export * from "./Type.ts"
+export * from "./Union.ts"
 export * from "./Use.ts"

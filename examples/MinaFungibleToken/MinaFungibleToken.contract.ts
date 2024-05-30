@@ -108,22 +108,22 @@ export function* withdraw() {
   })
 
   const balances = yield* balances_()
-  const balanceSender = balances.get(L.sender).match(L.None, L.u256.new(0))
+  const senderBalance = balances.get(L.sender).match(L.None, L.u256.new(0))
   const allocations = yield* allocations_()
-  const allocationsFromFrom = yield* allocations
+  const fromAllocations = yield* allocations
     .get(from)
     ["?"](L.None, InsufficientAllowance.new())
-  const allocationFromFromToSender = yield* allocationsFromFrom
+  const senderFromAllocation = yield* fromAllocations
     .get(L.sender)
     ["?"](L.None, InsufficientAllowance.new())
-  yield* allocationFromFromToSender.gte(amount).not().assert(InsufficientAllowance.new())
+  yield* senderFromAllocation.gte(amount).not().assert(InsufficientAllowance.new())
   yield* allocations_(
     allocations.set(
       from,
-      allocationsFromFrom.set(L.sender, allocationFromFromToSender.subtract(amount)),
+      fromAllocations.set(L.sender, senderFromAllocation.subtract(amount)),
     ),
   )
-  yield* balances_(balances.set(L.sender, balanceSender.add(amount)))
+  yield* balances_(balances.set(L.sender, senderBalance.add(amount)))
   yield Withdraw.new({ from, to: L.sender, amount })
 }
 

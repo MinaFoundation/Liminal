@@ -2,7 +2,7 @@ import { MerkleListSource } from "./MerkleList.ts"
 import { MerkleMapSource } from "./MerkleMap.ts"
 import { Factory, Type } from "./Type.ts"
 
-export interface Union<T extends Factory[]> extends ReturnType<typeof Union<T>> {}
+export interface Union<T extends Factory[] = any> extends ReturnType<typeof Union<T>> {}
 
 export function Union<T extends Factory[]>(...members: T) {
   return class extends Type.make("Union")<
