@@ -3,19 +3,26 @@ import { Tagged } from "../util/Tagged.ts"
 import { U2I } from "../util/U2I.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { Yield } from "./Call.ts"
+import { State } from "./State.ts"
 import { Factory, Type } from "./Type.ts"
 import { Union } from "./Union.ts"
 
-export type UseField = Factory
+export type UseField = Factory | State
 export type UseFieldTypes = Record<string, UseField>
-export type UseFields<F extends UseFieldTypes = any> = { [K in keyof F]: InstanceType<F[K]> }
+export type UseFields<F extends UseFieldTypes = any> = {
+  [K in keyof F as F[K] extends State ? never : K]: InstanceType<Exclude<F[K], State>>
+}
 
 export function use<F extends UseFieldTypes>(
   _fields: F,
 ): Generator<
   Use<Flatten<UseFields<F>>>,
   Flatten<
-    { [K in keyof F]: F[K] extends Union<infer U> ? InstanceType<U[number]> : InstanceType<F[K]> }
+    {
+      [K in keyof F]: Union.Unwrap<
+        F[K] extends State<infer T> ? T : F[K] extends Factory<infer T> ? T : never
+      >
+    }
   >
 > {
   unimplemented()
