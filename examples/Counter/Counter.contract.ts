@@ -6,7 +6,7 @@ export class Counter {
   *increment() {
     const { amount } = yield* L.use({ amount: L.Union(L.u256, L.None) })
     const from = yield* this.count()
-    const to = from.add(amount.match(L.None, L.u256.new(1)))
+    const to = from.add(amount.case(L.None, L.u256.new(1)))
     yield IncrementedEvent.new({ from, to })
     return yield* this.count(to)
   }

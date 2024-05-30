@@ -47,7 +47,7 @@ export class Type<
     return new bool(new BoolSource.Equals(this, inQuestion))
   }
 
-  match<
+  case<
     T extends Type,
     M extends Factory<T>,
     R extends Result,
@@ -57,7 +57,7 @@ export class Type<
     match: M,
     f: ValueCall<R, [InstanceType<M>]>,
   ): U
-  match<
+  case<
     T extends Type,
     M extends Factory<T>,
     Y extends Yield,
@@ -68,7 +68,7 @@ export class Type<
     match: M,
     f: GenCall<Y, R, [InstanceType<M>]>,
   ): Effect<Y, U>
-  match(_match: any, _f: any): any {
+  case(_match: any, _f: any): any {
     unimplemented()
   }
 
