@@ -47,7 +47,11 @@ export class Type<
     return new bool(new BoolSource.Equals(this, inQuestion))
   }
 
-  match<
+  is<T extends Type, M extends Factory<T>>(this: T, match: M): bool {
+    return new bool(new BoolSource.Is(this, match))
+  }
+
+  case<
     T extends Type,
     M extends Factory<T>,
     R extends Result,
@@ -57,7 +61,7 @@ export class Type<
     match: M,
     f: ValueCall<R, [InstanceType<M>]>,
   ): U
-  match<
+  case<
     T extends Type,
     M extends Factory<T>,
     Y extends Yield,
@@ -68,7 +72,7 @@ export class Type<
     match: M,
     f: GenCall<Y, R, [InstanceType<M>]>,
   ): Effect<Y, U>
-  match(_match: any, _f: any): any {
+  case(_match: any, _f: any): any {
     unimplemented()
   }
 
@@ -76,10 +80,6 @@ export class Type<
     this: T,
     match: M,
   ): Effect<InstanceType<M>, Exclude<T, InstanceType<M>>>
-  "?"<T extends Type, M extends (Factory<T>)[]>(
-    this: T,
-    ...match: M
-  ): Effect<InstanceType<M[number]>, Exclude<T, InstanceType<M[number]>>>
   "?"<T extends Type, M extends Factory<T>, W extends Type>(
     this: T,
     match: M,
@@ -88,8 +88,7 @@ export class Type<
   "?"<T extends Type>(
     this: T,
     _match: Factory<T>,
-    _maybeWith_?: Type | Factory<T>,
-    ..._rest: Factory<T>[]
+    _maybeWith_?: Type,
   ) {
     return unimplemented()
   }

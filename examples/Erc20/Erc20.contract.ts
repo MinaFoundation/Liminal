@@ -45,7 +45,7 @@ export function totalSupply() {
 export function* balanceOf(account: L.id) {
   return (yield* balances_())
     .get(account)
-    .match(L.None, L.u256.new(0))
+    .case(L.None, L.u256.new(0))
 }
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L41
@@ -56,8 +56,8 @@ export function* transfer(to: L.id, value: L.u256) {
   const newSenderBalance = senderBalance.subtract(value)
   const toNewBalance = balances
     .get(to)
-    .match(L.u256, (prev) => prev.add(value))
-    .match(L.None, value)
+    .case(L.u256, (prev) => prev.add(value))
+    .case(L.None, value)
   const newBalances = balances.set(L.sender, newSenderBalance).set(to, toNewBalance)
   balances_(newBalances)
   yield* to.equals(L.nullId).if(function*() {
@@ -71,8 +71,8 @@ export function* transfer(to: L.id, value: L.u256) {
 export function* allowance(owner: L.id, spender: L.id) {
   return (yield* allowances_())
     .get(owner)
-    .match(L.None, L.u256.new(0))
-    .match(Balances, (balances) => balances.get(spender))
+    .case(L.None, L.u256.new(0))
+    .case(Balances, (balances) => balances.get(spender))
 }
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L67
@@ -81,11 +81,11 @@ export function* approve(spender: L.id, value: L.u256) {
   yield* assertNotNullAddress(spender)
   yield* assertHasBalanceGte(spender, value)
   const allowances = yield* allowances_()
-  const ownerApprovals = allowances.get(L.sender).match(L.None, Balances.new())
+  const ownerApprovals = allowances.get(L.sender).case(L.None, Balances.new())
   const newSpenderAllowance = ownerApprovals
     .get(spender)
-    .match(L.u256, (prev) => prev.add(value))
-    .match(L.None, value)
+    .case(L.u256, (prev) => prev.add(value))
+    .case(L.None, value)
   const newOwnerApprovals = ownerApprovals.set(spender, newSpenderAllowance)
   const newAllowances = allowances.set(L.sender, newOwnerApprovals)
   yield* allowances_(newAllowances)
@@ -115,8 +115,8 @@ export function* transferFrom(from: L.id, to: L.id, value: L.u256) {
   const newFromBalance = fromBalance.subtract(value)
   const toNewBalance = balances
     .get(to)
-    .match(L.u256, (prev) => prev.add(value))
-    .match(L.None, value)
+    .case(L.u256, (prev) => prev.add(value))
+    .case(L.None, value)
   const newBalances = balances.set(from, newFromBalance).set(to, toNewBalance)
   yield* balances_(newBalances)
 }

@@ -4,7 +4,7 @@ declare const maybe: L.u8 | L.None
 
 {
   // Matching values: we match the `None` case and return a new value.
-  const value = maybe.match(L.None, L.u8.new(0))
+  const value = maybe.case(L.None, L.u8.new(0))
   value satisfies L.u8
 }
 
@@ -30,4 +30,12 @@ declare const maybe: L.u8 | L.None
   // Match and move an effect's yielded value back to the result channel.
   const rehandled = effect.rehandle(L.None)
   rehandled satisfies L.u8 | L.None
+}
+
+{
+  // Chained unhandling.
+  const chained = maybe
+    ["?"](L.u8)
+    ["?"](L.None)
+  chained satisfies L.Effect<L.u8 | L.None, never>
 }

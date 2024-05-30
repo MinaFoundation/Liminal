@@ -66,7 +66,7 @@ function Int<Signed extends boolean, Size extends IntSize>(signed: Signed, size:
       return new this.ctor(new IntSource.Divide(this, value))
     }
 
-    square(): this {
+    square(this: this): this {
       return new this.ctor(new IntSource.Square(this))
     }
 

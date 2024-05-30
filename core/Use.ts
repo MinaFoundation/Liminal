@@ -4,14 +4,19 @@ import { U2I } from "../util/U2I.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { Yield } from "./Call.ts"
 import { Factory, Type } from "./Type.ts"
+import { Union } from "./Union.ts"
 
 export type UseField = Factory
 export type UseFieldTypes = Record<string, UseField>
 export type UseFields<F extends UseFieldTypes = any> = { [K in keyof F]: InstanceType<F[K]> }
 
-// TODO: defaults?
-export function use<F extends UseFieldTypes>(_fields: F): Generator<
-  Use<Flatten<UseFields<F>>>
+export function use<F extends UseFieldTypes>(
+  _fields: F,
+): Generator<
+  Use<Flatten<UseFields<F>>>,
+  Flatten<
+    { [K in keyof F]: F[K] extends Union<infer U> ? InstanceType<U[number]> : InstanceType<F[K]> }
+  >
 > {
   unimplemented()
 }

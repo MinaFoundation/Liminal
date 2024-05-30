@@ -49,17 +49,17 @@ export function* transfer() {
   const balances = yield* balances_()
   const updatedSenderBalance = yield* balances
     .get(L.sender)
-    .match(L.u256, (balance) =>
+    .case(L.u256, (balance) =>
       balance
         .gte(amount)
         .if(balance.subtract(amount))
         .else(InsufficientBalance.new()))
-    .match(L.None, InsufficientBalance.new())
+    .case(L.None, InsufficientBalance.new())
     ["?"](InsufficientBalance)
   const updatedToBalance = balances
     .get(to)
-    .match(L.u256, (value) => value.add(amount))
-    .match(L.None, amount)
+    .case(L.u256, (value) => value.add(amount))
+    .case(L.None, amount)
   yield* balances_(
     balances
       .set(L.sender, updatedSenderBalance)
@@ -77,25 +77,25 @@ export function* allocate() {
   const balances = yield* balances_()
   const newSenderBalance = yield* balances
     .get(L.sender)
-    .match(L.u256, (v) =>
+    .case(L.u256, (v) =>
       v
         .gte(amount)
         .if(v.subtract(amount))
         .else(InsufficientBalance.new()))
-    .match(L.None, InsufficientBalance.new())
+    .case(L.None, InsufficientBalance.new())
     ["?"](InsufficientBalance)
   yield* balances_(balances.set(L.sender, newSenderBalance))
   const allocations = yield* allocations_()
   const allocatorAllocated = allocations
     .get(L.sender)
-    .match(Allocated, (allocated) => {
+    .case(Allocated, (allocated) => {
       const newAllocation = allocated
         .get(for_)
-        .match(L.u256, (v) => v.add(amount))
-        .match(L.None, amount)
+        .case(L.u256, (v) => v.add(amount))
+        .case(L.None, amount)
       return allocated.set(for_, newAllocation)
     })
-    .match(L.None, Allocated.new().set(for_, amount))
+    .case(L.None, Allocated.new().set(for_, amount))
   yield* allocations_(allocations.set(L.sender, allocatorAllocated))
   yield Allocate.new({ from: L.sender, for: for_, amount })
 }
@@ -108,22 +108,22 @@ export function* withdraw() {
   })
 
   const balances = yield* balances_()
-  const balanceSender = balances.get(L.sender).match(L.None, L.u256.new(0))
+  const senderBalance = balances.get(L.sender).case(L.None, L.u256.new(0))
   const allocations = yield* allocations_()
-  const allocationsFromFrom = yield* allocations
+  const fromAllocations = yield* allocations
     .get(from)
     ["?"](L.None, InsufficientAllowance.new())
-  const allocationFromFromToSender = yield* allocationsFromFrom
+  const senderFromAllocation = yield* fromAllocations
     .get(L.sender)
     ["?"](L.None, InsufficientAllowance.new())
-  yield* allocationFromFromToSender.gte(amount).not().assert(InsufficientAllowance.new())
+  yield* senderFromAllocation.gte(amount).not().assert(InsufficientAllowance.new())
   yield* allocations_(
     allocations.set(
       from,
-      allocationsFromFrom.set(L.sender, allocationFromFromToSender.subtract(amount)),
+      fromAllocations.set(L.sender, senderFromAllocation.subtract(amount)),
     ),
   )
-  yield* balances_(balances.set(L.sender, balanceSender.add(amount)))
+  yield* balances_(balances.set(L.sender, senderBalance.add(amount)))
   yield Withdraw.new({ from, to: L.sender, amount })
 }
 
@@ -136,25 +136,25 @@ export function* deallocate() {
   const allocations = yield* allocations_()
   const allocatorAllocated = yield* allocations
     .get(L.sender)
-    .match(Allocated, (allocated) => {
+    .case(Allocated, (allocated) => {
       const newAllocation = allocated
         .get(for_)
-        .match(L.u256, (v) =>
+        .case(L.u256, (v) =>
           v.gte(amount)
             .if(allocated.set(for_, v.subtract(amount)))
             .else(InsufficientAllowance.new()))
-        .match(L.None, InsufficientAllowance.new())
+        .case(L.None, InsufficientAllowance.new())
       return newAllocation
     })
-    .match(L.None, InsufficientAllowance.new())
+    .case(L.None, InsufficientAllowance.new())
     ["?"](InsufficientAllowance)
   yield* allocations_(allocations.set(L.sender, allocatorAllocated))
 
   const balances = yield* balances_()
   const newSenderBalance = balances
     .get(L.sender)
-    .match(L.u256, (v) => v.add(amount))
-    .match(L.None, amount)
+    .case(L.u256, (v) => v.add(amount))
+    .case(L.None, amount)
   yield* balances_(balances.set(L.sender, newSenderBalance))
   yield Deallocate.new({ from: L.sender, for: for_, amount })
 }
