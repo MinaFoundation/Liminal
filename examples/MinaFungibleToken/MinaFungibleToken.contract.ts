@@ -45,8 +45,11 @@ export const balances_ = Balances.state()
 export const allocations_ = Allocations.state()
 
 export function* transfer() {
-  const { to, amount } = yield* L.use({ to: L.id, amount: L.u256 })
-  const balances = yield* balances_()
+  const { to, amount, balances } = yield* L.use({
+    to: L.id,
+    amount: L.u256,
+    balances: balances_,
+  })
   const updatedSenderBalance = yield* balances
     .get(L.sender)
     .case(L.u256, (balance) =>
@@ -69,12 +72,12 @@ export function* transfer() {
 }
 
 export function* allocate() {
-  const { for_, amount } = yield* L.use({
+  const { for_, amount, balances, allocations } = yield* L.use({
     for_: Allocatee,
     amount: L.u256,
+    balances: balances_,
+    allocations: allocations_,
   })
-
-  const balances = yield* balances_()
   const newSenderBalance = yield* balances
     .get(L.sender)
     .case(L.u256, (v) =>
@@ -85,7 +88,6 @@ export function* allocate() {
     .case(L.None, InsufficientBalance.new())
     ["?"](InsufficientBalance)
   yield* balances_(balances.set(L.sender, newSenderBalance))
-  const allocations = yield* allocations_()
   const allocatorAllocated = allocations
     .get(L.sender)
     .case(Allocated, (allocated) => {
@@ -102,14 +104,13 @@ export function* allocate() {
 
 // TODO: enable not specifying `amount`
 export function* withdraw() {
-  const { from, amount } = yield* L.use({
+  const { from, amount, balances, allocations } = yield* L.use({
     from: L.id,
     amount: L.u256,
+    balances: balances_,
+    allocations: allocations_,
   })
-
-  const balances = yield* balances_()
   const senderBalance = balances.get(L.sender).case(L.None, L.u256.new(0))
-  const allocations = yield* allocations_()
   const fromAllocations = yield* allocations
     .get(from)
     ["?"](L.None, InsufficientAllowance.new())
@@ -128,12 +129,12 @@ export function* withdraw() {
 }
 
 export function* deallocate() {
-  const { for_, amount } = yield* L.use({
+  const { for_, amount, allocations, balances } = yield* L.use({
     for_: Allocatee,
     amount: L.u256,
+    allocations: allocations_,
+    balances: balances_,
   })
-
-  const allocations = yield* allocations_()
   const allocatorAllocated = yield* allocations
     .get(L.sender)
     .case(Allocated, (allocated) => {
@@ -149,8 +150,6 @@ export function* deallocate() {
     .case(L.None, InsufficientAllowance.new())
     ["?"](InsufficientAllowance)
   yield* allocations_(allocations.set(L.sender, allocatorAllocated))
-
-  const balances = yield* balances_()
   const newSenderBalance = balances
     .get(L.sender)
     .case(L.u256, (v) => v.add(amount))
