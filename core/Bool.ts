@@ -3,7 +3,7 @@ import { unimplemented } from "../util/unimplemented.ts"
 import { Call, Result, Yield } from "./Call.ts"
 import { Effect } from "./Effect.ts"
 import { None } from "./None.ts"
-import { Type } from "./Type.ts"
+import { Factory, Type } from "./Type.ts"
 
 export class bool extends Type.make("bool")<BoolSource, boolean, never, never> {
   if<R extends Result>(call: R | (() => R)): If<never, R>
@@ -42,7 +42,12 @@ export class If<Y extends Yield, R extends Result> extends Effect<Y, R | None> {
   }
 }
 
-export type BoolSource = BoolSource.True | BoolSource.False | BoolSource.Not | BoolSource.Equals
+export type BoolSource =
+  | BoolSource.True
+  | BoolSource.False
+  | BoolSource.Not
+  | BoolSource.Equals
+  | BoolSource.Is
 export namespace BoolSource {
   export class True extends Tagged("True") {}
   export class False extends Tagged("False") {}
@@ -53,6 +58,11 @@ export namespace BoolSource {
   }
   export class Equals extends Tagged("Equals") {
     constructor(readonly left: Type, readonly right: Type) {
+      super()
+    }
+  }
+  export class Is extends Tagged("Is") {
+    constructor(readonly inQuestion: Type, readonly match: Factory) {
       super()
     }
   }

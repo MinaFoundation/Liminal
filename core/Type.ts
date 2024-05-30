@@ -47,6 +47,10 @@ export class Type<
     return new bool(new BoolSource.Equals(this, inQuestion))
   }
 
+  is<T extends Type, M extends Factory<T>>(this: T, match: M): bool {
+    return new bool(new BoolSource.Is(this, match))
+  }
+
   case<
     T extends Type,
     M extends Factory<T>,
