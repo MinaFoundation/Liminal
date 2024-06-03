@@ -11,19 +11,19 @@ export type SignedInt = i8 | i16 | i32 | i64 | i256
 export type UnsignedInt = u8 | u16 | u32 | u64 | u256
 
 // TODO: allow from/into from opposite-signed types (effectively enabling an `absolute` method)
-export class u8 extends Int(false, 8)<never, u16 | u32 | u64 | u128 | u256> {}
-export class u16 extends Int(false, 16)<u8, u32 | u64 | u128 | u256> {}
-export class u32 extends Int(false, 32)<u8 | u16, u64 | u128 | u256> {}
-export class u64 extends Int(false, 64)<u8 | u16 | u32, u128 | u256> {}
-export class u128 extends Int(false, 128)<u8 | u16 | u32 | u64, u256> {}
-export class u256 extends Int(false, 256)<u8 | u16 | u32 | u64 | u128, never, U256Source> {}
+export class u8 extends Int(false, 8)<u8, u16 | u32 | u64 | u128 | u256> {}
+export class u16 extends Int(false, 16)<u8 | u16, u32 | u64 | u128 | u256> {}
+export class u32 extends Int(false, 32)<u8 | u16 | u32, u64 | u128 | u256> {}
+export class u64 extends Int(false, 64)<u8 | u16 | u32 | u64, u128 | u256> {}
+export class u128 extends Int(false, 128)<u8 | u16 | u32 | u64 | u128, u256> {}
+export class u256 extends Int(false, 256)<u8 | u16 | u32 | u64 | u128 | u256, never, U256Source> {}
 
-export class i8 extends Int(true, 8)<never, i16 | i32 | i64 | i128 | i256> {}
-export class i16 extends Int(true, 16)<i8, i32 | i64 | i128 | i256> {}
-export class i32 extends Int(true, 32)<i8 | i16, i64 | i128 | i256> {}
-export class i64 extends Int(true, 64)<i8 | i16 | i32, i128 | i256> {}
-export class i128 extends Int(true, 128)<i8 | i16 | i32 | i64, i256> {}
-export class i256 extends Int(true, 256)<i8 | i16 | i32 | i64 | i256, never> {}
+export class i8 extends Int(true, 8)<i8, i16 | i32 | i64 | i128 | i256> {}
+export class i16 extends Int(true, 16)<i8 | i16, i32 | i64 | i128 | i256> {}
+export class i32 extends Int(true, 32)<i8 | i16 | i32, i64 | i128 | i256> {}
+export class i64 extends Int(true, 64)<i8 | i16 | i32 | i64, i128 | i256> {}
+export class i128 extends Int(true, 128)<i8 | i16 | i32 | i64 | i128, i256> {}
+export class i256 extends Int(true, 256)<i8 | i16 | i32 | i64 | i128 | i256, never> {}
 
 export type IntSize = 8 | 16 | 32 | 64 | 128 | 256
 
