@@ -1,28 +1,31 @@
 # Liminal
 
-A WIP concept DX for describing programs that blend zero knowledge with JavaScript runtimes.
+Liminal is a WIP TypeScript library for authoring and interacting with programs that integrate with
+zero-knowledge proofs (and more specifically, [Mina](https://minaprotocol.com/)). Liminal is
+currently a type-only mock of what we may ultimately want to implement. It still needs much
+feedback, including that from key stakeholders, such as [o1labs](https://www.o1labs.org/). In the
+long term, Liminal may serve as a specification of capabilities supported in a given Mina program.
+In this case, the Liminal AST would be a common representation against which builders could support
+a wide range of targets, such as block explorers, wallet transaction insights, persistent storage
+layers and even non-JS Liminal runtimes.
 
 ```ts
 import * as L from "liminal"
 
-export class Counter {
-  // Define a persistent state.
-  count = L.u256.state();
+// Define a persistent state.
+export const count = L.u256.state();
 
-  // Define a method.
-  *increment() {
-    // Get the initial count.
-    const initial = yield* this.count()
-    // Get the increment `amount` (also describes the dependency).
-    const { amount } = yield* L.use({ amount: L.u256 })
-    // Calculate the final count.
-    const final = count.add(amount))
-    // Set the count to `final`.
-    yield* this.count(to)
-    // "Emit" the `IncrementedEvent`
-    yield IncrementedEvent.new({ initial, final })
-  }
-}
+// Define a method.
+const increment = L.f({ amount: L.u256 }, function*({ amount }) {
+  // Get the initial count.
+  const initial = yield* count()
+  // Calculate the final count.
+  const final = count.add(amount))
+  // Set the count to `final`.
+  yield* count(to)
+  // "Emit" the `IncrementedEvent`
+  yield IncrementedEvent.new({ initial, final })
+})
 
 // Define the event Struct for use in the above method.
 export class IncrementedEvent extends L.Struct({
