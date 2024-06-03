@@ -45,10 +45,7 @@ export function totalSupply() {
 export const balanceOf = L.f({
   account: L.id,
   balances: balances_,
-}, ({ account, balances }) =>
-  balances
-    .get(account)
-    .case(L.None, L.u256.new(0)))
+}, ({ account, balances }) => balances.get(account).case(L.None, L.u256.new(0)))
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L41
 export const transfer = L.f({
