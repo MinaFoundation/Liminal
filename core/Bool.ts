@@ -5,7 +5,7 @@ import { Effect } from "./Effect.ts"
 import { None } from "./None.ts"
 import { Factory, Type } from "./Type.ts"
 
-export class bool extends Type.make("bool")<BoolSource, boolean, never, never> {
+export class bool extends Type.make("bool")<BoolSource, boolean, boolean, never> {
   if<R extends Result>(call: R | (() => R)): If<never, R>
   if<Y extends Yield, R extends Result>(
     call: Generator<Y, R> | (() => Generator<Y, R>),
