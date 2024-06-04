@@ -1,4 +1,4 @@
 // TODO
-export class MerkleList<T> {
+export class List<T> {
   declare ""?: [T]
 }

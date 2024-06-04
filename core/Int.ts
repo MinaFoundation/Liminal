@@ -1,7 +1,7 @@
 import { Tagged } from "../util/Tagged.ts"
 import type { bool } from "./Bool.ts"
-import type { MerkleList } from "./MerkleList.ts"
-import type { MerkleMap } from "./MerkleMap.ts"
+import type { List } from "./List.ts"
+import type { Mapping } from "./Mapping.ts"
 import { Factory, Type } from "./Type.ts"
 
 // TODO: bit manipulation, floats, floor/ceil, power ...
@@ -162,15 +162,15 @@ export namespace IntSource {
   }
 }
 
-export type U256Source = U256Source.MerkleMapSize | U256Source.MerkleListSize
+export type U256Source = U256Source.MappingSize | U256Source.ListSize
 export namespace U256Source {
-  export class MerkleMapSize extends Tagged("MerkleMapSize") {
-    constructor(readonly self: MerkleMap) {
+  export class MappingSize extends Tagged("MappingSize") {
+    constructor(readonly self: Mapping) {
       super()
     }
   }
-  export class MerkleListSize extends Tagged("MerkleMapSize") {
-    constructor(readonly self: MerkleList) {
+  export class ListSize extends Tagged("ListSize") {
+    constructor(readonly self: List) {
       super()
     }
   }

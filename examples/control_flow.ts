@@ -4,7 +4,7 @@ declare const maybe: L.u8 | L.None
 
 {
   // Matching values: we match the `None` case and return a new value.
-  const value = maybe.case(L.None, L.u8.new(0))
+  const value = maybe.match(L.None, L.u8.new(0))
   value satisfies L.u8
 }
 

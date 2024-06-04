@@ -2,9 +2,9 @@ import * as L from "liminal"
 
 export class TokenId extends L.u256 {}
 export class Token extends L.Bytes(32) {}
-export class Tokens extends L.MerkleMap(TokenId, Token) {}
+export class Tokens extends L.Mapping(TokenId, Token) {}
 export class TokenOwner extends L.id {}
-export class TokenOwners extends L.MerkleMap(TokenId, TokenOwner) {}
+export class TokenOwners extends L.Mapping(TokenId, TokenOwner) {}
 
 export const admin_ = L.id.state()
 export const globalMetadata_ = Token.state()
@@ -42,7 +42,7 @@ export const create = L.f({
     .equals(L.u256.max())
     .not()
     .if(nextId_(nextId.add(L.u256.new(1))))
-    .else(maxReached_(L.bool.new(true)))
+    .else(maxReached_(L.true))
   yield* tokens_(tokens.set(tokenId, metadata))
   yield* tokenOwners_(tokenOwners.set(tokenId, L.sender))
   return tokenId
@@ -55,12 +55,12 @@ export const destroy = L.f({
 }, function*({ tokens, tokenOwners, tokenId }) {
   yield* tokens
     .get(tokenId)
-    .case(L.None, SpecifiedTokenDneError.new())
+    .match(L.None, SpecifiedTokenDneError.new())
     ["?"](SpecifiedTokenDneError)
   yield* tokenOwners
     .get(tokenId)
-    .case(L.None, L.Never.new())
-    .case(
+    .match(L.None, L.Never.new())
+    .match(
       TokenOwner,
       (tokenOwner) => tokenOwner.equals(L.sender).not().if(NotAuthorizedError.new()),
     )
