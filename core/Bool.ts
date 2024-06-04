@@ -2,7 +2,6 @@ import { Tagged } from "../util/Tagged.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { Call, GenCall, Result, ValueCall, Yield } from "./Call.ts"
 import { Effect } from "./Effect.ts"
-import { Never } from "./Never.ts"
 import { None } from "./None.ts"
 import { Factory, Type } from "./Type.ts"
 
