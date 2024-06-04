@@ -1,6 +1,4 @@
-# TODO
-
-## Design thoughts
+# Misc. Design Thoughts
 
 - Should be able to plainly see which keys correspond to required signatures, hence the difference
   between the id and signer type
@@ -12,8 +10,8 @@
   effect, you’ll get a compilation error.
 - Just a description. Not the execution. We want to compile this into a minimal metadata format from
   which we can derive circuits.
-- Doc comments flow through the experience
-- State update preconditions are derived from assertions
+- Doc comments flow through the contract authoring experience all the way to the client experience
+- State update preconditions are derived from assertions / yields
 - Generators are quite nice, as they establish a secondary channel (the yield channel). This enables
   type safe modeling of functional effects.
 - Another benefit of this: one can describe signer requirements in such a way that they’re
@@ -33,54 +31,4 @@
 - In T6's words: "the yield* indicates 'hey, an effect is being used here'"
 - should `Struct` instead be `Event`? We'll never opt to use a `Struct` if we don't have to / would
   prefer TS interfaces / JS objects
-
-———
-
-- tsconfig paths mapping. Swc register does this, but esm sourcemapping is broken. Meanwhile
-  ts-node's accompanying tsconfig-paths lib is incompatible with --import approach. Seemingly
-  unmaintained.
-
-- default values
-
-- make everything `yield*`able
-
-- merkle map/list equality checks, slicing
-
-How do we deal with tipping within the tx generator? Ideally we could use different tips for
-different calls, no?
-
-Merkle list+map impls
-
-Batch set
-
-Can we do away with account updates?
-
-Implicit type conversion in misc. methods. Ie.
-
-Custom inspect
-
-Fallible from? For instance a u16 to a u8, where there is a runtime check for overflowing
-
-```ts
-add(value: this | Type.From<this>): this {
-  return new AddNode(this, value).instance()
-}
-```
-
-<!--
-
-Be consistent about convention around type names/tags/misc.
-
-// trap
-// deps
-// sign
-// event
-
--->
-
-// if you don't yield, it's effectively meta-programming
-
-Structure:
-
-- why generators?
-- ids and signers
+- If you don't yield, it's effectively meta-programming

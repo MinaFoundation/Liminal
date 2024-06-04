@@ -37,9 +37,7 @@ export class InsufficientAllowance extends L.Struct({
 }) {}
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L22
-export function totalSupply() {
-  return totalSupply_()
-}
+export const totalSupply = L.f({ totalSupply: totalSupply_ }, ({ totalSupply }) => totalSupply)
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L32
 export const balanceOf = L.f({
@@ -52,8 +50,9 @@ export const transfer = L.f({
   to: L.id,
   value: L.u256,
   balances: balances_,
-}, function*({ to, value, balances }) {
-  yield* assertHasBalanceGte(L.sender, value)
+  totalSupply: totalSupply_,
+}, function*({ to, value, balances, totalSupply }) {
+  yield* assertHasBalanceGte(balances, L.sender, value)
   const senderBalance = yield* balances.get(L.sender)["?"](L.None, InsufficientBalance.new())
   const newSenderBalance = senderBalance.subtract(value)
   const toNewBalance = balances
@@ -62,10 +61,7 @@ export const transfer = L.f({
     .match(L.None, value)
   const newBalances = balances.set(L.sender, newSenderBalance).set(to, toNewBalance)
   yield* balances_(newBalances)
-  yield* to.equals(L.nullId).if(function*() {
-    const newTotalSupply = (yield* totalSupply_()).subtract(value)
-    yield* totalSupply_(newTotalSupply)
-  })
+  yield* to.equals(L.nullId).if(totalSupply_(totalSupply.subtract(value)))
   yield Transfer.new({ from: L.sender, to, value })
 })
 
@@ -85,10 +81,11 @@ export const approve = L.f({
   spender: L.id,
   value: L.u256,
   allowances: allowances_,
-}, function*({ spender, value, allowances }) {
+  balances: balances_,
+}, function*({ spender, value, allowances, balances }) {
   yield* assertNotNullAddress(L.sender)
   yield* assertNotNullAddress(spender)
-  yield* assertHasBalanceGte(spender, value)
+  yield* assertHasBalanceGte(balances, spender, value)
   const ownerApprovals = allowances.get(L.sender).match(L.None, Balances.new())
   const newSpenderAllowance = ownerApprovals
     .get(spender)
@@ -120,7 +117,7 @@ export const transferFrom = L.f({
   const newFromApprovals = fromApprovals.set(L.sender, newSenderAllowance)
   const newAllowances = allowances.set(from, newFromApprovals)
   yield* allowances_(newAllowances)
-  yield* assertHasBalanceGte(from, value)
+  yield* assertHasBalanceGte(balances, from, value)
   const fromBalance = yield* balances
     .get(from)
     ["?"](L.None, InsufficientBalance.new())
@@ -133,10 +130,8 @@ export const transferFrom = L.f({
   yield* balances_(newBalances)
 })
 
-function* assertHasBalanceGte(inQuestion: L.id, value: L.u256) {
-  const inQuestionBalance = yield* (yield* balances_())
-    .get(inQuestion)
-    ["?"](L.None, InsufficientBalance.new())
+function* assertHasBalanceGte(balances: Balances, inQuestion: L.id, value: L.u256) {
+  const inQuestionBalance = yield* balances.get(inQuestion)["?"](L.None, InsufficientBalance.new())
   yield* inQuestionBalance.gte(value).assert(InsufficientBalance.new())
 }
 

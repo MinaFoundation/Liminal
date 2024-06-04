@@ -92,6 +92,9 @@ export interface SendProps {
 }
 
 // TODO
-export type Contract<T> = id & T & {
-  store(store: Store): Contract<T>
-}
+export type Contract<T> =
+  & id
+  & { [K in keyof T]: T[K] extends State<infer S> ? S : T[K] }
+  & {
+    store(store: Store): Contract<T>
+  }
