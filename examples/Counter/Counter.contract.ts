@@ -6,7 +6,7 @@ export const increment = L.f({
   amount: L.Union(L.u256, L.None),
   initial: count_,
 }, function*({ amount, initial }) {
-  const final = initial.add(amount.case(L.None, L.u256.new(1)))
+  const final = initial.add(amount.match(L.None, L.u256.new(1)))
   yield IncrementedEvent.new({ initial, final })
   return yield* count_(final)
 })

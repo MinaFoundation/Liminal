@@ -1,7 +1,7 @@
 import * as L from "liminal"
 
-export class Balances extends L.MerkleMap(L.id, L.u256) {}
-export class Allowances extends L.MerkleMap(L.id, Balances) {}
+export class Balances extends L.Mapping(L.id, L.u256) {}
+export class Allowances extends L.Mapping(L.id, Balances) {}
 
 export const totalSupply_ = L.u256.state()
 export const balances_ = Balances.state()
@@ -45,7 +45,7 @@ export function totalSupply() {
 export const balanceOf = L.f({
   account: L.id,
   balances: balances_,
-}, ({ account, balances }) => balances.get(account).case(L.None, L.u256.new(0)))
+}, ({ account, balances }) => balances.get(account).match(L.None, L.u256.new(0)))
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L41
 export const transfer = L.f({
@@ -58,8 +58,8 @@ export const transfer = L.f({
   const newSenderBalance = senderBalance.subtract(value)
   const toNewBalance = balances
     .get(to)
-    .case(L.u256, (prev) => prev.add(value))
-    .case(L.None, value)
+    .match(L.u256, (prev) => prev.add(value))
+    .match(L.None, value)
   const newBalances = balances.set(L.sender, newSenderBalance).set(to, toNewBalance)
   yield* balances_(newBalances)
   yield* to.equals(L.nullId).if(function*() {
@@ -77,8 +77,8 @@ export const allowance = L.f({
 }, ({ owner, spender, allowances }) =>
   allowances
     .get(owner)
-    .case(L.None, L.u256.new(0))
-    .case(Balances, (balances) => balances.get(spender)))
+    .match(L.None, L.u256.new(0))
+    .match(Balances, (balances) => balances.get(spender)))
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L67
 export const approve = L.f({
@@ -89,11 +89,11 @@ export const approve = L.f({
   yield* assertNotNullAddress(L.sender)
   yield* assertNotNullAddress(spender)
   yield* assertHasBalanceGte(spender, value)
-  const ownerApprovals = allowances.get(L.sender).case(L.None, Balances.new())
+  const ownerApprovals = allowances.get(L.sender).match(L.None, Balances.new())
   const newSpenderAllowance = ownerApprovals
     .get(spender)
-    .case(L.u256, (prev) => prev.add(value))
-    .case(L.None, value)
+    .match(L.u256, (prev) => prev.add(value))
+    .match(L.None, value)
   const newOwnerApprovals = ownerApprovals.set(spender, newSpenderAllowance)
   const newAllowances = allowances.set(L.sender, newOwnerApprovals)
   yield* allowances_(newAllowances)
@@ -127,8 +127,8 @@ export const transferFrom = L.f({
   const newFromBalance = fromBalance.subtract(value)
   const toNewBalance = balances
     .get(to)
-    .case(L.u256, (prev) => prev.add(value))
-    .case(L.None, value)
+    .match(L.u256, (prev) => prev.add(value))
+    .match(L.None, value)
   const newBalances = balances.set(from, newFromBalance).set(to, toNewBalance)
   yield* balances_(newBalances)
 })

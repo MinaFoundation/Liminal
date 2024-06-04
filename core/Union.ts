@@ -1,5 +1,5 @@
-import { MerkleListSource } from "./MerkleList.ts"
-import { MerkleMapSource } from "./MerkleMap.ts"
+import { ListSource } from "./List.ts"
+import { MappingSource } from "./Mapping.ts"
 import { Factory, Type } from "./Type.ts"
 
 export interface Union<T extends Factory[] = any>
@@ -20,4 +20,4 @@ export namespace Union {
   export type Unwrap<T extends Type> = T extends Union<infer M> ? InstanceType<M[number]> : T
 }
 
-export type UnionSource = MerkleMapSource.Get | MerkleListSource.At
+export type UnionSource = MappingSource.Get | ListSource.At
