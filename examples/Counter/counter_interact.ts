@@ -8,7 +8,7 @@ const sender = signer()
 const finalization = await L
   .tx(function*() {
     const counter = L.id.fromHex(Deno.env.get("COUNTER_ID")!).bind(Counter)
-    const initial = yield* counter.count_()
+    const initial = counter.count_
     yield* counter.increment({ amount: L.none })
     yield* counter.increment({ amount: L.none })
     yield* counter.increment({ amount: L.none })
