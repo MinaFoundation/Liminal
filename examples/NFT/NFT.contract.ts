@@ -66,7 +66,7 @@ export const transfer = L.f(
   function*({ to, tokenId, tokens, tokenOwners }) {
     yield* tokens.get(tokenId)["?"](L.None, SpecifiedTokenDneError.new())
     const tokenOwner = yield* tokenOwners.get(tokenId)["?"](L.None, InternalConsistencyError.new())
-    yield* tokenOwner.equals(L.sender).not().if(NotAuthorizedError.new())["?"](NotAuthorizedError)
+    yield* tokenOwner.equals(L.sender).assert(NotAuthorizedError.new())
     yield* tokenOwners_(tokenOwners.set(tokenId, to))
   },
 )
