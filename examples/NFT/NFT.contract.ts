@@ -1,13 +1,13 @@
 import * as L from "liminal"
 
 export class TokenId extends L.u256 {}
-export class TokenMetadata extends L.Bytes(32) {}
-export class Tokens extends L.MerkleMap(TokenId, TokenMetadata) {}
+export class Token extends L.Bytes(32) {}
+export class Tokens extends L.MerkleMap(TokenId, Token) {}
 export class TokenOwner extends L.id {}
 export class TokenOwners extends L.MerkleMap(TokenId, TokenOwner) {}
 
 export const admin_ = L.id.state()
-export const globalMetadata_ = TokenMetadata.state()
+export const globalMetadata_ = Token.state()
 export const maxReached_ = L.bool.state()
 export const nextId_ = L.u256.state()
 export const tokens_ = Tokens.state()
@@ -18,7 +18,7 @@ export class NotAuthorizedError extends L.Struct({ tag: "NotAuthorizedError" }) 
 export class SpecifiedTokenDneError extends L.Struct({ tag: "SpecifiedTokenDneError" }) {}
 
 export const create = L.f({
-  metadata: TokenMetadata,
+  metadata: Token,
   maxReached: maxReached_,
   nextId: nextId_,
   tokens: tokens_,
