@@ -45,6 +45,7 @@ export const create = L.f({
     .else(maxReached_(L.bool.new(true)))
   yield* tokens_(tokens.set(tokenId, metadata))
   yield* tokenOwners_(tokenOwners.set(tokenId, L.sender))
+  return tokenId
 })
 
 export const destroy = L.f({
