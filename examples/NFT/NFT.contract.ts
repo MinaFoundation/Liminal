@@ -17,6 +17,16 @@ export class MaxTokensReachedError extends L.Struct({ tag: "MaxTokensReachedErro
 export class NotAuthorizedError extends L.Struct({ tag: "NotAuthorizedError" }) {}
 export class SpecifiedTokenDneError extends L.Struct({ tag: "SpecifiedTokenDneError" }) {}
 
+export const getOwner = L.f({
+  tokenId: TokenId,
+  tokenOwners: tokenOwners_,
+}, ({ tokenId, tokenOwners }) => tokenOwners.get(tokenId))
+
+export const getToken = L.f({
+  tokenId: TokenId,
+  tokens: tokens_,
+}, ({ tokenId, tokens }) => tokens.get(tokenId))
+
 export const create = L.f({
   metadata: Token,
   maxReached: maxReached_,
