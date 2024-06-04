@@ -68,7 +68,6 @@ export const destroy = L.f({
     ["?"](NotAuthorizedError)
   yield* tokens_(tokens.delete(tokenId))
   yield* tokenOwners_(tokenOwners.delete(tokenId))
-  //
 })
 
 export const transfer = L.f({
