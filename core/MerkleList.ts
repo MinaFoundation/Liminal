@@ -48,10 +48,10 @@ export function MerkleList<T extends Type>(elementType: Factory<T>) {
       ) as never as T | None
     }
 
-    reduceKeys<R extends Type, Y extends Type>(
+    reduce<R extends Type, Y extends Type>(
       _initial: R,
       _f: (acc: R, cur: T) => Generator<Y, R>,
-    ): Effect<R, Y> {
+    ): Effect<Y, R> {
       unimplemented()
     }
   }
