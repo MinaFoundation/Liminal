@@ -16,7 +16,6 @@ export const tokenOwners_ = TokenOwners.state()
 export class MaxTokensReachedError extends L.Struct({ tag: "MaxTokensReachedError" }) {}
 export class NotAuthorizedError extends L.Struct({ tag: "NotAuthorizedError" }) {}
 export class SpecifiedTokenDneError extends L.Struct({ tag: "SpecifiedTokenDneError" }) {}
-export class InternalConsistencyError extends L.Struct({ tag: "InternalConsistencyError" }) {}
 
 export const create = L.f({
   metadata: TokenMetadata,
@@ -49,24 +48,26 @@ export const destroy = L.f({
     ["?"](SpecifiedTokenDneError)
   yield* tokenOwners
     .get(tokenId)
-    .case(L.None, InternalConsistencyError.new())
+    .case(L.None, L.Never.new())
     .case(
       TokenOwner,
       (tokenOwner) => tokenOwner.equals(L.sender).not().if(NotAuthorizedError.new()),
     )
-    ["?"](InternalConsistencyError)
+    ["?"](L.Never)
     ["?"](NotAuthorizedError)
   yield* tokens_(tokens.delete(tokenId))
   yield* tokenOwners_(tokenOwners.delete(tokenId))
   //
 })
 
-export const transfer = L.f(
-  { to: L.id, tokenId: TokenId, tokens: tokens_, tokenOwners: tokenOwners_ },
-  function*({ to, tokenId, tokens, tokenOwners }) {
-    yield* tokens.get(tokenId)["?"](L.None, SpecifiedTokenDneError.new())
-    const tokenOwner = yield* tokenOwners.get(tokenId)["?"](L.None, InternalConsistencyError.new())
-    yield* tokenOwner.equals(L.sender).assert(NotAuthorizedError.new())
-    yield* tokenOwners_(tokenOwners.set(tokenId, to))
-  },
-)
+export const transfer = L.f({
+  to: L.id,
+  tokenId: TokenId,
+  tokens: tokens_,
+  tokenOwners: tokenOwners_,
+}, function*({ to, tokenId, tokens, tokenOwners }) {
+  yield* tokens.get(tokenId)["?"](L.None, SpecifiedTokenDneError.new())
+  const tokenOwner = yield* tokenOwners.get(tokenId)["?"](L.None, L.Never.new())
+  yield* tokenOwner.equals(L.sender).assert(NotAuthorizedError.new())
+  yield* tokenOwners_(tokenOwners.set(tokenId, to))
+})
