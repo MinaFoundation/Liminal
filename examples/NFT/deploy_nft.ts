@@ -10,18 +10,7 @@ const contractId = L.id.fromHex(Deno.env.get("CONTRACT_ID")!)
 
 await L
   .tx(function*() {
-    const contract = yield* contractId
-      .signer("contract")
-      .deploy(NFT, {
-        state: {
-          admin_: L.sender,
-          globalMetadata_: NFT.Token.new(new Uint8Array()),
-          maxReached_: L.false,
-          tokens_: NFT.Tokens.new(),
-          nextId_: L.u256.new(0),
-          tokenOwners_: NFT.TokenOwners.new(),
-        },
-      })
+    const contract = yield* contractId.signer("contract").deploy(NFT)
     const tokenId = yield* contract.create({
       metadata: NFT.Token.new(new Uint8Array()),
     })

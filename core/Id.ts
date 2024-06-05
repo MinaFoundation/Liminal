@@ -3,7 +3,6 @@ import { Tagged } from "../util/Tagged.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { Effect } from "./Effect.ts"
 import { u64 } from "./Int.ts"
-import { State } from "./State.ts"
 import { Type } from "./Type.ts"
 
 export type IdSource = IdSource.Sender | IdSource.Self | IdSource.Caller | IdSource.Null
@@ -37,7 +36,7 @@ export class SignerEffect<K extends string> extends Effect<SignerRequirement<K>,
 
   deploy<N>(
     _namespace: N,
-    _deployOptions: DeployOptions<N>,
+    _deployOptions?: DeployOptions,
   ): Generator<SignerRequirement<K>, Contract<N>> {
     unimplemented()
   }
@@ -59,10 +58,7 @@ export function signer<K extends keyof any>(key: K) {
   return class extends id {
     readonly key = key
 
-    deploy<N>(
-      _namespace: N,
-      _deployOptions: DeployOptions<N>,
-    ): Generator<never, Contract<N>> {
+    deploy<N>(_namespace: N, _deployOptions?: DeployOptions): Generator<never, Contract<N>> {
       unimplemented()
     }
 
@@ -77,13 +73,8 @@ export const caller = new id(new IdSource.Caller())
 export const self = new id(new IdSource.Self())
 export const sender = new id(new IdSource.Sender())
 
-export interface DeployOptions<N> {
+export interface DeployOptions {
   deployer?: signer
-  state: DeployState<N>
-}
-
-export type DeployState<N> = {
-  [K in keyof N as N[K] extends State ? K : never]: N[K] extends State<infer T> ? T : never
 }
 
 export interface SendProps {
@@ -94,7 +85,7 @@ export interface SendProps {
 // TODO
 export type Contract<T> =
   & id
-  & { [K in keyof T]: T[K] extends State<infer S> ? S : T[K] }
+  & T
   & {
     store(store: Store): Contract<T>
   }

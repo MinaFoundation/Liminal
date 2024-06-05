@@ -1,3 +1,4 @@
+import { decodeHex } from "@std/encoding"
 import * as L from "liminal"
 
 export class TokenId extends L.u256 {}
@@ -6,53 +7,42 @@ export class Tokens extends L.Mapping(TokenId, Token) {}
 export class TokenOwner extends L.id {}
 export class TokenOwners extends L.Mapping(TokenId, TokenOwner) {}
 
-export const admin_ = L.id.state()
-export const globalMetadata_ = Token.state()
-export const maxReached_ = L.bool.state()
-export const nextId_ = L.u256.state()
-export const tokens_ = Tokens.state()
-export const tokenOwners_ = TokenOwners.state()
+export const admin = L.id.fromHex(Deno.env.get("NFT_ADMIN_ID")!)
+export const globalMetadata = Token.new(decodeHex(Deno.env.get("NFT_METADATA")!))
+export const maxReached = L.false
+export const nextId = L.u256.new(0)
+export const tokens = Tokens.new()
+export const tokenOwners = TokenOwners.new()
 
-export class MaxTokensReachedError extends L.Struct({ tag: "MaxTokensReachedError" }) {}
-export class NotAuthorizedError extends L.Struct({ tag: "NotAuthorizedError" }) {}
-export class SpecifiedTokenDneError extends L.Struct({ tag: "SpecifiedTokenDneError" }) {}
+export class MaxTokensReachedError extends L.Struct({
+  tag: "MaxTokensReachedError",
+}) {}
+export class NotAuthorizedError extends L.Struct({
+  tag: "NotAuthorizedError",
+}) {}
+export class SpecifiedTokenDneError extends L.Struct({
+  tag: "SpecifiedTokenDneError",
+}) {}
 
-export const getOwner = L.f({
-  tokenId: TokenId,
-  tokenOwners: tokenOwners_,
-}, ({ tokenId, tokenOwners }) => tokenOwners.get(tokenId))
+export const getOwner = L.f({ tokenId: TokenId }, ({ tokenId }) => tokenOwners.get(tokenId))
 
-export const getToken = L.f({
-  tokenId: TokenId,
-  tokens: tokens_,
-}, ({ tokenId, tokens }) => tokens.get(tokenId))
+export const getToken = L.f({ tokenId: TokenId }, ({ tokenId }) => tokens.get(tokenId))
 
-export const create = L.f({
-  metadata: Token,
-  maxReached: maxReached_,
-  nextId: nextId_,
-  tokens: tokens_,
-  tokenOwners: tokenOwners_,
-  admin: admin_,
-}, function*({ metadata, nextId, tokens, tokenOwners, maxReached, admin }) {
+export const create = L.f({ metadata: Token }, function*({ metadata }) {
   yield* L.sender.equals(admin).assert(NotAuthorizedError.new())
   yield* maxReached.if(MaxTokensReachedError.new())["?"](MaxTokensReachedError)
   const tokenId = TokenId.new(nextId)
   yield* nextId
     .equals(L.u256.max())
     .not()
-    .if(nextId_(nextId.add(L.u256.new(1))))
-    .else(maxReached_(L.true))
-  yield* tokens_(tokens.set(tokenId, metadata))
-  yield* tokenOwners_(tokenOwners.set(tokenId, L.sender))
+    .if(nextId["="](nextId.add(L.u256.new(1))))
+    .else(maxReached["="](L.true))
+  yield* tokens["="](tokens.set(tokenId, metadata))
+  yield* tokenOwners["="](tokenOwners.set(tokenId, L.sender))
   return tokenId
 })
 
-export const destroy = L.f({
-  tokenId: TokenId,
-  tokens: tokens_,
-  tokenOwners: tokenOwners_,
-}, function*({ tokens, tokenOwners, tokenId }) {
+export const destroy = L.f({ tokenId: TokenId }, function*({ tokenId }) {
   yield* tokens
     .get(tokenId)
     .match(L.None, SpecifiedTokenDneError.new())
@@ -66,18 +56,16 @@ export const destroy = L.f({
     )
     ["?"](L.Never)
     ["?"](NotAuthorizedError)
-  yield* tokens_(tokens.delete(tokenId))
-  yield* tokenOwners_(tokenOwners.delete(tokenId))
+  yield* tokens["="](tokens.delete(tokenId))
+  yield* tokenOwners["="](tokenOwners.delete(tokenId))
 })
 
 export const transfer = L.f({
   to: L.id,
   tokenId: TokenId,
-  tokens: tokens_,
-  tokenOwners: tokenOwners_,
-}, function*({ to, tokenId, tokens, tokenOwners }) {
+}, function*({ to, tokenId }) {
   yield* tokens.get(tokenId)["?"](L.None, SpecifiedTokenDneError.new())
   const tokenOwner = yield* tokenOwners.get(tokenId)["?"](L.None, L.Never.new())
   yield* tokenOwner.equals(L.sender).assert(NotAuthorizedError.new())
-  yield* tokenOwners_(tokenOwners.set(tokenId, to))
+  yield* tokenOwners["="](tokenOwners.set(tokenId, to))
 })

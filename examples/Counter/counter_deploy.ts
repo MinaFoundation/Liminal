@@ -6,14 +6,7 @@ const client = await L.client()
 const [contract, sender] = signer(2)
 
 await L
-  .tx(
-    L.id
-      .new(contract.publicKey)
-      .signer("contract")
-      .deploy(Counter, {
-        state: { count_: L.u256.new(1) },
-      }),
-  )
+  .tx(L.id.new(contract.publicKey).signer("contract").deploy(Counter))
   .sign(sender, { contract })
   .run()
   .commit(client)

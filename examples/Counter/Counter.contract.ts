@@ -1,14 +1,16 @@
 import * as L from "liminal"
 
-export const count_ = L.u256.state()
+export const count = L.u256.new(1)
 
 export const increment = L.f({
-  amount: L.Union(L.u256, L.None),
-  initial: count_,
-}, function*({ amount, initial }) {
-  const final = initial.add(amount.match(L.None, L.u256.new(1)))
-  yield IncrementedEvent.new({ initial, final })
-  return yield* count_(final)
+  by: L.Union(L.u256, L.None),
+}, function*({ by }) {
+  const final = count.add(by.match(L.None, L.u256.new(1)))
+  yield IncrementedEvent.new({
+    initial: count,
+    final,
+  })
+  return yield* count["="](final)
 })
 
 export class IncrementedEvent extends L.Struct({
