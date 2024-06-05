@@ -3,7 +3,7 @@ import { Tagged } from "../util/Tagged.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { Effect } from "./Effect.ts"
 import { u64 } from "./Int.ts"
-import { Type, TypeSource } from "./Type.ts"
+import { Type } from "./Type.ts"
 
 export type IdSource = IdSource.Sender | IdSource.Self | IdSource.Caller | IdSource.Null
 export namespace IdSource {
@@ -84,5 +84,13 @@ export interface SendProps {
 
 export type Contract<N> =
   & id
-  & { store(_store: Store): void }
+  & { da(_store: Store): void }
   & { [K in keyof N]: N[K] }
+
+export function Contract<N>(id: id, ns: N): Contract<N> {
+  return Object.assign(id, ns, {
+    da(_store: Store) {
+      return Contract(id, ns)
+    },
+  })
+}
