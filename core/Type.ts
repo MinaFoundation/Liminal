@@ -34,8 +34,8 @@ export class Type<
 
   ctor = this.constructor as never as new(source: Source | TypeSource) => this
 
-  "="<T extends Type>(setter: StateSetter<T>): Effect<never, T> {
-    throw 0
+  "="<T extends Type>(_setter: StateSetter<T>): Effect<never, T> {
+    unimplemented()
   }
 
   into<O extends Into>(into: Factory<O>): O {
