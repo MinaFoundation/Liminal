@@ -4,7 +4,6 @@ import { unimplemented } from "../util/unimplemented.ts"
 import { bool, BoolSource } from "./Bool.ts"
 import { GenCall, Result, ValueCall, Yield } from "./Call.ts"
 import { Effect } from "./Effect.ts"
-import { State } from "./State.ts"
 
 export type Factory<T extends Type = any> = new(source: any) => T
 
@@ -31,13 +30,13 @@ export class Type<
     return new this(new TypeSource.New(value))
   }
 
-  static state<T extends Type>(this: Factory<T>): State<T> {
-    return State(this)
-  }
-
   constructor(readonly typeName: Name, readonly source: Source | TypeSource) {}
 
   ctor = this.constructor as never as new(source: Source | TypeSource) => this
+
+  "="<T extends Type>(_setter: StateSetter<T>): Effect<never, T> {
+    unimplemented()
+  }
 
   into<O extends Into>(into: Factory<O>): O {
     return new into(new TypeSource.Into({ from: this }))
@@ -118,3 +117,5 @@ export namespace TypeSource {
     }
   }
 }
+
+export type StateSetter<T> = T | ((value: T) => T)

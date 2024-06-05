@@ -1,11 +1,13 @@
 import * as L from "liminal"
 
-export class Balances extends L.Mapping(L.id, L.u256) {}
-export class Allowances extends L.Mapping(L.id, Balances) {}
+// https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L22
+export const totalSupply = L.u256.new(parseInt(Deno.env.get("TOTAL_SUPPLY")!))
 
-export const totalSupply_ = L.u256.state()
-export const balances_ = Balances.state()
-export const allowances_ = Allowances.state()
+export class Balances extends L.Mapping(L.id, L.u256) {}
+export const balances = Balances.new()
+
+export class Allowances extends L.Mapping(L.id, Balances) {}
+export const allowances = Allowances.new()
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L16
 export class Transfer extends L.Struct({
@@ -23,36 +25,23 @@ export class Approval extends L.Struct({
   value: L.u256,
 }) {}
 
-export class AlreadyInitialized extends L.Struct({
-  tag: "AlreadyInitialized",
-}) {}
-export class InsufficientBalance extends L.Struct({
-  tag: "InsufficientBalance",
-}) {}
-export class CannotTargetNullAddress extends L.Struct({
-  tag: "CannotTargetNullAddress",
-}) {}
-export class InsufficientAllowance extends L.Struct({
-  tag: "InsufficientAllowance",
-}) {}
-
-// https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L22
-export const totalSupply = L.f({ totalSupply: totalSupply_ }, ({ totalSupply }) => totalSupply)
+export class AlreadyInitialized extends L.Struct({ tag: "AlreadyInitialized" }) {}
+export class InsufficientBalance extends L.Struct({ tag: "InsufficientBalance" }) {}
+export class CannotTargetNullAddress extends L.Struct({ tag: "CannotTargetNullAddress" }) {}
+export class InsufficientAllowance extends L.Struct({ tag: "InsufficientAllowance" }) {}
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L32
-export const balanceOf = L.f({
-  account: L.id,
-  balances: balances_,
-}, ({ account, balances }) => balances.get(account).match(L.None, L.u256.new(0)))
+export const balanceOf = L.f(
+  { account: L.id },
+  ({ account }) => balances.get(account).match(L.None, L.u256.new(0)),
+)
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L41
 export const transfer = L.f({
   to: L.id,
   value: L.u256,
-  balances: balances_,
-  totalSupply: totalSupply_,
-}, function*({ to, value, balances, totalSupply }) {
-  yield* assertHasBalanceGte(balances, L.sender, value)
+}, function*({ to, value }) {
+  yield* assertHasBalanceGte(L.sender, value)
   const senderBalance = yield* balances.get(L.sender)["?"](L.None, InsufficientBalance.new())
   const newSenderBalance = senderBalance.subtract(value)
   const toNewBalance = balances
@@ -60,8 +49,8 @@ export const transfer = L.f({
     .match(L.u256, (prev) => prev.add(value))
     .match(L.None, value)
   const newBalances = balances.set(L.sender, newSenderBalance).set(to, toNewBalance)
-  yield* balances_(newBalances)
-  yield* to.equals(L.nullId).if(totalSupply_(totalSupply.subtract(value)))
+  yield* balances["="](newBalances)
+  yield* to.equals(L.nullId).if(totalSupply["="](totalSupply.subtract(value)))
   yield Transfer.new({ from: L.sender, to, value })
 })
 
@@ -69,8 +58,7 @@ export const transfer = L.f({
 export const allowance = L.f({
   owner: L.id,
   spender: L.id,
-  allowances: allowances_,
-}, ({ owner, spender, allowances }) =>
+}, ({ owner, spender }) =>
   allowances
     .get(owner)
     .match(L.None, L.u256.new(0))
@@ -80,12 +68,10 @@ export const allowance = L.f({
 export const approve = L.f({
   spender: L.id,
   value: L.u256,
-  allowances: allowances_,
-  balances: balances_,
-}, function*({ spender, value, allowances, balances }) {
+}, function*({ spender, value }) {
   yield* assertNotNullAddress(L.sender)
   yield* assertNotNullAddress(spender)
-  yield* assertHasBalanceGte(balances, spender, value)
+  yield* assertHasBalanceGte(spender, value)
   const ownerApprovals = allowances.get(L.sender).match(L.None, Balances.new())
   const newSpenderAllowance = ownerApprovals
     .get(spender)
@@ -93,7 +79,7 @@ export const approve = L.f({
     .match(L.None, value)
   const newOwnerApprovals = ownerApprovals.set(spender, newSpenderAllowance)
   const newAllowances = allowances.set(L.sender, newOwnerApprovals)
-  yield* allowances_(newAllowances)
+  yield* allowances["="](newAllowances)
 })
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L78
@@ -101,9 +87,7 @@ export const transferFrom = L.f({
   from: L.id,
   to: L.id,
   value: L.u256,
-  allowances: allowances_,
-  balances: balances_,
-}, function*({ from, to, value, allowances, balances }) {
+}, function*({ from, to, value }) {
   yield* assertNotNullAddress(from)
   yield* assertNotNullAddress(to)
   const fromApprovals = yield* allowances
@@ -116,8 +100,8 @@ export const transferFrom = L.f({
   const newSenderAllowance = senderAllowance.subtract(value)
   const newFromApprovals = fromApprovals.set(L.sender, newSenderAllowance)
   const newAllowances = allowances.set(from, newFromApprovals)
-  yield* allowances_(newAllowances)
-  yield* assertHasBalanceGte(balances, from, value)
+  yield* allowances["="](newAllowances)
+  yield* assertHasBalanceGte(from, value)
   const fromBalance = yield* balances
     .get(from)
     ["?"](L.None, InsufficientBalance.new())
@@ -127,10 +111,10 @@ export const transferFrom = L.f({
     .match(L.u256, (prev) => prev.add(value))
     .match(L.None, value)
   const newBalances = balances.set(from, newFromBalance).set(to, toNewBalance)
-  yield* balances_(newBalances)
+  yield* balances["="](newBalances)
 })
 
-function* assertHasBalanceGte(balances: Balances, inQuestion: L.id, value: L.u256) {
+function* assertHasBalanceGte(inQuestion: L.id, value: L.u256) {
   const inQuestionBalance = yield* balances.get(inQuestion)["?"](L.None, InsufficientBalance.new())
   yield* inQuestionBalance.gte(value).assert(InsufficientBalance.new())
 }

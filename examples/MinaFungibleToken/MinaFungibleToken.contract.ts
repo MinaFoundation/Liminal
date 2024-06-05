@@ -41,40 +41,38 @@ export class Withdraw extends L.Struct({
 export class InsufficientBalance extends L.Struct({ tag: "InsufficientBalance" }) {}
 export class InsufficientAllowance extends L.Struct({ tag: "InsufficientAllowance" }) {}
 
-export const balances_ = Balances.state()
-export const allocations_ = Allocations.state()
+export const balances = Balances.new()
+export const allocations = Allocations.new()
 
-export const transfer = L.f(
-  { to: L.id, amount: L.u256, balances: balances_ },
-  function*({ to, amount, balances }) {
-    const updatedSenderBalance = yield* balances
-      .get(L.sender)
-      .match(L.u256, (balance) =>
-        balance
-          .gte(amount)
-          .if(balance.subtract(amount))
-          .else(InsufficientBalance.new()))
-      .match(L.None, InsufficientBalance.new())
-      ["?"](InsufficientBalance)
-    const updatedToBalance = balances
-      .get(to)
-      .match(L.u256, (value) => value.add(amount))
-      .match(L.None, amount)
-    yield* balances_(
-      balances
-        .set(L.sender, updatedSenderBalance)
-        .set(to, updatedToBalance),
-    )
-    yield Transfer.new({ to, amount })
-  },
-)
+export const transfer = L.f({
+  to: L.id,
+  amount: L.u256,
+}, function*({ to, amount }) {
+  const updatedSenderBalance = yield* balances
+    .get(L.sender)
+    .match(L.u256, (balance) =>
+      balance
+        .gte(amount)
+        .if(balance.subtract(amount))
+        .else(InsufficientBalance.new()))
+    .match(L.None, InsufficientBalance.new())
+    ["?"](InsufficientBalance)
+  const updatedToBalance = balances
+    .get(to)
+    .match(L.u256, (value) => value.add(amount))
+    .match(L.None, amount)
+  yield* balances["="](
+    balances
+      .set(L.sender, updatedSenderBalance)
+      .set(to, updatedToBalance),
+  )
+  yield Transfer.new({ to, amount })
+})
 
 export const allocate = L.f({
   for_: Allocatee,
   amount: L.u256,
-  balances: balances_,
-  allocations: allocations_,
-}, function*({ balances, allocations, for_, amount }) {
+}, function*({ for_, amount }) {
   const newSenderBalance = yield* balances
     .get(L.sender)
     .match(L.u256, (v) =>
@@ -84,7 +82,7 @@ export const allocate = L.f({
         .else(InsufficientBalance.new()))
     .match(L.None, InsufficientBalance.new())
     ["?"](InsufficientBalance)
-  yield* balances_(balances.set(L.sender, newSenderBalance))
+  yield* balances["="](balances.set(L.sender, newSenderBalance))
   const allocatorAllocated = allocations
     .get(L.sender)
     .match(Allocated, (allocated) => {
@@ -95,16 +93,14 @@ export const allocate = L.f({
       return allocated.set(for_, newAllocation)
     })
     .match(L.None, Allocated.new().set(for_, amount))
-  yield* allocations_(allocations.set(L.sender, allocatorAllocated))
+  yield* allocations["="](allocations.set(L.sender, allocatorAllocated))
   yield Allocate.new({ from: L.sender, for: for_, amount })
 })
 
 export const withdraw = L.f({
   from: L.id,
   amount: L.u256,
-  balances: balances_,
-  allocations: allocations_,
-}, function*({ from, amount, balances, allocations }) {
+}, function*({ from, amount }) {
   const senderBalance = balances.get(L.sender).match(L.None, L.u256.new(0))
   const fromAllocations = yield* allocations
     .get(from)
@@ -113,22 +109,20 @@ export const withdraw = L.f({
     .get(L.sender)
     ["?"](L.None, InsufficientAllowance.new())
   yield* senderFromAllocation.gte(amount).not().assert(InsufficientAllowance.new())
-  yield* allocations_(
+  yield* allocations["="](
     allocations.set(
       from,
       fromAllocations.set(L.sender, senderFromAllocation.subtract(amount)),
     ),
   )
-  yield* balances_(balances.set(L.sender, senderBalance.add(amount)))
+  yield* balances["="](balances.set(L.sender, senderBalance.add(amount)))
   yield Withdraw.new({ from, to: L.sender, amount })
 })
 
 export const deallocate = L.f({
   for_: Allocatee,
   amount: L.u256,
-  allocations: allocations_,
-  balances: balances_,
-}, function*({ for_, amount, allocations, balances }) {
+}, function*({ for_, amount }) {
   const allocatorAllocated = yield* allocations
     .get(L.sender)
     .match(Allocated, (allocated) => {
@@ -143,11 +137,11 @@ export const deallocate = L.f({
     })
     .match(L.None, InsufficientAllowance.new())
     ["?"](InsufficientAllowance)
-  yield* allocations_(allocations.set(L.sender, allocatorAllocated))
+  yield* allocations["="](allocations.set(L.sender, allocatorAllocated))
   const newSenderBalance = balances
     .get(L.sender)
     .match(L.u256, (v) => v.add(amount))
     .match(L.None, amount)
-  yield* balances_(balances.set(L.sender, newSenderBalance))
+  yield* balances["="](balances.set(L.sender, newSenderBalance))
   yield Deallocate.new({ from: L.sender, for: for_, amount })
 })
