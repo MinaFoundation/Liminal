@@ -6,9 +6,12 @@ const client = await L.client()
 const [contract, sender] = signer(2)
 
 await L
-  .tx(function*() {
-    yield* L.id.new(contract.publicKey).signer("contract").deploy(Counter)
-  })
+  .tx(
+    L.id
+      .new(contract.publicKey)
+      .signer("contract")
+      .deploy(Counter),
+  )
   .sign(sender, { contract })
   .run()
   .commit(client)
