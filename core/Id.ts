@@ -84,8 +84,5 @@ export interface SendProps {
 
 // TODO
 export type Contract<T> =
-  & id
-  & T
-  & {
-    store(store: Store): Contract<T>
-  }
+  & { [K in keyof T]: T[K] }
+  & { store(store: Store): "TODO" }

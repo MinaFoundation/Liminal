@@ -14,7 +14,10 @@ await L
     const tokenId = yield* contract.create({
       metadata: NFT.Token.new(new Uint8Array()),
     })
-    yield* contract.transfer({ tokenId, to: L.nullId })
+    yield* contract.transfer({
+      tokenId,
+      to: L.nullId,
+    })
   })
   .sign(senderSigner, { contract: contractSigner })
   .run()
