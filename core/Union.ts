@@ -2,8 +2,8 @@ import { ListSource } from "./List.ts"
 import { MappingSource } from "./Mapping.ts"
 import { Factory, Type } from "./Type.ts"
 
-export interface Union<T extends Factory[] = any>
-  extends InstanceType<ReturnType<typeof Union<T>>>
+export interface Union<T extends Factory = any>
+  extends InstanceType<ReturnType<typeof Union<T[]>>>
 {}
 
 export function Union<T extends Factory[]>(...members: T) {
@@ -17,7 +17,7 @@ export function Union<T extends Factory[]>(...members: T) {
 }
 
 export namespace Union {
-  export type Unwrap<T extends Type> = T extends Union<infer M> ? InstanceType<M[number]> : T
+  export type Unwrap<T extends Type> = T extends Union<infer M> ? InstanceType<M> : T
 }
 
 export type UnionSource = MappingSource.Get | ListSource.At

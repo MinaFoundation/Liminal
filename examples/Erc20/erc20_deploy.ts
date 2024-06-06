@@ -10,7 +10,12 @@ const client = await L.client()
 const [contract, sender] = signer(2)
 
 await L
-  .tx(L.id.new(contract.publicKey).signer("contract").deploy({ ...Erc20, ...Erc20Metadata }))
+  .tx(
+    L.id
+      .new(contract.publicKey)
+      .signer("contract")
+      .deploy({ ...Erc20, ...Erc20Metadata }),
+  )
   .sign(sender, { contract })
   .run()
   .commit(client)

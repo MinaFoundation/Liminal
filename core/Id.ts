@@ -82,10 +82,15 @@ export interface SendProps {
   amount: u64
 }
 
-// TODO
-export type Contract<T> =
+export type Contract<N> =
   & id
-  & T
-  & {
-    store(store: Store): Contract<T>
-  }
+  & { da(_store: Store): void }
+  & { [K in keyof N]: N[K] }
+
+export function Contract<N>(id: id, ns: N): Contract<N> {
+  return Object.assign(id, ns, {
+    da(_store: Store) {
+      return Contract(id, ns)
+    },
+  })
+}

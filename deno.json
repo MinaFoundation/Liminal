@@ -12,11 +12,12 @@
     "rules": {
       "include": ["ban-untagged-todo", "camelcase", "guard-for-in"],
       "exclude": [
+        "ban-types",
         "ban-untagged-todo",
+        "no-empty",
         "no-explicit-any",
         "no-inner-declarations",
         "no-namespace",
-        "no-empty",
         "require-await"
       ],
       "tags": ["recommended"]
