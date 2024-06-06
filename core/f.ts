@@ -23,7 +23,7 @@ export class FInternal<A extends ArgTypes, Y extends Yield, R extends Result>
     readonly call: Call<Y, R, [args: Args<A>]>,
   ) {
     super(source)
-    const call_ = (..._args: any) => {}
+    const call_ = (..._args: any) => {} // TODO
     Object.setPrototypeOf(call_, FInternal.prototype)
     Object.assign(call_, this)
   }

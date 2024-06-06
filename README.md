@@ -29,7 +29,7 @@ const increment = L.f({ amount: L.u256 }, function*({ amount }) {
   yield IncrementedEvent.new({ initial: count, final })
 })
 
-// Define the event Struct for use in the above method.
+// Define the event Struct for use in the method above.
 export class IncrementedEvent extends L.Struct({
   // Struct fields can be defined with `keyof any`...
   tag: "Incremented",
@@ -55,7 +55,7 @@ await L
     // This forces us to specify a signer for "contract" later.
     const contractSigner = yield* contractId.signer("contract")
     // Use the new signer to deploy the `Counter`.
-    yield* contract.deploy(new Counter())
+    yield* contract.deploy(Counter)
   })
   .sign(senderSigner, { contract: contractSigner })
   .run()
@@ -74,7 +74,10 @@ import * as L from "liminal"
 
 // Get bindings to the deployed `Counter` contract.
 // Note, we also specify the store with which to access off-chain data.
-const counter = L.id.fromHex(CONTRACT_ID).bind(Counter)
+const counter = L.id
+  .fromHex(CONTRACT_ID)
+  .bind(Counter)
+  .store(DaLayer)
 
 // Create a transaction to increment the counter.
 const finalized = await L
