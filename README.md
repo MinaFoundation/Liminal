@@ -24,7 +24,7 @@ const increment = L.f({ amount: L.u256 }, function*({ amount }) {
   // Calculate the final count.
   const final = count.add(amount))
   // Set the count to `final`.
-  yield* count["="](to)
+  yield* count.assign(to)
   // "Emit" the `IncrementedEvent`
   yield IncrementedEvent.new({ initial: count, final })
 })
