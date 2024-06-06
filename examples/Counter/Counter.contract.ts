@@ -10,7 +10,7 @@ export const increment = L.f({
     initial: count,
     final,
   })
-  return yield* count["="](final)
+  return yield* count["assign"](final)
 })
 
 export class IncrementedEvent extends L.Struct({

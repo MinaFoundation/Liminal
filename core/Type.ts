@@ -34,7 +34,11 @@ export class Type<
 
   ctor = this.constructor as never as new(source: Source | TypeSource) => this
 
-  "="<T extends Type>(_setter: StateSetter<T>): Effect<never, T> {
+  apply<T extends Type>(this: T, metadata: unknown): T {
+    return new this.ctor(new TypeSource.Apply(this, metadata))
+  }
+
+  assign<T extends Type>(_setter: StateSetter<T>): Effect<never, T> {
     unimplemented()
   }
 
@@ -99,7 +103,11 @@ export declare namespace Type {
   export type Source<T extends Type> = T extends Type<any, infer S> ? S : never
 }
 
-export type TypeSource = TypeSource.New | TypeSource.Into | TypeSource.StructField
+export type TypeSource =
+  | TypeSource.New
+  | TypeSource.Into
+  | TypeSource.StructField
+  | TypeSource.Apply
 export namespace TypeSource {
   export class New extends Tagged("New") {
     constructor(readonly from: unknown) {
@@ -113,6 +121,11 @@ export namespace TypeSource {
   }
   export class StructField extends Tagged("StructField") {
     constructor(readonly self: Type, readonly key: keyof any) {
+      super()
+    }
+  }
+  export class Apply extends Tagged("Apply") {
+    constructor(readonly self: Type, readonly metadata: unknown) {
       super()
     }
   }
