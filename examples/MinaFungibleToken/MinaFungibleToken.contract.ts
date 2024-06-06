@@ -61,7 +61,7 @@ export const transfer = L.f({
     .get(to)
     .match(L.u256, (value) => value.add(amount))
     .match(L.None, amount)
-  yield* balances["="](
+  yield* balances.assign(
     balances
       .set(L.sender, updatedSenderBalance)
       .set(to, updatedToBalance),
@@ -82,7 +82,7 @@ export const allocate = L.f({
         .else(InsufficientBalance.new()))
     .match(L.None, InsufficientBalance.new())
     ["?"](InsufficientBalance)
-  yield* balances["="](balances.set(L.sender, newSenderBalance))
+  yield* balances.assign(balances.set(L.sender, newSenderBalance))
   const allocatorAllocated = allocations
     .get(L.sender)
     .match(Allocated, (allocated) => {
@@ -93,7 +93,7 @@ export const allocate = L.f({
       return allocated.set(for_, newAllocation)
     })
     .match(L.None, Allocated.new().set(for_, amount))
-  yield* allocations["="](allocations.set(L.sender, allocatorAllocated))
+  yield* allocations.assign(allocations.set(L.sender, allocatorAllocated))
   yield Allocate.new({ from: L.sender, for: for_, amount })
 })
 
@@ -109,13 +109,13 @@ export const withdraw = L.f({
     .get(L.sender)
     ["?"](L.None, InsufficientAllowance.new())
   yield* senderFromAllocation.gte(amount).not().assert(InsufficientAllowance.new())
-  yield* allocations["="](
+  yield* allocations.assign(
     allocations.set(
       from,
       fromAllocations.set(L.sender, senderFromAllocation.subtract(amount)),
     ),
   )
-  yield* balances["="](balances.set(L.sender, senderBalance.add(amount)))
+  yield* balances.assign(balances.set(L.sender, senderBalance.add(amount)))
   yield Withdraw.new({ from, to: L.sender, amount })
 })
 
@@ -137,11 +137,11 @@ export const deallocate = L.f({
     })
     .match(L.None, InsufficientAllowance.new())
     ["?"](InsufficientAllowance)
-  yield* allocations["="](allocations.set(L.sender, allocatorAllocated))
+  yield* allocations.assign(allocations.set(L.sender, allocatorAllocated))
   const newSenderBalance = balances
     .get(L.sender)
     .match(L.u256, (v) => v.add(amount))
     .match(L.None, amount)
-  yield* balances["="](balances.set(L.sender, newSenderBalance))
+  yield* balances.assign(balances.set(L.sender, newSenderBalance))
   yield Deallocate.new({ from: L.sender, for: for_, amount })
 })

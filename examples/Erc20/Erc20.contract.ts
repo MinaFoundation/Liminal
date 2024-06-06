@@ -49,8 +49,8 @@ export const transfer = L.f({
     .match(L.u256, (prev) => prev.add(value))
     .match(L.None, value)
   const newBalances = balances.set(L.sender, newSenderBalance).set(to, toNewBalance)
-  yield* balances["="](newBalances)
-  yield* to.equals(L.nullId).if(totalSupply["="](totalSupply.subtract(value)))
+  yield* balances.assign(newBalances)
+  yield* to.equals(L.nullId).if(totalSupply.assign(totalSupply.subtract(value)))
   yield Transfer.new({ from: L.sender, to, value })
 })
 
@@ -79,7 +79,7 @@ export const approve = L.f({
     .match(L.None, value)
   const newOwnerApprovals = ownerApprovals.set(spender, newSpenderAllowance)
   const newAllowances = allowances.set(L.sender, newOwnerApprovals)
-  yield* allowances["="](newAllowances)
+  yield* allowances.assign(newAllowances)
 })
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L78
@@ -100,7 +100,7 @@ export const transferFrom = L.f({
   const newSenderAllowance = senderAllowance.subtract(value)
   const newFromApprovals = fromApprovals.set(L.sender, newSenderAllowance)
   const newAllowances = allowances.set(from, newFromApprovals)
-  yield* allowances["="](newAllowances)
+  yield* allowances.assign(newAllowances)
   yield* assertHasBalanceGte(from, value)
   const fromBalance = yield* balances
     .get(from)
@@ -111,7 +111,7 @@ export const transferFrom = L.f({
     .match(L.u256, (prev) => prev.add(value))
     .match(L.None, value)
   const newBalances = balances.set(from, newFromBalance).set(to, toNewBalance)
-  yield* balances["="](newBalances)
+  yield* balances.assign(newBalances)
 })
 
 function* assertHasBalanceGte(inQuestion: L.id, value: L.u256) {

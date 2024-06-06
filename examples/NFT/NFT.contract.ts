@@ -35,10 +35,10 @@ export const create = L.f({ metadata: Token }, function*({ metadata }) {
   yield* nextId
     .equals(L.u256.max())
     .not()
-    .if(nextId["="](nextId.add(L.u256.new(1))))
-    .else(maxReached["="](L.true))
-  yield* tokens["="](tokens.set(tokenId, metadata))
-  yield* tokenOwners["="](tokenOwners.set(tokenId, L.sender))
+    .if(nextId.assign(nextId.add(L.u256.new(1))))
+    .else(maxReached.assign(L.true))
+  yield* tokens.assign(tokens.set(tokenId, metadata))
+  yield* tokenOwners.assign(tokenOwners.set(tokenId, L.sender))
   return tokenId
 })
 
@@ -56,8 +56,8 @@ export const destroy = L.f({ tokenId: TokenId }, function*({ tokenId }) {
     )
     ["?"](L.Never)
     ["?"](NotAuthorizedError)
-  yield* tokens["="](tokens.delete(tokenId))
-  yield* tokenOwners["="](tokenOwners.delete(tokenId))
+  yield* tokens.assign(tokens.delete(tokenId))
+  yield* tokenOwners.assign(tokenOwners.delete(tokenId))
 })
 
 export const transfer = L.f({
@@ -67,5 +67,5 @@ export const transfer = L.f({
   yield* tokens.get(tokenId)["?"](L.None, SpecifiedTokenDneError.new())
   const tokenOwner = yield* tokenOwners.get(tokenId)["?"](L.None, L.Never.new())
   yield* tokenOwner.equals(L.sender).assert(NotAuthorizedError.new())
-  yield* tokenOwners["="](tokenOwners.set(tokenId, to))
+  yield* tokenOwners.assign(tokenOwners.set(tokenId, to))
 })
