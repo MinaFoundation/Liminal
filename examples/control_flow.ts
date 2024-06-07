@@ -24,12 +24,8 @@ declare const maybe: L.u8 | L.None
   effect satisfies L.Effect<L.None, L.u8>
 
   // Handle values that were yielded from the call that produced the effect.
-  const handled = effect.handle(L.None, L.u8.new(0))
-  handled satisfies L.u8
-
-  // Match and move an effect's yielded value back to the result channel.
-  const rehandled = effect.rehandle(L.None)
-  rehandled satisfies L.u8 | L.None
+  const handled = effect.catch(L.None, L.u8.new(0))
+  handled satisfies L.Effect<L.None, L.u8>
 }
 
 {
