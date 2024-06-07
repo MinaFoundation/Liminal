@@ -1,5 +1,6 @@
 import { decodeHex } from "@std/encoding"
 import * as L from "liminal"
+import { Counter } from "../../std/mod.ts"
 
 export class TokenId extends L.u256 {}
 export class Token extends L.Bytes(32) {}
@@ -9,14 +10,12 @@ export class TokenOwners extends L.Mapping(TokenId, TokenOwner) {}
 
 export const admin = L.id.fromHex(Deno.env.get("NFT_ADMIN_ID")!)
 export const globalMetadata = Token.new(decodeHex(Deno.env.get("NFT_METADATA")!))
-export const maxReached = L.false
-export const nextId = L.u256.new(0)
 export const tokens = Tokens.new()
 export const tokenOwners = TokenOwners.new()
 
-export class MaxTokensReachedError extends L.Struct({
-  tag: "MaxTokensReachedError",
-}) {}
+export class IdCounter extends Counter(L.u256) {}
+export const idCounter = IdCounter.init()
+
 export class NotAuthorizedError extends L.Struct({
   tag: "NotAuthorizedError",
 }) {}
@@ -30,13 +29,7 @@ export const getToken = L.f({ tokenId: TokenId }, ({ tokenId }) => tokens.get(to
 
 export const create = L.f({ metadata: Token }, function*({ metadata }) {
   yield* L.sender.equals(admin).assert(NotAuthorizedError.new())
-  yield* maxReached.if(MaxTokensReachedError.new())["?"](MaxTokensReachedError)
-  const tokenId = TokenId.new(nextId)
-  yield* nextId
-    .equals(L.u256.max())
-    .not()
-    .if(nextId.assign(nextId.add(L.u256.new(1))))
-    .else(maxReached.assign(L.true))
+  const tokenId = TokenId.new(yield* idCounter.next())
   yield* tokens.assign(tokens.set(tokenId, metadata))
   yield* tokenOwners.assign(tokenOwners.set(tokenId, L.sender))
   return tokenId

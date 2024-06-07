@@ -74,6 +74,7 @@ minaserve
 mrmr1993
 multiaddress
 multiaddresses
+multisigs
 mybranch
 neovim
 nodenext

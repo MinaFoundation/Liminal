@@ -2,6 +2,7 @@ import { Tagged } from "../util/Tagged.ts"
 import type { bool } from "./Bool.ts"
 import type { List } from "./List.ts"
 import type { Mapping } from "./Mapping.ts"
+import type { LSet } from "./Set.ts"
 import { Factory, Type } from "./Type.ts"
 
 // TODO: bit manipulation, floats, floor/ceil, power ...
@@ -162,7 +163,7 @@ export namespace IntSource {
   }
 }
 
-export type U256Source = U256Source.MappingSize | U256Source.ListSize
+export type U256Source = U256Source.MappingSize | U256Source.ListSize | U256Source.LSetSize
 export namespace U256Source {
   export class MappingSize extends Tagged("MappingSize") {
     constructor(readonly self: Mapping) {
@@ -171,6 +172,11 @@ export namespace U256Source {
   }
   export class ListSize extends Tagged("ListSize") {
     constructor(readonly self: List) {
+      super()
+    }
+  }
+  export class LSetSize extends Tagged("LSetSize") {
+    constructor(readonly self: LSet) {
       super()
     }
   }
