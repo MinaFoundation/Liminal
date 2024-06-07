@@ -1,14 +1,10 @@
 import { unimplemented } from "../util/unimplemented.ts"
-import { GenCall, Result, ValueCall, Yield } from "./Call.ts"
+import { Call, GenCall, Result, ValueCall, Yield } from "./Call.ts"
 import { Factory, Type } from "./Type.ts"
 
 export abstract class Effect<Y extends Yield, R extends Result> implements Generator<Y, R> {
   declare yields?: Y[]
   declare result?: R
-
-  map<R2 extends Result>(_f: (value: R) => R2): Effect<Y, R2> {
-    unimplemented()
-  }
 
   next(): IteratorResult<Y, R> {
     unimplemented()
@@ -46,24 +42,29 @@ export abstract class Effect<Y extends Yield, R extends Result> implements Gener
     return unimplemented()
   }
 
-  handle<M extends Factory<Y>, R extends Result>(
+  catch<
+    M extends Factory<Y>,
+    R2 extends Result,
+  >(
     match: M,
-    f: ValueCall<R, [value: InstanceType<M>]>,
-  ): [Exclude<Y, InstanceType<M>>] extends [never] ? R : Effect<Exclude<Y, InstanceType<M>>, R>
-  handle<M extends Factory<Y>, Y2 extends Yield, R extends Result>(
+    f: ValueCall<R2, [InstanceType<M>]>,
+  ): Effect<Exclude<Y, InstanceType<M>>, R | R2>
+  catch<
+    M extends Factory<Y>,
+    Y2 extends Yield,
+    R2 extends Result,
+  >(
     match: M,
-    f: GenCall<Y2, R, [value: InstanceType<M>]>,
-  ): [Exclude<Y, InstanceType<M>> | Y2] extends [never] ? R
-    : Effect<Exclude<Y, InstanceType<M>> | Y2, R>
-  handle(_match: any, _f: any): any {
-    unimplemented()
-  }
-
-  rehandle<M extends Factory[]>(
-    ..._match: M
-  ): [Exclude<Y, InstanceType<M[number]>>] extends [never] ? Extract<Y, InstanceType<M[number]>> | R
-    : Effect<Exclude<Y, InstanceType<M[number]>>, R>
-  {
+    f: GenCall<Y, R2, [InstanceType<M>]>,
+  ): Effect<Exclude<Y, InstanceType<M>> | Y2, R | R2>
+  catch<
+    M extends Factory<Y>,
+    Y2 extends Yield,
+    R2 extends Result,
+  >(
+    _match: M,
+    _f: Call<Y, R2, [InstanceType<M>]>,
+  ): Effect<Exclude<Y, InstanceType<M>> | Y2, R | R2> {
     unimplemented()
   }
 }
