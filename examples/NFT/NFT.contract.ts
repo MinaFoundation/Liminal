@@ -1,6 +1,6 @@
 import { decodeHex } from "@std/encoding"
 import * as L from "liminal"
-import { Counter } from "../../std/mod.ts"
+import { Counter } from "liminal/std"
 
 export class TokenId extends L.u256 {}
 export class Token extends L.Bytes(32) {}
@@ -13,15 +13,10 @@ export const globalMetadata = Token.new(decodeHex(Deno.env.get("NFT_METADATA")!)
 export const tokens = Tokens.new()
 export const tokenOwners = TokenOwners.new()
 
-export class IdCounter extends Counter(L.u256) {}
-export const idCounter = IdCounter.init()
+export const idCounter = Counter.default()
 
-export class NotAuthorizedError extends L.Struct({
-  tag: "NotAuthorizedError",
-}) {}
-export class SpecifiedTokenDneError extends L.Struct({
-  tag: "SpecifiedTokenDneError",
-}) {}
+export class NotAuthorizedError extends L.Struct({ tag: "NotAuthorizedError" }) {}
+export class SpecifiedTokenDneError extends L.Struct({ tag: "SpecifiedTokenDneError" }) {}
 
 export const getOwner = L.f({ tokenId: TokenId }, ({ tokenId }) => tokenOwners.get(tokenId))
 
@@ -36,19 +31,15 @@ export const create = L.f({ metadata: Token }, function*({ metadata }) {
 })
 
 export const destroy = L.f({ tokenId: TokenId }, function*({ tokenId }) {
-  yield* tokens
-    .get(tokenId)
-    .match(L.None, SpecifiedTokenDneError.new())
-    ["?"](SpecifiedTokenDneError)
+  yield* tokens.get(tokenId)["?"](L.None, SpecifiedTokenDneError.new())
   yield* tokenOwners
     .get(tokenId)
-    .match(L.None, L.Never.new())
-    .match(
-      TokenOwner,
-      (tokenOwner) => tokenOwner.equals(L.sender).not().if(NotAuthorizedError.new()),
-    )
-    ["?"](L.Never)
-    ["?"](NotAuthorizedError)
+    .match(TokenOwner, (owner) =>
+      owner
+        .equals(L.sender)
+        .not()
+        .assert(NotAuthorizedError.new()))
+    ["?"](L.None, L.Never.new())
   yield* tokens.assign(tokens.delete(tokenId))
   yield* tokenOwners.assign(tokenOwners.delete(tokenId))
 })

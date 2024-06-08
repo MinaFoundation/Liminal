@@ -1,4 +1,5 @@
 import * as L from "liminal"
+import { Counter } from "liminal/std"
 
 declare const Call: L.Factory<L.F<{}, never, never>>
 
@@ -15,11 +16,10 @@ export class Proposal extends L.Struct({
 export class Proposals extends L.Mapping(ProposalId, Proposal) {}
 
 export class MultisigId extends L.u256 {}
-export class ProposalsCounter extends L.Counter(L.u256) {}
 /** Contains information about the given multisig. */
 export class Multisig extends L.Struct({
   members: Members,
-  proposalCounter: ProposalsCounter,
+  proposalCounter: Counter,
   proposals: Proposals,
   threshold: L.u8,
 }) {}
@@ -28,12 +28,9 @@ export class Multisigs extends L.Mapping(MultisigId, Multisig) {}
 
 export const multisigs = Multisigs.new()
 
-export class MultisigDneError extends L.Struct({
-  tag: "MultisigDneError",
-}) {}
+export class MultisigDneError extends L.Struct({ tag: "MultisigDneError" }) {}
 
-export class MultisigCounter extends L.Counter(L.u256) {}
-export const multisigCounter = MultisigCounter.init()
+export const multisigCounter = Counter.default()
 
 export const create = L.f({
   members: Members,
@@ -42,7 +39,7 @@ export const create = L.f({
   const multisigId = MultisigId.new(yield* multisigCounter.next())
   const multisig = Multisig.new({
     members,
-    proposalCounter: ProposalsCounter.init(),
+    proposalCounter: Counter.default(),
     proposals: Proposals.new(),
     threshold,
   })
@@ -57,7 +54,8 @@ export const propose = L.f({
   multisigId: MultisigId,
   call: Call,
 }, function*({ multisigId, call }) {
-  const multisig = yield* multisigs.get(multisigId)["?"](L.None, MultisigDneError.new())
+  const multisig = yield* multisigs.get(multisigId)
+    ["?"](L.None, MultisigDneError.new())
   const proposalId = yield* multisig.fields.proposalCounter.next()
   const proposals = multisig.fields.proposals.set(proposalId, Proposal.new({ call, approvals: 0 }))
   const newMultisig = Multisig.new({ ...multisig.fields, proposals })

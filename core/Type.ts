@@ -7,15 +7,18 @@ import { Effect } from "./Effect.ts"
 
 export type Factory<T extends Type = any> = new(source: any) => T
 
+export interface WithDefault {
+  ""?: [any, any, any, true]
+}
+
 export class Type<
   Name extends string = any,
   Source = any,
   Native = any,
   From = any,
   Into extends Type = any,
+  HasDefault extends boolean = any,
 > {
-  declare ""?: [Native, From, Into]
-
   static make<Name extends string>(name: Name) {
     return class<Source, Native = never, From = Native, Into extends Type = never>
       extends this<Name, Source, Native, From, Into>
@@ -30,9 +33,21 @@ export class Type<
     return new this(new TypeSource.New(value))
   }
 
-  constructor(readonly typeName: Name, readonly source: Source | TypeSource) {}
+  static withDefault<F extends Factory>(
+    this: F,
+    _from: Type.From<InstanceType<F>>,
+  ): F & WithDefault {
+    unimplemented()
+  }
 
+  static default<F extends Factory>(this: F): InstanceType<F> {
+    unimplemented()
+  }
+
+  declare ""?: [Native, From, Into, HasDefault]
   ctor = this.constructor as never as new(source: Source | TypeSource) => this
+
+  constructor(readonly typeName: Name, readonly source: Source | TypeSource) {}
 
   apply<T extends Type>(this: T, metadata: unknown): T {
     return new this.ctor(new TypeSource.Apply(this, metadata))
@@ -43,7 +58,7 @@ export class Type<
   }
 
   into<O extends Into>(into: Factory<O>): O {
-    return new into(new TypeSource.Into({ from: this }))
+    return new into(new TypeSource.Into(this))
   }
 
   equals<T extends Type>(this: T, inQuestion: T): bool {
@@ -101,6 +116,8 @@ export declare namespace Type {
   export type From<T> = T extends Type<any, any, any, infer From> ? From : never
   export type Native<T extends Type | void> = T extends Type<any, any, infer N> ? N : undefined
   export type Source<T extends Type> = T extends Type<any, infer S> ? S : never
+  export type ArgRest<T extends Type[]> = { [K in keyof T]: Arg<T[K]> }
+  export type Arg<T extends Type> = T | From<T> | Native<T>
 }
 
 export type TypeSource =
@@ -108,6 +125,7 @@ export type TypeSource =
   | TypeSource.Into
   | TypeSource.StructField
   | TypeSource.Apply
+  | TypeSource.Default
 export namespace TypeSource {
   export class New extends Tagged("New") {
     constructor(readonly from: unknown) {
@@ -115,7 +133,7 @@ export namespace TypeSource {
     }
   }
   export class Into extends Tagged("Into") {
-    constructor(readonly from: unknown) {
+    constructor(readonly into: unknown) {
       super()
     }
   }
@@ -126,6 +144,11 @@ export namespace TypeSource {
   }
   export class Apply extends Tagged("Apply") {
     constructor(readonly self: Type, readonly metadata: unknown) {
+      super()
+    }
+  }
+  export class Default<F extends Factory = any> extends Tagged("Default") {
+    constructor(readonly factory: F, readonly from: Type.From<F>) {
       super()
     }
   }

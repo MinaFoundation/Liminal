@@ -102,11 +102,9 @@ export const withdraw = L.f({
   amount: L.u256,
 }, function*({ from, amount }) {
   const senderBalance = balances.get(L.sender).match(L.None, L.u256.new(0))
-  const fromAllocations = yield* allocations
-    .get(from)
+  const fromAllocations = yield* allocations.get(from)
     ["?"](L.None, InsufficientAllowance.new())
-  const senderFromAllocation = yield* fromAllocations
-    .get(L.sender)
+  const senderFromAllocation = yield* fromAllocations.get(L.sender)
     ["?"](L.None, InsufficientAllowance.new())
   yield* senderFromAllocation.gte(amount).not().assert(InsufficientAllowance.new())
   yield* allocations.assign(
