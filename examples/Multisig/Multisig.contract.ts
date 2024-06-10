@@ -2,7 +2,7 @@ import * as L from "liminal"
 import { U256Counter } from "liminal/std"
 
 // TODO: remove upon cleanup of F type
-declare const Call: L.Factory<L.F<{}, never, never>>
+declare const Call: L.Type<L.F<{}, never, never>>
 
 export class Members extends L.LSet(L.id) {}
 

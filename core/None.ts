@@ -1,7 +1,7 @@
 import { Tagged } from "../util/Tagged.ts"
-import { Type } from "./Type.ts"
+import { Value } from "./Value.ts"
 
-export class None extends Type.make("None")<NoneSource, undefined> {}
+export class None extends Value.make("None")<NoneSource, undefined> {}
 
 export type NoneSource = NoneSource.Intrinsic
 export namespace NoneSource {

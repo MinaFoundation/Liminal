@@ -4,13 +4,15 @@ import { unimplemented } from "../util/unimplemented.ts"
 import { Effect } from "./Effect.ts"
 import { u256, U256Source } from "./Int.ts"
 import { None } from "./None.ts"
-import { Factory, Type } from "./Type.ts"
 import { Union } from "./Union.ts"
+import { Type, Value } from "./Value.ts"
 
-export interface List<T extends Type = Type> extends InstanceType<ReturnType<typeof List<T>>> {}
+export interface List<T extends Value = any> extends InstanceType<ReturnType<typeof List<T>>> {}
 
-export function List<T extends Type>(elementType: Factory<T>) {
-  return class extends Type.make("List")<ListSource, ListNative<Type.Native<T>>, undefined, never> {
+export function List<T extends Value>(elementType: Type<T>) {
+  return class
+    extends Value.make("List")<ListSource, ListNative<Value.Native<T>>, undefined, never>
+  {
     elementType = elementType
 
     length: u256 = new u256(new U256Source.ListSize(this))
@@ -41,15 +43,15 @@ export function List<T extends Type>(elementType: Factory<T>) {
       ) as never as T | None
     }
 
-    reduce<R extends Type, Y extends Type>(
+    reduce<R extends Value, Y extends Value>(
       initial: R,
       f: (acc: R, cur: T) => Generator<Y, R>,
     ): Effect<Y, R>
-    reduce<R extends Type>(initial: R, f: (acc: R, cur: T) => R): R
-    reduce<
-      Y extends Type,
-      R extends Type,
-    >(_initial: R, _f: (acc: R, cur: T) => R | Generator<Y, R>): any {
+    reduce<R extends Value>(initial: R, f: (acc: R, cur: T) => R): R
+    reduce<Y extends Value, R extends Value>(
+      _initial: R,
+      _f: (acc: R, cur: T) => R | Generator<Y, R>,
+    ): any {
       unimplemented()
     }
   }
@@ -63,12 +65,12 @@ export type ListSource =
   | ListSource.At
 export namespace ListSource {
   export class Prepend extends Tagged("Prepend") {
-    constructor(readonly self: List, readonly value: Type) {
+    constructor(readonly self: List, readonly value: Value) {
       super()
     }
   }
   export class Append extends Tagged("Append") {
-    constructor(readonly self: List, readonly value: Type) {
+    constructor(readonly self: List, readonly value: Value) {
       super()
     }
   }

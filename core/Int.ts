@@ -3,7 +3,7 @@ import { bool, BoolSource } from "./Bool.ts"
 import { List } from "./List.ts"
 import { LSet } from "./LSet.ts"
 import { Mapping } from "./Mapping.ts"
-import { Factory, Type } from "./Type.ts"
+import { Type, Value } from "./Value.ts"
 
 // TODO: bit manipulation, floats, floor/ceil, power ...
 
@@ -46,8 +46,8 @@ export class i256 extends Int(true, 256)<i8 | i16 | i32 | i64 | i128 | i256, nev
 export type IntSize = 8 | 16 | 32 | 64 | 128 | 256
 
 function Int<Signed extends boolean, Size extends IntSize>(signed: Signed, size: Size) {
-  return class<From extends Type, Into extends Type, ExtraSource = never>
-    extends Type.make(`${signed ? "i" : "u"}${size}`)<
+  return class<From extends Value, Into extends Value, ExtraSource = never>
+    extends Value.make(`${signed ? "i" : "u"}${size}`)<
       IntSource | ExtraSource,
       number,
       number | From,
@@ -56,31 +56,31 @@ function Int<Signed extends boolean, Size extends IntSize>(signed: Signed, size:
   {
     signed = signed
 
-    static min<This extends Factory>(this: This) {
+    static min<This extends Type>(this: This) {
       return new this(new IntSource.Min())
     }
 
-    static max<This extends Factory>(this: This) {
+    static max<This extends Type>(this: This) {
       return new this(new IntSource.Max())
     }
 
-    static random<This extends Factory>(this: This) {
+    static random<This extends Type>(this: This) {
       return new this(new IntSource.Random())
     }
 
-    add(...[value]: Type.Args<[value: this]>) {
+    add(...[value]: Value.Args<[value: this]>) {
       return new this.ctor(new IntSource.Add(this, value))
     }
 
-    subtract(...[value]: Type.Args<[value: this]>) {
+    subtract(...[value]: Value.Args<[value: this]>) {
       return new this.ctor(new IntSource.Subtract(this, value))
     }
 
-    multiply(...[value]: Type.Args<[value: this]>) {
+    multiply(...[value]: Value.Args<[value: this]>) {
       return new this.ctor(new IntSource.Multiply(this, value))
     }
 
-    divide(...[value]: Type.Args<[value: this]>) {
+    divide(...[value]: Value.Args<[value: this]>) {
       return new this.ctor(new IntSource.Divide(this, value))
     }
 
@@ -88,23 +88,23 @@ function Int<Signed extends boolean, Size extends IntSize>(signed: Signed, size:
       return new this.ctor(new IntSource.Square(this))
     }
 
-    logarithm(...[value]: Type.Args<[value: this]>) {
+    logarithm(...[value]: Value.Args<[value: this]>) {
       return new this.ctor(new IntSource.Logarithm(this, value))
     }
 
-    gt(...[value]: Type.Args<[value: this]>) {
+    gt(...[value]: Value.Args<[value: this]>) {
       return new bool(new BoolSource.IntGt(this, value))
     }
 
-    gte(...[value]: Type.Args<[value: this]>): bool {
+    gte(...[value]: Value.Args<[value: this]>): bool {
       return new bool(new BoolSource.IntGte(this, value))
     }
 
-    lt(...[value]: Type.Args<[value: this]>): bool {
+    lt(...[value]: Value.Args<[value: this]>): bool {
       return new bool(new BoolSource.IntLt(this, value))
     }
 
-    lte(...[value]: Type.Args<[value: this]>): bool {
+    lte(...[value]: Value.Args<[value: this]>): bool {
       return new bool(new BoolSource.IntLte(this, value))
     }
   }
@@ -129,52 +129,52 @@ export namespace IntSource {
   export class Min extends Tagged("Min") {}
   export class Max extends Tagged("Max") {}
   export class Add extends Tagged("Add") {
-    constructor(readonly left: Type, readonly right: unknown) {
+    constructor(readonly left: Value, readonly right: unknown) {
       super()
     }
   }
   export class Subtract extends Tagged("Subtract") {
-    constructor(readonly left: Type, readonly right: unknown) {
+    constructor(readonly left: Value, readonly right: unknown) {
       super()
     }
   }
   export class Multiply extends Tagged("Multiply") {
-    constructor(readonly left: Type, readonly right: unknown) {
+    constructor(readonly left: Value, readonly right: unknown) {
       super()
     }
   }
   export class Divide extends Tagged("Divide") {
-    constructor(readonly left: Type, readonly right: unknown) {
+    constructor(readonly left: Value, readonly right: unknown) {
       super()
     }
   }
   export class Square extends Tagged("Square") {
-    constructor(readonly self: Type) {
+    constructor(readonly self: Value) {
       super()
     }
   }
   export class Logarithm extends Tagged("Logarithm") {
-    constructor(readonly left: Type, readonly right: unknown) {
+    constructor(readonly left: Value, readonly right: unknown) {
       super()
     }
   }
   export class Gt extends Tagged("Gt") {
-    constructor(readonly left: Type, readonly right: unknown) {
+    constructor(readonly left: Value, readonly right: unknown) {
       super()
     }
   }
   export class Gte extends Tagged("Gte") {
-    constructor(readonly left: Type, readonly right: unknown) {
+    constructor(readonly left: Value, readonly right: unknown) {
       super()
     }
   }
   export class Lt extends Tagged("Lt") {
-    constructor(readonly left: Type, readonly right: unknown) {
+    constructor(readonly left: Value, readonly right: unknown) {
       super()
     }
   }
   export class Lte extends Tagged("Lte") {
-    constructor(readonly left: Type, readonly right: unknown) {
+    constructor(readonly left: Value, readonly right: unknown) {
       super()
     }
   }

@@ -3,7 +3,7 @@ import { Tagged } from "../util/Tagged.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { Effect } from "./Effect.ts"
 import { u64 } from "./Int.ts"
-import { Type } from "./Type.ts"
+import { Value } from "./Value.ts"
 
 export type IdSource = IdSource.Sender | IdSource.Self | IdSource.Caller | IdSource.Null
 export namespace IdSource {
@@ -15,7 +15,7 @@ export namespace IdSource {
   export class Null extends Tagged("Null") {}
 }
 
-export class id extends Type.make("id")<IdSource, Uint8Array, Uint8Array> {
+export class id extends Value.make("id")<IdSource, Uint8Array, Uint8Array> {
   static fromHex(_hex: string): id {
     unimplemented()
   }
@@ -43,7 +43,7 @@ export class SignerEffect<K extends string> extends Effect<SignerRequirement<K>,
 }
 
 export class SignerRequirement<K extends string = any>
-  extends Type.make("SignerRequirement")<K, never>
+  extends Value.make("SignerRequirement")<K, never>
 {
   constructor(readonly key: K) {
     super(key)
