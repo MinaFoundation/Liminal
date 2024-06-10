@@ -1,5 +1,7 @@
 import { Flatten } from "../util/Flatten.ts"
 import { isKey } from "../util/isKey.ts"
+import { Setter } from "../util/Setter.ts"
+import { unimplemented } from "../util/unimplemented.ts"
 import { Key } from "./Key.ts"
 import { Factory, Type, TypeSource } from "./Type.ts"
 
@@ -18,11 +20,29 @@ export function Struct<const F extends FieldTypes>(fieldTypes: F) {
         ),
       ]),
     ) as Fields<F>
+
+    // TODO: clean up typing
+    set<
+      T,
+      V extends ValueFields<F>,
+      K extends keyof V,
+    >(
+      this: T,
+      _key: K,
+      _setter: Setter<InstanceType<V[K]>>,
+    ): T {
+      unimplemented()
+    }
   }
 }
 
 export type FieldType = keyof any | Factory
 export type FieldTypes = Record<string, FieldType>
+
+export type ValueFields<F extends FieldTypes> = Extract<
+  Record<any, Factory>,
+  { [K in keyof F as F[K] extends Factory ? K : never]: F[K] }
+>
 
 export type Fields<F extends FieldTypes = any> = {
   -readonly [K in keyof F]: F[K] extends keyof any ? Key<F[K]>

@@ -1,9 +1,11 @@
 import { Rest } from "../util/Rest.ts"
+import { Setter } from "../util/Setter.ts"
 import { Tagged } from "../util/Tagged.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { bool, BoolSource } from "./Bool.ts"
 import { GenCall, Result, ValueCall, Yield } from "./Call.ts"
 import { Effect } from "./Effect.ts"
+import { Union, UnionCtor } from "./Union.ts"
 
 export type Factory<T extends Type = any> = new(source: any) => T
 
@@ -14,8 +16,6 @@ export class Type<
   From = any,
   Into extends Type = any,
 > {
-  declare ""?: [Native, From, Into]
-
   static make<Name extends string>(name: Name) {
     return class<Source, Native = never, From = Native, Into extends Type = never>
       extends this<Name, Source, Native, From, Into>
@@ -26,24 +26,40 @@ export class Type<
     }
   }
 
+  static or<F extends Factory, O extends Factory>(
+    this: F,
+    or: O,
+  ): F extends UnionCtor<infer M> ? UnionCtor<M | O> : UnionCtor<F | O> {
+    return Union(this, or) as never
+  }
+
   static new<T extends Type>(this: Factory<T>, ...[value]: Rest<Type.From<T>>): T {
     return new this(new TypeSource.New(value))
   }
 
-  constructor(readonly typeName: Name, readonly source: Source | TypeSource) {}
+  static withDefault<F extends Factory>(this: F, _from: Type.From<InstanceType<F>>): F {
+    unimplemented()
+  }
 
+  static default<F extends Factory>(this: F): InstanceType<F> {
+    unimplemented()
+  }
+
+  declare ""?: [Native, From, Into]
   ctor = this.constructor as never as new(source: Source | TypeSource) => this
+
+  constructor(readonly typeName: Name, readonly source: Source | TypeSource) {}
 
   apply<T extends Type>(this: T, metadata: unknown): T {
     return new this.ctor(new TypeSource.Apply(this, metadata))
   }
 
-  assign<T extends Type>(_setter: StateSetter<T>): Effect<never, T> {
+  assign<T extends Type>(_setter: Setter<T>): Effect<never, T> {
     unimplemented()
   }
 
   into<O extends Into>(into: Factory<O>): O {
-    return new into(new TypeSource.Into({ from: this }))
+    return new into(new TypeSource.Into(this))
   }
 
   equals<T extends Type>(this: T, inQuestion: T): bool {
@@ -101,6 +117,7 @@ export declare namespace Type {
   export type From<T> = T extends Type<any, any, any, infer From> ? From : never
   export type Native<T extends Type | void> = T extends Type<any, any, infer N> ? N : undefined
   export type Source<T extends Type> = T extends Type<any, infer S> ? S : never
+  export type Args<A extends Type[]> = { [K in keyof A]: A[K] | From<A[K]> | Native<A[K]> }
 }
 
 export type TypeSource =
@@ -108,6 +125,7 @@ export type TypeSource =
   | TypeSource.Into
   | TypeSource.StructField
   | TypeSource.Apply
+  | TypeSource.Default
 export namespace TypeSource {
   export class New extends Tagged("New") {
     constructor(readonly from: unknown) {
@@ -115,7 +133,7 @@ export namespace TypeSource {
     }
   }
   export class Into extends Tagged("Into") {
-    constructor(readonly from: unknown) {
+    constructor(readonly into: unknown) {
       super()
     }
   }
@@ -129,6 +147,9 @@ export namespace TypeSource {
       super()
     }
   }
+  export class Default<F extends Factory = any> extends Tagged("Default") {
+    constructor(readonly factory: F, readonly from: Type.From<F>) {
+      super()
+    }
+  }
 }
-
-export type StateSetter<T> = T | ((value: T) => T)

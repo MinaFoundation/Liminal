@@ -9,6 +9,7 @@
     "examples/": {
       "liminal": "./mod.ts",
       "liminal/lib": "./lib/mod.ts",
+      "liminal/std": "./std/mod.ts",
       "liminal/test": "./test/mod.ts"
     }
   }

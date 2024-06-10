@@ -1,14 +1,32 @@
 import { Tagged } from "../util/Tagged.ts"
-import type { bool } from "./Bool.ts"
-import type { List } from "./List.ts"
-import type { Mapping } from "./Mapping.ts"
+import { bool, BoolSource } from "./Bool.ts"
+import { List } from "./List.ts"
+import { LSet } from "./LSet.ts"
+import { Mapping } from "./Mapping.ts"
 import { Factory, Type } from "./Type.ts"
 
 // TODO: bit manipulation, floats, floor/ceil, power ...
 
-export type Int = SignedInt | UnsignedInt
-export type SignedInt = i8 | i16 | i32 | i64 | i256
-export type UnsignedInt = u8 | u16 | u32 | u64 | u256
+export type IntFactory = UnsignedIntFactory | SignedIntFactory
+export type Int = UnsignedInt | SignedInt
+
+export type UnsignedInt = InstanceType<UnsignedIntFactory>
+export type UnsignedIntFactory =
+  | typeof i8
+  | typeof i16
+  | typeof i32
+  | typeof i64
+  | typeof i128
+  | typeof i256
+
+export type SignedInt = InstanceType<SignedIntFactory>
+export type SignedIntFactory =
+  | typeof u8
+  | typeof u16
+  | typeof u32
+  | typeof u64
+  | typeof u128
+  | typeof u256
 
 // TODO: allow from/into from opposite-signed types (effectively enabling an `absolute` method)
 export class u8 extends Int(false, 8)<u8, u16 | u32 | u64 | u128 | u256> {}
@@ -50,44 +68,44 @@ function Int<Signed extends boolean, Size extends IntSize>(signed: Signed, size:
       return new this(new IntSource.Random())
     }
 
-    add(value: this): this {
+    add(...[value]: Type.Args<[value: this]>) {
       return new this.ctor(new IntSource.Add(this, value))
     }
 
-    subtract(value: this): this {
+    subtract(...[value]: Type.Args<[value: this]>) {
       return new this.ctor(new IntSource.Subtract(this, value))
     }
 
-    multiply(value: this): this {
+    multiply(...[value]: Type.Args<[value: this]>) {
       return new this.ctor(new IntSource.Multiply(this, value))
     }
 
-    divide(value: this): this {
+    divide(...[value]: Type.Args<[value: this]>) {
       return new this.ctor(new IntSource.Divide(this, value))
     }
 
-    square(this: this): this {
+    square() {
       return new this.ctor(new IntSource.Square(this))
     }
 
-    logarithm(value: this): this {
+    logarithm(...[value]: Type.Args<[value: this]>) {
       return new this.ctor(new IntSource.Logarithm(this, value))
     }
 
-    gt(value: this): bool {
-      return new this.ctor(new IntSource.Gt(this, value)) as never
+    gt(...[value]: Type.Args<[value: this]>) {
+      return new bool(new BoolSource.IntGt(this, value))
     }
 
-    gte(value: this): bool {
-      return new this.ctor(new IntSource.Gte(this, value)) as never
+    gte(...[value]: Type.Args<[value: this]>): bool {
+      return new bool(new BoolSource.IntGte(this, value))
     }
 
-    lt(value: this): bool {
-      return new this.ctor(new IntSource.Lt(this, value)) as never
+    lt(...[value]: Type.Args<[value: this]>): bool {
+      return new bool(new BoolSource.IntLt(this, value))
     }
 
-    lte(value: this): bool {
-      return new this.ctor(new IntSource.Lte(this, value)) as never
+    lte(...[value]: Type.Args<[value: this]>): bool {
+      return new bool(new BoolSource.IntLte(this, value))
     }
   }
 }
@@ -111,22 +129,22 @@ export namespace IntSource {
   export class Min extends Tagged("Min") {}
   export class Max extends Tagged("Max") {}
   export class Add extends Tagged("Add") {
-    constructor(readonly left: Type, readonly right: Type) {
+    constructor(readonly left: Type, readonly right: unknown) {
       super()
     }
   }
   export class Subtract extends Tagged("Subtract") {
-    constructor(readonly left: Type, readonly right: Type) {
+    constructor(readonly left: Type, readonly right: unknown) {
       super()
     }
   }
   export class Multiply extends Tagged("Multiply") {
-    constructor(readonly left: Type, readonly right: Type) {
+    constructor(readonly left: Type, readonly right: unknown) {
       super()
     }
   }
   export class Divide extends Tagged("Divide") {
-    constructor(readonly left: Type, readonly right: Type) {
+    constructor(readonly left: Type, readonly right: unknown) {
       super()
     }
   }
@@ -136,33 +154,33 @@ export namespace IntSource {
     }
   }
   export class Logarithm extends Tagged("Logarithm") {
-    constructor(readonly left: Type, readonly right: Type) {
+    constructor(readonly left: Type, readonly right: unknown) {
       super()
     }
   }
   export class Gt extends Tagged("Gt") {
-    constructor(readonly left: Type, readonly right: Type) {
+    constructor(readonly left: Type, readonly right: unknown) {
       super()
     }
   }
   export class Gte extends Tagged("Gte") {
-    constructor(readonly left: Type, readonly right: Type) {
+    constructor(readonly left: Type, readonly right: unknown) {
       super()
     }
   }
   export class Lt extends Tagged("Lt") {
-    constructor(readonly left: Type, readonly right: Type) {
+    constructor(readonly left: Type, readonly right: unknown) {
       super()
     }
   }
   export class Lte extends Tagged("Lte") {
-    constructor(readonly left: Type, readonly right: Type) {
+    constructor(readonly left: Type, readonly right: unknown) {
       super()
     }
   }
 }
 
-export type U256Source = U256Source.MappingSize | U256Source.ListSize
+export type U256Source = U256Source.MappingSize | U256Source.ListSize | U256Source.LSetSize
 export namespace U256Source {
   export class MappingSize extends Tagged("MappingSize") {
     constructor(readonly self: Mapping) {
@@ -171,6 +189,11 @@ export namespace U256Source {
   }
   export class ListSize extends Tagged("ListSize") {
     constructor(readonly self: List) {
+      super()
+    }
+  }
+  export class LSetSize extends Tagged("LSetSize") {
+    constructor(readonly self: LSet) {
       super()
     }
   }

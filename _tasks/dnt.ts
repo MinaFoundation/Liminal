@@ -24,6 +24,7 @@ await build({
   entryPoints: [
     { name: ".", path: "./mod.ts" },
     { name: "liminal/lib", path: "./lib/mod.ts" },
+    { name: "liminal/std", path: "./std/mod.ts" },
     { name: "liminal/test", path: "./test/mod.ts" },
   ],
   outDir: "target/npm",

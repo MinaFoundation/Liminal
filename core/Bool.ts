@@ -5,7 +5,60 @@ import { Effect } from "./Effect.ts"
 import { None } from "./None.ts"
 import { Factory, Type } from "./Type.ts"
 
+export type BoolSource =
+  | BoolSource.True
+  | BoolSource.False
+  | BoolSource.Not
+  | BoolSource.Equals
+  | BoolSource.Is
+  | BoolSource.IntGt
+  | BoolSource.IntGte
+  | BoolSource.IntLt
+  | BoolSource.IntLte
+export namespace BoolSource {
+  export class True extends Tagged("True") {}
+  export class False extends Tagged("False") {}
+  export class Not extends Tagged("Not") {
+    constructor(readonly not: bool) {
+      super()
+    }
+  }
+  export class Equals extends Tagged("Equals") {
+    constructor(readonly left: Type, readonly right: Type) {
+      super()
+    }
+  }
+  export class Is extends Tagged("Is") {
+    constructor(readonly inQuestion: Type, readonly match: Factory) {
+      super()
+    }
+  }
+  export class IntGt extends Tagged("IntGt") {
+    constructor(readonly left: Type, readonly right: unknown) {
+      super()
+    }
+  }
+  export class IntGte extends Tagged("IntGte") {
+    constructor(readonly left: Type, readonly right: unknown) {
+      super()
+    }
+  }
+  export class IntLt extends Tagged("IntLt") {
+    constructor(readonly left: Type, readonly right: unknown) {
+      super()
+    }
+  }
+  export class IntLte extends Tagged("IntLte") {
+    constructor(readonly left: Type, readonly right: unknown) {
+      super()
+    }
+  }
+}
+
 export class bool extends Type.make("bool")<BoolSource, boolean, boolean, never> {
+  static true = new this(new BoolSource.True())
+  static false = new this(new BoolSource.False())
+
   if<R extends Result>(call: ValueCall<R, []>): If<never, R>
   if<Y extends Yield, R extends Result>(call: GenCall<Y, R, []>): If<Y, R>
   if<Y extends Yield, R extends Result>(call: Call<Y, R, []>) {
@@ -35,35 +88,3 @@ export class If<Y extends Yield, R extends Result> extends Effect<Y, R | None> {
     return unimplemented()
   }
 }
-
-export type BoolSource =
-  | BoolSource.True
-  | BoolSource.False
-  | BoolSource.Not
-  | BoolSource.Equals
-  | BoolSource.Is
-export namespace BoolSource {
-  export class True extends Tagged("True") {}
-  export class False extends Tagged("False") {}
-  export class Not extends Tagged("Not") {
-    constructor(readonly not: bool) {
-      super()
-    }
-  }
-  export class Equals extends Tagged("Equals") {
-    constructor(readonly left: Type, readonly right: Type) {
-      super()
-    }
-  }
-  export class Is extends Tagged("Is") {
-    constructor(readonly inQuestion: Type, readonly match: Factory) {
-      super()
-    }
-  }
-}
-
-const true_ = new bool(new BoolSource.True())
-export { true_ as true }
-
-const false_ = new bool(new BoolSource.False())
-export { false_ as false }

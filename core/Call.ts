@@ -19,11 +19,12 @@ export type Call<
 > = ValueCall<R, A> | GenCall<Y, R, A>
 
 export namespace Call {
-  export function collect<Y extends Yield, R extends Result>(
-    call: Call<Y, R>,
+  export function collect<Y extends Yield, R extends Result, A extends unknown[]>(
+    call: Call<Y, R, A>,
+    ...args: A
   ): G.Collected<Y, R> {
     if (typeof call === "function") {
-      const maybeGen = call()
+      const maybeGen = call(...args)
       if (typeof maybeGen === "object" && Symbol.iterator in maybeGen) {
         return G.collect(maybeGen)
       } else {
