@@ -6,11 +6,6 @@ import { Union } from "./Union.ts"
 export type Params = Record<any, Factory>
 export type ParamsResolved<A extends Params> = { [K in keyof A]: Union.Unwrap<InstanceType<A[K]>> }
 
-export interface FFrom<A extends Params, Y extends Yield, R extends Result> {
-  argTypes: A
-  call: Call<Y, R, [args: ParamsResolved<A>]>
-}
-
 export class FInternal<A extends Params, Y extends Yield, R extends Result>
   extends Type.make("F")<never, Uint8Array>
 {
