@@ -28,6 +28,23 @@ export abstract class Effect<Y extends Yield, R extends Result> implements Gener
     return result
   }
 
+  match<T extends Type<R>, R2 extends Result>(
+    match: T,
+    f: ValueCall<R2, [InstanceType<T>]>,
+  ): Effect<Y, Exclude<R, InstanceType<T>> | R2>
+  match<T extends Type<R>, Y2 extends Yield, R2 extends Result>(
+    this: Effect<Y, R>,
+    match: T,
+    f: GenCall<Y2, R2, [InstanceType<T>]>,
+  ): Effect<Y | Y2, Exclude<R, InstanceType<T>> | R2>
+  match<T extends Type<R>, Y2 extends Yield, R2 extends Result>(
+    this: Effect<Y, R>,
+    _match: T,
+    _f: Call<Y2, R2, [InstanceType<T>]>,
+  ): Effect<Y | Y2, Exclude<R, InstanceType<T>> | R2> {
+    unimplemented()
+  }
+
   "?"<M extends Type<Exclude<R, void>>>(
     match: M,
   ): Effect<Y | InstanceType<M>, Exclude<R, InstanceType<M>>>
