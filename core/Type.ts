@@ -1,10 +1,11 @@
 import { Rest } from "../util/Rest.ts"
+import { Setter } from "../util/Setter.ts"
 import { Tagged } from "../util/Tagged.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { bool, BoolSource } from "./Bool.ts"
 import { GenCall, Result, ValueCall, Yield } from "./Call.ts"
 import { Effect } from "./Effect.ts"
-import { UnionCtor } from "./Union.ts"
+import { Union, UnionCtor } from "./Union.ts"
 
 export type Factory<T extends Type = any> = new(source: any) => T
 
@@ -27,19 +28,16 @@ export class Type<
 
   static or<F extends Factory, O extends Factory>(
     this: F,
-    _or: O,
+    or: O,
   ): F extends UnionCtor<infer M> ? UnionCtor<M | O> : UnionCtor<F | O> {
-    unimplemented()
+    return Union(this, or) as never
   }
 
   static new<T extends Type>(this: Factory<T>, ...[value]: Rest<Type.From<T>>): T {
     return new this(new TypeSource.New(value))
   }
 
-  static withDefault<F extends Factory>(
-    this: F,
-    _from: Type.From<InstanceType<F>>,
-  ): F {
+  static withDefault<F extends Factory>(this: F, _from: Type.From<InstanceType<F>>): F {
     unimplemented()
   }
 
@@ -56,7 +54,7 @@ export class Type<
     return new this.ctor(new TypeSource.Apply(this, metadata))
   }
 
-  assign<T extends Type>(_setter: StateSetter<T>): Effect<never, T> {
+  assign<T extends Type>(_setter: Setter<T>): Effect<never, T> {
     unimplemented()
   }
 
@@ -155,5 +153,3 @@ export namespace TypeSource {
     }
   }
 }
-
-export type StateSetter<T> = T | ((value: T) => T)

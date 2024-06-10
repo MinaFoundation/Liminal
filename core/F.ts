@@ -4,7 +4,7 @@ import { Factory, Type, TypeSource } from "./Type.ts"
 import { Union } from "./Union.ts"
 
 export type Params = Record<any, Factory>
-export type ParamsResolved<A extends Params> = { [K in keyof A]: Union.Unwrap<InstanceType<A[K]>> }
+export type ParamsResolved<A extends Params> = { [K in keyof A]: Union.Members<InstanceType<A[K]>> }
 
 export class FInternal<A extends Params, Y extends Yield, R extends Result>
   extends Type.make("F")<never, Uint8Array>

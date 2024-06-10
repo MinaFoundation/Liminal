@@ -25,8 +25,8 @@ export function Mapping<K extends Type, V extends Type>(
 
     size: u256 = new u256(new U256Source.MappingSize(this))
 
-    set(key: K, value: V): Mapping<K, V> {
-      return new this.ctor(new MappingSource.Set(this, key, value))
+    set(key: K, setter: V): Mapping<K, V> {
+      return new this.ctor(new MappingSource.Set(this, key, setter))
     }
 
     delete(key: K): Mapping<K, V> {

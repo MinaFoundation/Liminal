@@ -1,3 +1,3 @@
 // moderate
 
-export * from "./Counter.ts"
+export * from "./U256Counter.ts"

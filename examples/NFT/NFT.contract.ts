@@ -1,6 +1,6 @@
 import { decodeHex } from "@std/encoding"
 import * as L from "liminal"
-import { Counter } from "liminal/std"
+import { U256Counter } from "liminal/std"
 
 export class TokenId extends L.u256 {}
 export class Token extends L.Bytes(32) {}
@@ -13,7 +13,7 @@ export const globalMetadata = Token.new(decodeHex(Deno.env.get("NFT_METADATA")!)
 export const tokens = Tokens.new()
 export const tokenOwners = TokenOwners.new()
 
-export const idCounter = Counter.default()
+export const idCounter = U256Counter.default()
 
 export class NotAuthorizedError extends L.Struct({ tag: "NotAuthorizedError" }) {}
 export class SpecifiedTokenDneError extends L.Struct({ tag: "SpecifiedTokenDneError" }) {}

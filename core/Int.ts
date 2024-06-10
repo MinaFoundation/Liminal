@@ -1,8 +1,8 @@
 import { Tagged } from "../util/Tagged.ts"
 import { bool, BoolSource } from "./Bool.ts"
 import { List } from "./List.ts"
+import { LSet } from "./LSet.ts"
 import { Mapping } from "./Mapping.ts"
-import { LSet } from "./Set.ts"
 import { Factory, Type } from "./Type.ts"
 
 // TODO: bit manipulation, floats, floor/ceil, power ...
