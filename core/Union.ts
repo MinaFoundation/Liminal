@@ -2,9 +2,8 @@ import { ListSource } from "./List.ts"
 import { MappingSource } from "./Mapping.ts"
 import { Factory, Type } from "./Type.ts"
 
-export interface Union<T extends Factory = any>
-  extends InstanceType<ReturnType<typeof Union<T[]>>>
-{}
+export interface Union<T extends Factory = any> extends InstanceType<UnionCtor> {}
+export type UnionCtor<T extends Factory = any> = ReturnType<typeof Union<T[]>>
 
 export function Union<T extends Factory[]>(...members: T) {
   return class extends Type.make("Union")<

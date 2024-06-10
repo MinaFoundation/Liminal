@@ -23,7 +23,7 @@ export namespace Call {
     call: Call<Y, R>,
   ): G.Collected<Y, R> {
     if (typeof call === "function") {
-      const maybeGen = call()
+      const maybeGen = call(null!) // TODO
       if (typeof maybeGen === "object" && Symbol.iterator in maybeGen) {
         return G.collect(maybeGen)
       } else {

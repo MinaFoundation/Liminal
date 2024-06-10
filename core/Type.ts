@@ -4,12 +4,9 @@ import { unimplemented } from "../util/unimplemented.ts"
 import { bool, BoolSource } from "./Bool.ts"
 import { GenCall, Result, ValueCall, Yield } from "./Call.ts"
 import { Effect } from "./Effect.ts"
+import { Union, UnionCtor } from "./Union.ts"
 
 export type Factory<T extends Type = any> = new(source: any) => T
-
-export interface WithDefault {
-  ""?: [any, any, any, true]
-}
 
 export class Type<
   Name extends string = any,
@@ -17,7 +14,6 @@ export class Type<
   Native = any,
   From = any,
   Into extends Type = any,
-  HasDefault extends boolean = any,
 > {
   static make<Name extends string>(name: Name) {
     return class<Source, Native = never, From = Native, Into extends Type = never>
@@ -29,6 +25,13 @@ export class Type<
     }
   }
 
+  static or<F extends Factory, O extends Factory>(
+    this: F,
+    _or: O,
+  ): F extends UnionCtor<infer M> ? UnionCtor<M | O> : UnionCtor<F | O> {
+    unimplemented()
+  }
+
   static new<T extends Type>(this: Factory<T>, ...[value]: Rest<Type.From<T>>): T {
     return new this(new TypeSource.New(value))
   }
@@ -36,7 +39,7 @@ export class Type<
   static withDefault<F extends Factory>(
     this: F,
     _from: Type.From<InstanceType<F>>,
-  ): F & WithDefault {
+  ): F {
     unimplemented()
   }
 
@@ -44,7 +47,7 @@ export class Type<
     unimplemented()
   }
 
-  declare ""?: [Native, From, Into, HasDefault]
+  declare ""?: [Native, From, Into]
   ctor = this.constructor as never as new(source: Source | TypeSource) => this
 
   constructor(readonly typeName: Name, readonly source: Source | TypeSource) {}
@@ -116,8 +119,11 @@ export declare namespace Type {
   export type From<T> = T extends Type<any, any, any, infer From> ? From : never
   export type Native<T extends Type | void> = T extends Type<any, any, infer N> ? N : undefined
   export type Source<T extends Type> = T extends Type<any, infer S> ? S : never
-  export type ArgRest<T extends Type[]> = { [K in keyof T]: Arg<T[K]> }
-  export type Arg<T extends Type> = T | From<T> | Native<T>
+  export type Args = Record<any, Factory>
+  export type ArgsResolved<A extends Type[]> = {
+    [K in keyof A]: Union.Unwrap<A[K]> | From<A[K]> | Native<A[K]>
+  }
+  // export type Arg<F extends Factory> = InstanceType<F> | From<F> | Native<InstanceType<F>>
 }
 
 export type TypeSource =

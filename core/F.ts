@@ -1,26 +1,24 @@
 import { Call, GenCall, Result, ValueCall, Yield } from "./Call.ts"
 import { Effect } from "./Effect.ts"
-import { Factory, Type, TypeSource } from "./Type.ts"
+import { Type, TypeSource } from "./Type.ts"
 import { Union } from "./Union.ts"
 
-export type ArgTypes = Record<keyof any, Factory>
-
-export type Args<U extends ArgTypes> = {
-  [K in keyof U]: Union.Unwrap<InstanceType<U[K]>>
-}
-
-export interface FFrom<A extends ArgTypes, Y extends Yield, R extends Result> {
+export interface FFrom<A extends Type.Args, Y extends Yield, R extends Result> {
   argTypes: A
-  call: Call<Y, R, [args: Args<A>]>
+  call: Call<Y, R, [args: ParamsResolved<A>]>
 }
 
-export class FInternal<A extends ArgTypes, Y extends Yield, R extends Result>
+export type ParamsResolved<A extends Type.Args> = {
+  [K in keyof A]: Union.Unwrap<InstanceType<A[K]>>
+}
+
+export class FInternal<A extends Type.Args, Y extends Yield, R extends Result>
   extends Type.make("F")<never, Uint8Array>
 {
   constructor(
     source: TypeSource,
     readonly argTypes: A,
-    readonly call: Call<Y, R, [args: Args<A>]>,
+    readonly call: Call<Y, R, [args: ParamsResolved<A>]>,
   ) {
     super(source)
     const call_ = (..._args: any) => {} // TODO
@@ -28,36 +26,33 @@ export class FInternal<A extends ArgTypes, Y extends Yield, R extends Result>
     Object.assign(call_, this)
   }
 }
-export interface F<A extends ArgTypes, Y extends Yield, R extends Result>
+export interface F<A extends Type.Args, Y extends Yield, R extends Result>
   extends FInternal<A, Y, R>
 {
-  (_args: Args<A>): Effect<Y, R>
+  (_args: ParamsResolved<A>): Effect<Y, R>
 }
 
 export function f<R extends Result>(call: ValueCall<R, []>): F<{}, never, R>
-export function f<
-  R extends Result,
-  P extends ArgTypes,
->(
-  argTypes: P,
-  call: ValueCall<R, [args: Args<P>]>,
-): F<P, never, R>
+export function f<R extends Result, A extends Type.Args>(
+  argTypes: A,
+  call: ValueCall<R, [args: ParamsResolved<A>]>,
+): F<A, never, R>
 export function f<Y extends Yield, R extends Result>(f: GenCall<Y, R, []>): F<{}, Y, R>
 export function f<
   Y extends Yield,
   R extends Result,
-  P extends ArgTypes,
+  A extends Type.Args,
 >(
-  argTypes: P,
-  call: GenCall<Y, R, [args: Args<P>]>,
-): F<P, Y, R>
+  argTypes: A,
+  call: GenCall<Y, R, [args: ParamsResolved<A>]>,
+): F<A, Y, R>
 export function f<
   Y extends Yield,
   R extends Result,
-  A extends ArgTypes,
+  A extends Type.Args,
 >(
-  argTypesOrF: A | Call<Y, R, [args: Args<A>]>,
-  call?: Call<Y, R, [Args<A>]>,
+  argTypesOrF: A | Call<Y, R, []>,
+  call?: Call<Y, R, [args: ParamsResolved<A>]>,
 ): F<A, Y, R> {
   if (typeof argTypesOrF === "function") {
     return new FInternal(null!, {} as never, argTypesOrF) as never
