@@ -68,19 +68,19 @@ function Int<Signed extends boolean, Size extends IntSize>(signed: Signed, size:
       return new this(new IntSource.Random())
     }
 
-    add(...[value]: Type.ArgsResolved<[value: this]>) {
+    add(...[value]: Type.Args<[value: this]>) {
       return new this.ctor(new IntSource.Add(this, value))
     }
 
-    subtract(...[value]: Type.ArgsResolved<[value: this]>) {
+    subtract(...[value]: Type.Args<[value: this]>) {
       return new this.ctor(new IntSource.Subtract(this, value))
     }
 
-    multiply(...[value]: Type.ArgsResolved<[value: this]>) {
+    multiply(...[value]: Type.Args<[value: this]>) {
       return new this.ctor(new IntSource.Multiply(this, value))
     }
 
-    divide(...[value]: Type.ArgsResolved<[value: this]>) {
+    divide(...[value]: Type.Args<[value: this]>) {
       return new this.ctor(new IntSource.Divide(this, value))
     }
 
@@ -88,23 +88,23 @@ function Int<Signed extends boolean, Size extends IntSize>(signed: Signed, size:
       return new this.ctor(new IntSource.Square(this))
     }
 
-    logarithm(...[value]: Type.ArgsResolved<[value: this]>) {
+    logarithm(...[value]: Type.Args<[value: this]>) {
       return new this.ctor(new IntSource.Logarithm(this, value))
     }
 
-    gt(...[value]: Type.ArgsResolved<[value: this]>) {
+    gt(...[value]: Type.Args<[value: this]>) {
       return new bool(new BoolSource.IntGt(this, value))
     }
 
-    gte(...[value]: Type.ArgsResolved<[value: this]>): bool {
+    gte(...[value]: Type.Args<[value: this]>): bool {
       return new bool(new BoolSource.IntGte(this, value))
     }
 
-    lt(...[value]: Type.ArgsResolved<[value: this]>): bool {
+    lt(...[value]: Type.Args<[value: this]>): bool {
       return new bool(new BoolSource.IntLt(this, value))
     }
 
-    lte(...[value]: Type.ArgsResolved<[value: this]>): bool {
+    lte(...[value]: Type.Args<[value: this]>): bool {
       return new bool(new BoolSource.IntLte(this, value))
     }
   }

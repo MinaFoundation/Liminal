@@ -119,7 +119,7 @@ export declare namespace Type {
   export type From<T> = T extends Type<any, any, any, infer From> ? From : never
   export type Native<T extends Type | void> = T extends Type<any, any, infer N> ? N : undefined
   export type Source<T extends Type> = T extends Type<any, infer S> ? S : never
-  export type ArgsResolved<A extends Type[]> = { [K in keyof A]: A[K] | From<A[K]> | Native<A[K]> }
+  export type Args<A extends Type[]> = { [K in keyof A]: A[K] | From<A[K]> | Native<A[K]> }
 }
 
 export type TypeSource =
