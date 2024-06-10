@@ -1,16 +1,16 @@
 import { Call, GenCall, Result, ValueCall, Yield } from "./Call.ts"
 import { Effect } from "./Effect.ts"
-import { Factory, Type, TypeSource } from "./Type.ts"
 import { Union } from "./Union.ts"
+import { Type, Value, ValueSource } from "./Value.ts"
 
-export type Params = Record<any, Factory>
+export type Params = Record<any, Type>
 export type ParamsResolved<A extends Params> = { [K in keyof A]: Union.Members<InstanceType<A[K]>> }
 
 export class FInternal<A extends Params, Y extends Yield, R extends Result>
-  extends Type.make("F")<never, Uint8Array>
+  extends Value.make("F")<never, Uint8Array>
 {
   constructor(
-    source: TypeSource,
+    source: ValueSource,
     readonly argTypes: A,
     readonly call: Call<Y, R, [args: ParamsResolved<A>]>,
   ) {

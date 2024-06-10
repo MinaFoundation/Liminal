@@ -4,20 +4,20 @@ import { unimplemented } from "../util/unimplemented.ts"
 import { Effect } from "./Effect.ts"
 import { u256, U256Source } from "./Int.ts"
 import { None } from "./None.ts"
-import { Factory, Type } from "./Type.ts"
 import { Union } from "./Union.ts"
+import { Type, Value } from "./Value.ts"
 
-export interface Mapping<K extends Type = Type, V extends Type = Type>
+export interface Mapping<K extends Value = any, V extends Value = any>
   extends InstanceType<ReturnType<typeof Mapping<K, V>>>
 {}
 
-export function Mapping<K extends Type, V extends Type>(
-  keyType: Factory<K>,
-  valueType: Factory<V>,
+export function Mapping<K extends Value, V extends Value>(
+  keyType: Type<K>,
+  valueType: Type<V>,
 ) {
-  return class extends Type.make("Mapping")<
+  return class extends Value.make("Mapping")<
     MappingSource,
-    MappingNative<Type.Native<K>, Type.Native<V>>,
+    MappingNative<Value.Native<K>, Value.Native<V>>,
     undefined
   > {
     keyType = keyType
@@ -39,21 +39,21 @@ export function Mapping<K extends Type, V extends Type>(
       ) as never as V | None
     }
 
-    reduceKeys<R extends Type, Y extends Type>(
+    reduceKeys<R extends Value, Y extends Value>(
       _initial: R,
       _f: (acc: R, cur: K) => Generator<Y, R>,
     ): Effect<R, Y> {
       unimplemented()
     }
 
-    reduceValues<R extends Type, Y extends Type>(
+    reduceValues<R extends Value, Y extends Value>(
       _initial: R,
       _f: (acc: R, cur: V) => Generator<Y, R>,
     ): Effect<R, Y> {
       unimplemented()
     }
 
-    reduceEntries<R extends Type, Y extends Type>(
+    reduceEntries<R extends Value, Y extends Value>(
       _initial: R,
       _f: (acc: R, cur: [K, V]) => Generator<Y, R>,
     ): Effect<R, Y> {
@@ -65,20 +65,20 @@ export function Mapping<K extends Type, V extends Type>(
 export type MappingSource = MappingSource.Get | MappingSource.Set | MappingSource.Delete
 export namespace MappingSource {
   export class Get extends Tagged("Get") {
-    constructor(readonly map: Mapping, readonly key: Type) {
+    constructor(readonly map: Mapping, readonly key: Value) {
       super()
     }
   }
   export class Delete extends Tagged("Delete") {
-    constructor(readonly map: Mapping, readonly key: Type) {
+    constructor(readonly map: Mapping, readonly key: Value) {
       super()
     }
   }
   export class Set extends Tagged("Set") {
     constructor(
       readonly map: Mapping,
-      readonly key: Type,
-      readonly value: Type,
+      readonly key: Value,
+      readonly value: Value,
     ) {
       super()
     }

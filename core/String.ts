@@ -1,5 +1,5 @@
-import { Type } from "./Type.ts"
+import { Value } from "./Value.ts"
 
-export class String extends Type.make("String")<StringSource, string, string> {}
+export class String extends Value.make("String")<StringSource, string, string> {}
 
 export type StringSource = never

@@ -1,4 +1,4 @@
-import { Result, Type } from "../core/mod.ts"
+import { Result, Value } from "../core/mod.ts"
 import { SignalOptions } from "../util/AbortController.ts"
 import { Subscription } from "../util/Subscription.ts"
 import { unimplemented } from "../util/unimplemented.ts"
@@ -9,7 +9,7 @@ export class Client implements Disposable {
   send<R extends Result>(
     _tx: () => Generator<unknown, R>,
     _options: SignalOptions,
-  ): Subscription<TxStatus<Type.Native<R>>> {
+  ): Subscription<TxStatus<Value.Native<R>>> {
     unimplemented()
   }
 

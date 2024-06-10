@@ -1,10 +1,10 @@
-import { Factory, Type } from "./Type.ts"
+import { Type, Value } from "./Value.ts"
 
-export function Hash<T extends Type, A extends HashAlgorithm>(
-  targetType: Factory<T>,
+export function Hash<T extends Value, A extends HashAlgorithm>(
+  targetType: Type<T>,
   algorithm: A,
 ) {
-  return class extends Type.make("Hash")<HashSource, Uint8Array, never, never> {
+  return class extends Value.make("Hash")<HashSource, Uint8Array, never, never> {
     targetType = targetType
     algorithm = algorithm
   }

@@ -3,7 +3,7 @@ import { unimplemented } from "../util/unimplemented.ts"
 import { Call, GenCall, Result, ValueCall, Yield } from "./Call.ts"
 import { Effect } from "./Effect.ts"
 import { None } from "./None.ts"
-import { Factory, Type } from "./Type.ts"
+import { Type, Value } from "./Value.ts"
 
 export type BoolSource =
   | BoolSource.True
@@ -24,38 +24,38 @@ export namespace BoolSource {
     }
   }
   export class Equals extends Tagged("Equals") {
-    constructor(readonly left: Type, readonly right: Type) {
+    constructor(readonly left: Value, readonly right: Value) {
       super()
     }
   }
   export class Is extends Tagged("Is") {
-    constructor(readonly inQuestion: Type, readonly match: Factory) {
+    constructor(readonly inQuestion: Value, readonly match: Type) {
       super()
     }
   }
   export class IntGt extends Tagged("IntGt") {
-    constructor(readonly left: Type, readonly right: unknown) {
+    constructor(readonly left: Value, readonly right: unknown) {
       super()
     }
   }
   export class IntGte extends Tagged("IntGte") {
-    constructor(readonly left: Type, readonly right: unknown) {
+    constructor(readonly left: Value, readonly right: unknown) {
       super()
     }
   }
   export class IntLt extends Tagged("IntLt") {
-    constructor(readonly left: Type, readonly right: unknown) {
+    constructor(readonly left: Value, readonly right: unknown) {
       super()
     }
   }
   export class IntLte extends Tagged("IntLte") {
-    constructor(readonly left: Type, readonly right: unknown) {
+    constructor(readonly left: Value, readonly right: unknown) {
       super()
     }
   }
 }
 
-export class bool extends Type.make("bool")<BoolSource, boolean, boolean, never> {
+export class bool extends Value.make("bool")<BoolSource, boolean, boolean, never> {
   static true = new this(new BoolSource.True())
   static false = new this(new BoolSource.False())
 
@@ -69,7 +69,7 @@ export class bool extends Type.make("bool")<BoolSource, boolean, boolean, never>
     return new bool(new BoolSource.Not(this))
   }
 
-  assert<E extends Type>(_error: E): Effect<E, never> {
+  assert<E extends Value>(_error: E): Effect<E, never> {
     unimplemented()
   }
 }

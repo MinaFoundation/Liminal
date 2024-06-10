@@ -1,8 +1,8 @@
 import * as G from "../util/generator/collect.ts"
-import { Type } from "./Type.ts"
+import { Value } from "./Value.ts"
 
-export type Yield = Type
-export type Result = Type | void
+export type Yield = Value
+export type Result = Value | void
 
 export type ValueCall<R, A extends unknown[]> = R | ((...args: A) => R)
 

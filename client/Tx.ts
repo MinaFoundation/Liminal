@@ -1,12 +1,12 @@
 import { Call, Result, Yield } from "../core/Call.ts"
 import { SignerRequirement } from "../core/Id.ts"
-import { Type } from "../core/Type.ts"
+import { Value } from "../core/Value.ts"
 import { SignalOptions } from "../util/AbortController.ts"
 import { Subscription } from "../util/Subscription.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { Client, TxBroadcast, TxFinalization, TxInclusion, TxStatus } from "./Client.ts"
 
-export function tx<R extends Type>(f: R | (() => R)): Tx<never, R>
+export function tx<R extends Value>(f: R | (() => R)): Tx<never, R>
 export function tx<Y extends Yield, R extends Result>(
   f: Generator<Y, R> | (() => Generator<Y, R>),
 ): Tx<Y, R>
@@ -42,12 +42,14 @@ export class SignedTx<Y extends Yield, R extends Result> {
   }
 }
 
-export type TxHandler<Y extends Yield> = (value: Type.Native<Exclude<Y, SignerRequirement>>) => void
+export type TxHandler<Y extends Yield> = (
+  value: Value.Native<Exclude<Y, SignerRequirement>>,
+) => void
 
 export class TxRun<Y extends Yield, R extends Result> {
   constructor(readonly signedTx: SignedTx<Y, R>) {}
 
-  commit(_chain: Client, _options?: CommitOptions): Commit<Type.Native<R>> {
+  commit(_chain: Client, _options?: CommitOptions): Commit<Value.Native<R>> {
     unimplemented()
   }
 }
