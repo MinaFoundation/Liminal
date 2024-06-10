@@ -3,11 +3,12 @@ import { Setter } from "../util/Setter.ts"
 import { Tagged } from "../util/Tagged.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { bool, BoolSource } from "./Bool.ts"
-import { GenCall, Result, ValueCall, Yield } from "./Call.ts"
+import { Call, GenCall, Result, ValueCall, Yield } from "./Call.ts"
 import { Effect } from "./Effect.ts"
 import { Union, UnionCtor } from "./Union.ts"
 
-export type Type<T extends Value = any> = new(source: any) => T
+// TODO: is this void exclusion cursed?
+export type Type<T extends Value | void = any> = new(source: any) => Exclude<T, void>
 
 export class Value<
   Name extends string = any,
@@ -92,7 +93,17 @@ export class Value<
     match: M,
     f: GenCall<Y, R, [InstanceType<M>]>,
   ): Effect<Y, U>
-  match(_match: any, _f: any): any {
+  match<
+    T extends Value,
+    M extends Type<T>,
+    Y extends Yield,
+    R extends Result,
+    U extends Exclude<T, InstanceType<M>> | R,
+  >(
+    this: T,
+    _match: M,
+    _f: Call<Y, R, [InstanceType<M>]>,
+  ): U | Effect<Y, U> {
     unimplemented()
   }
 
