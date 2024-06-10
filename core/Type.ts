@@ -4,7 +4,7 @@ import { unimplemented } from "../util/unimplemented.ts"
 import { bool, BoolSource } from "./Bool.ts"
 import { GenCall, Result, ValueCall, Yield } from "./Call.ts"
 import { Effect } from "./Effect.ts"
-import { Union, UnionCtor } from "./Union.ts"
+import { UnionCtor } from "./Union.ts"
 
 export type Factory<T extends Type = any> = new(source: any) => T
 
@@ -119,11 +119,7 @@ export declare namespace Type {
   export type From<T> = T extends Type<any, any, any, infer From> ? From : never
   export type Native<T extends Type | void> = T extends Type<any, any, infer N> ? N : undefined
   export type Source<T extends Type> = T extends Type<any, infer S> ? S : never
-  export type Args = Record<any, Factory>
-  export type ArgsResolved<A extends Type[]> = {
-    [K in keyof A]: Union.Unwrap<A[K]> | From<A[K]> | Native<A[K]>
-  }
-  // export type Arg<F extends Factory> = InstanceType<F> | From<F> | Native<InstanceType<F>>
+  export type ArgsResolved<A extends Type[]> = { [K in keyof A]: A[K] | From<A[K]> | Native<A[K]> }
 }
 
 export type TypeSource =
