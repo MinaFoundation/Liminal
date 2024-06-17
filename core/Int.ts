@@ -1,5 +1,6 @@
 import { Tagged } from "../util/Tagged.ts"
 import { bool, BoolSource } from "./Bool.ts"
+import { id } from "./Id.ts"
 import { List } from "./List.ts"
 import { LSet } from "./LSet.ts"
 import { Mapping } from "./Mapping.ts"
@@ -180,8 +181,17 @@ export namespace IntSource {
   }
 }
 
-export type U256Source = U256Source.MappingSize | U256Source.ListSize | U256Source.LSetSize
+export type U256Source =
+  | U256Source.MappingSize
+  | U256Source.ListSize
+  | U256Source.LSetSize
+  | U256Source.Balance
 export namespace U256Source {
+  export class Balance extends Tagged("Balance") {
+    constructor(readonly self: id) {
+      super()
+    }
+  }
   export class MappingSize extends Tagged("MappingSize") {
     constructor(readonly self: Mapping) {
       super()

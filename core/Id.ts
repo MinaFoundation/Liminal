@@ -2,7 +2,7 @@ import { Store } from "../client/mod.ts"
 import { Tagged } from "../util/Tagged.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { Effect } from "./Effect.ts"
-import { u64 } from "./Int.ts"
+import { u256, U256Source } from "./Int.ts"
 import { Value } from "./Value.ts"
 
 export type IdSource = IdSource.Sender | IdSource.Self | IdSource.Caller | IdSource.Null
@@ -19,6 +19,8 @@ export class id extends Value.make("id")<IdSource, Uint8Array, Uint8Array> {
   static fromHex(_hex: string): id {
     unimplemented()
   }
+
+  balance = new u256(new U256Source.Balance(this))
 
   bind<N>(_namespace: N): Contract<N> {
     unimplemented()
@@ -79,7 +81,7 @@ export interface DeployOptions {
 
 export interface SendProps {
   to: id
-  amount: u64
+  amount: u256
 }
 
 export type Contract<N> =
