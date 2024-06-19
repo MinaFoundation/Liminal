@@ -4,6 +4,7 @@ import { U256Counter } from "liminal/std"
 export class Members extends L.LSet(L.id) {}
 
 export class ProposalId extends L.u256 {}
+// TODO: how to actually represent the multisig id + signer + allow signing on behalf of the multisig?
 export class Proposal extends L.Struct({
   callVk: L.Vk,
   approvals: L.u8,
@@ -53,30 +54,36 @@ export class Propose
   })
 {}
 
-export function Approve<
-  Y extends L.Yield,
-  R extends L.Result,
->(f: L.F<Y, R, {}>) {
+export class Approve extends L.F({
+  multisigId: MultisigId,
+  proposalId: ProposalId,
+}, function*({ multisigId, proposalId }) {
+  const multisig = yield* multisigs.get(multisigId)
+    ["?"](L.None, MultisigDneError.new())
+  const proposal = yield* multisig.fields.proposals.get(proposalId)
+    ["?"](L.None, ProposalDneError.new())
+  yield* multisigs.assign(
+    multisigs.set(
+      multisigId,
+      Multisig.new({
+        ...multisig.fields,
+        proposals: multisig.fields.proposals.set(proposalId, {
+          ...proposal.fields,
+          approvals: proposal.fields.approvals.add(1),
+        }),
+      }),
+    ),
+  )
+}) {}
+
+export function Execute<Y extends L.Yield, R extends L.Result>(_f: L.F<Y, R, {}>) {
   return L.F({
     multisigId: MultisigId,
     proposalId: ProposalId,
   }, function*({ multisigId, proposalId }) {
-    const multisig = yield* multisigs.get(multisigId)
-      ["?"](L.None, MultisigDneError.new())
-    const proposal = yield* multisig.fields.proposals.get(proposalId)
-      ["?"](L.None, ProposalDneError.new())
-    yield* multisigs.assign(
-      multisigs.set(
-        multisigId,
-        Multisig.new({
-          ...multisig.fields,
-          proposals: multisig.fields.proposals.set(proposalId, {
-            ...proposal.fields,
-            approvals: proposal.fields.approvals.add(1),
-          }),
-        }),
-      ),
-    )
-    yield* proposal.fields.approvals.equals(multisig.fields.threshold).if(proposal.fields.callVk)
+    const multisig = yield* multisigs.get(multisigId)["?"](L.None)
+    const proposal = yield* multisig.fields.proposals.get(proposalId)["?"](L.None)
+    proposal
+    // TODO... how to actually execute `f` on behalf of the multisig?
   })
 }

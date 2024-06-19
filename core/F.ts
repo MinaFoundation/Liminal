@@ -8,18 +8,14 @@ import { Vk } from "./Vk.ts"
 export type Params = Record<any, Type>
 export type ParamsResolved<A extends Params> = { [K in keyof A]: Union.Members<InstanceType<A[K]>> }
 
-export interface F<
-  Y extends Yield,
-  R extends Result,
-  A extends Params,
-> extends InstanceType<FCtor<Y, R, A>> {}
-export type FCtor<
-  Y extends Yield,
-  R extends Result,
-  A extends Params,
-> = ReturnType<typeof f<Y, R, A>>
+export interface F<Y extends Yield, R extends Result, A extends Params>
+  extends InstanceType<FCtor<Y, R, A>>
+{}
+export type FCtor<Y extends Yield, R extends Result, A extends Params> = ReturnType<
+  typeof FInternal<Y, R, A>
+>
 
-export function f<
+function FInternal<
   Y extends Yield,
   R extends Result,
   A extends Params,
@@ -60,7 +56,9 @@ export function F<
   argTypes: A | Call<Y, R, []>,
   call?: Call<Y, R, [args: ParamsResolved<A>]>,
 ): FCtor<Y, R, A> {
-  return (typeof argTypes === "function" ? f({}, argTypes) : f(argTypes as never, call)) as never
+  return (typeof argTypes === "function"
+    ? FInternal({}, argTypes)
+    : FInternal(argTypes as never, call)) as never
 }
 
 export type FFrom<F extends Params> = { [K in keyof F]: Value.Args<[InstanceType<F[K]>]>[0] }
