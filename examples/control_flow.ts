@@ -26,6 +26,9 @@ declare const maybe: L.u8 | L.None
   // Handle values that were yielded from the call that produced the effect.
   const handled = effect.catch(L.None, L.u8.new(0))
   handled satisfies L.Effect<L.None, L.u8>
+
+  const matched = handled.match(L.u8, L.u256.new(1))
+  matched satisfies L.Effect<never, L.u256>
 }
 
 {
