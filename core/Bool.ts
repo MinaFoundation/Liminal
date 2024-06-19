@@ -8,6 +8,7 @@ import { Type, Value } from "./Value.ts"
 export type BoolSource =
   | BoolSource.True
   | BoolSource.False
+  | BoolSource.Random
   | BoolSource.Not
   | BoolSource.Equals
   | BoolSource.Is
@@ -18,6 +19,7 @@ export type BoolSource =
 export namespace BoolSource {
   export class True extends Tagged("True") {}
   export class False extends Tagged("False") {}
+  export class Random extends Tagged("Random") {}
   export class Not extends Tagged("Not") {
     constructor(readonly not: bool) {
       super()
@@ -58,6 +60,9 @@ export namespace BoolSource {
 export class bool extends Value.make("bool")<BoolSource, boolean, boolean, never> {
   static true = new this(new BoolSource.True())
   static false = new this(new BoolSource.False())
+  static random() {
+    return new this(new BoolSource.Random())
+  }
 
   if<R extends Result>(call: ValueCall<R, []>): If<never, R>
   if<Y extends Yield, R extends Result>(call: GenCall<Y, R, []>): If<Y, R>

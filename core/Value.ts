@@ -1,5 +1,3 @@
-import { Rest } from "../util/Rest.ts"
-import { Setter } from "../util/Setter.ts"
 import { Tagged } from "../util/Tagged.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { bool, BoolSource } from "./Bool.ts"
@@ -7,8 +5,7 @@ import { Call, GenCall, Result, ValueCall, Yield } from "./Call.ts"
 import { Effect } from "./Effect.ts"
 import { Union, UnionCtor } from "./Union.ts"
 
-// TODO: is this void exclusion cursed?
-export type Type<T extends Value | void = any> = new(source: any) => Exclude<T, void>
+export type Type<V extends Value | void = any> = new(source: any) => V
 
 export class Value<
   Name extends string = any,
@@ -17,7 +14,6 @@ export class Value<
   From = any,
   Into extends Value = any,
 > {
-  // TODO: rename
   static make<Name extends string>(name: Name) {
     return class<Source, Native = never, From = Native, Into extends Value = never>
       extends this<Name, Source, Native, From, Into>
@@ -35,15 +31,11 @@ export class Value<
     return Union(this, or) as never
   }
 
-  static new<T extends Value>(this: Type<T>, ...[value]: Rest<Value.From<T>>): T {
+  static new<T extends Value>(this: Type<T>, value?: Value.Args<[T]>[0]): T {
     return new this(new ValueSource.New(value))
   }
 
-  static withDefault<F extends Type>(this: F, _from: Value.From<InstanceType<F>>): F {
-    unimplemented()
-  }
-
-  static default<F extends Type>(this: F): InstanceType<F> {
+  static default<T extends Type>(this: T, _from: Value.Args<[InstanceType<T>]>[0]): T {
     unimplemented()
   }
 
@@ -56,7 +48,7 @@ export class Value<
     return new this.ctor(new ValueSource.Apply(this, metadata))
   }
 
-  assign<T extends Value>(_setter: Setter<T>): Effect<never, T> {
+  assign<T extends Value>(_setter: Value.Setter<T>): Effect<never, T> {
     unimplemented()
   }
 
@@ -64,7 +56,7 @@ export class Value<
     return new into(new ValueSource.Into(this))
   }
 
-  equals<T extends Value>(this: T, inQuestion: T): bool {
+  equals<T extends Value>(this: T, inQuestion: Value.Args<[T]>[0]): bool {
     return new bool(new BoolSource.Equals(this, inQuestion))
   }
 
@@ -130,6 +122,7 @@ export declare namespace Value {
   export type Native<T extends Value | void> = T extends Value<any, any, infer N> ? N : undefined
   export type Source<T extends Value> = T extends Value<any, infer S> ? S : never
   export type Args<A extends Value[]> = { [K in keyof A]: A[K] | From<A[K]> | Native<A[K]> }
+  export type Setter<V extends Value = any> = V | From<V> | Native<V> | ((value: V) => V)
 }
 
 export type ValueSource =

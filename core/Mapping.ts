@@ -25,7 +25,7 @@ export function Mapping<K extends Value, V extends Value>(
 
     size: u256 = new u256(new U256Source.MappingSize(this))
 
-    set(key: K, setter: V): Mapping<K, V> {
+    set(key: Value.Args<[K]>[0], setter: Value.Setter<V>): Mapping<K, V> {
       return new this.ctor(new MappingSource.Set(this, key, setter))
     }
 
@@ -78,7 +78,7 @@ export namespace MappingSource {
     constructor(
       readonly map: Mapping,
       readonly key: Value,
-      readonly value: Value,
+      readonly value: Value.Setter,
     ) {
       super()
     }

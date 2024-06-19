@@ -13,24 +13,26 @@ export const globalMetadata = Token.new(decodeHex(Deno.env.get("NFT_METADATA")!)
 export const tokens = Tokens.new()
 export const tokenOwners = TokenOwners.new()
 
-export const idCounter = U256Counter.default()
+export const idCounter = U256Counter.new()
 
 export class NotAuthorizedError extends L.Struct({ tag: "NotAuthorizedError" }) {}
 export class SpecifiedTokenDneError extends L.Struct({ tag: "SpecifiedTokenDneError" }) {}
 
-export const getOwner = L.f({ tokenId: TokenId }, ({ tokenId }) => tokenOwners.get(tokenId))
+export class getOwner
+  extends L.F({ tokenId: TokenId }, ({ tokenId }) => tokenOwners.get(tokenId))
+{}
 
-export const getToken = L.f({ tokenId: TokenId }, ({ tokenId }) => tokens.get(tokenId))
+export class GetToken extends L.F({ tokenId: TokenId }, ({ tokenId }) => tokens.get(tokenId)) {}
 
-export const create = L.f({ metadata: Token }, function*({ metadata }) {
+export class Create extends L.F({ metadata: Token }, function*({ metadata }) {
   yield* L.sender.equals(admin).assert(NotAuthorizedError.new())
   const tokenId = TokenId.new(yield* idCounter.next())
   yield* tokens.assign(tokens.set(tokenId, metadata))
   yield* tokenOwners.assign(tokenOwners.set(tokenId, L.sender))
   return tokenId
-})
+}) {}
 
-export const destroy = L.f({ tokenId: TokenId }, function*({ tokenId }) {
+export class Destroy extends L.F({ tokenId: TokenId }, function*({ tokenId }) {
   yield* tokens.get(tokenId)["?"](L.None, SpecifiedTokenDneError.new())
   yield* tokenOwners
     .get(tokenId)
@@ -42,9 +44,9 @@ export const destroy = L.f({ tokenId: TokenId }, function*({ tokenId }) {
     ["?"](L.None, L.Never.new())
   yield* tokens.assign(tokens.delete(tokenId))
   yield* tokenOwners.assign(tokenOwners.delete(tokenId))
-})
+}) {}
 
-export const transfer = L.f({
+export class Transfer extends L.F({
   to: L.id,
   tokenId: TokenId,
 }, function*({ to, tokenId }) {
@@ -52,4 +54,4 @@ export const transfer = L.f({
   const tokenOwner = yield* tokenOwners.get(tokenId)["?"](L.None, L.Never.new())
   yield* tokenOwner.equals(L.sender).assert(NotAuthorizedError.new())
   yield* tokenOwners.assign(tokenOwners.set(tokenId, to))
-})
+}) {}

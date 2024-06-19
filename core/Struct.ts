@@ -1,6 +1,5 @@
 import { Flatten } from "../util/Flatten.ts"
 import { isKey } from "../util/isKey.ts"
-import { Setter } from "../util/Setter.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { Key } from "./Key.ts"
 import { Type, Value, ValueSource } from "./Value.ts"
@@ -29,7 +28,7 @@ export function Struct<const F extends FieldTypes>(fieldTypes: F) {
     >(
       this: T,
       _key: K,
-      _setter: Setter<InstanceType<V[K]>>,
+      _setter: Value.Setter<InstanceType<V[K]>>,
     ): T {
       unimplemented()
     }
@@ -53,7 +52,7 @@ export type Fields<F extends FieldTypes = any> = {
 export type StructFrom<F extends FieldTypes = any> = F extends Record<string, keyof any> ? undefined
   : {
     -readonly [K in keyof F as F[K] extends Type ? K : never]: F[K] extends Type<infer T>
-      ? T | Value.Native<T>
+      ? T | Value.From<T> | Value.Native<T>
       : never
   }
 

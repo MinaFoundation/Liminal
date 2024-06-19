@@ -10,7 +10,7 @@ export class Allowances extends L.Mapping(L.id, Balances) {}
 export const allowances = Allowances.new()
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L16
-export class Transfer extends L.Struct({
+export class TransferEvent extends L.Struct({
   tag: "Transfer",
   from: L.id,
   to: L.id,
@@ -18,7 +18,7 @@ export class Transfer extends L.Struct({
 }) {}
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L22
-export class Approval extends L.Struct({
+export class ApprovalEvent extends L.Struct({
   tag: "Approval",
   owner: L.id,
   spender: L.id,
@@ -31,13 +31,13 @@ export class CannotTargetNullAddress extends L.Struct({ tag: "CannotTargetNullAd
 export class InsufficientAllowance extends L.Struct({ tag: "InsufficientAllowance" }) {}
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L32
-export const balanceOf = L.f(
+export class balanceOf extends L.F(
   { account: L.id },
   ({ account }) => balances.get(account).match(L.None, L.u256.new(0)),
-)
+) {}
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L41
-export const transfer = L.f({
+export class Transfer extends L.F({
   to: L.id,
   value: L.u256,
 }, function*({ to, value }) {
@@ -51,11 +51,11 @@ export const transfer = L.f({
   const newBalances = balances.set(L.sender, newSenderBalance).set(to, toNewBalance)
   yield* balances.assign(newBalances)
   yield* to.equals(L.nullId).if(totalSupply.assign(totalSupply.subtract(value)))
-  yield Transfer.new({ from: L.sender, to, value })
-})
+  yield TransferEvent.new({ from: L.sender, to, value })
+}) {}
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L50
-export const allowance = L.f({
+export class Allowance extends L.F({
   owner: L.id,
   spender: L.id,
 }, ({ owner, spender }) =>
@@ -63,9 +63,10 @@ export const allowance = L.f({
     .get(owner)
     .match(L.None, L.u256.new(0))
     .match(Balances, (balances) => balances.get(spender)))
+{}
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L67
-export const approve = L.f({
+export class Approve extends L.F({
   spender: L.id,
   value: L.u256,
 }, function*({ spender, value }) {
@@ -80,10 +81,10 @@ export const approve = L.f({
   const newOwnerApprovals = ownerApprovals.set(spender, newSpenderAllowance)
   const newAllowances = allowances.set(L.sender, newOwnerApprovals)
   yield* allowances.assign(newAllowances)
-})
+}) {}
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L78
-export const transferFrom = L.f({
+export class TransferFrom extends L.F({
   from: L.id,
   to: L.id,
   value: L.u256,
@@ -112,7 +113,7 @@ export const transferFrom = L.f({
     .match(L.None, value)
   const newBalances = balances.set(from, newFromBalance).set(to, toNewBalance)
   yield* balances.assign(newBalances)
-})
+}) {}
 
 function* assertHasBalanceGte(inQuestion: L.id, value: L.u256) {
   const inQuestionBalance = yield* balances.get(inQuestion)["?"](L.None, InsufficientBalance.new())

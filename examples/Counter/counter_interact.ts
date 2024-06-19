@@ -9,7 +9,7 @@ await L
   .tx(function*() {
     const counter = L.id.fromHex(Deno.env.get("COUNTER_ID")!).bind(Counter)
     for (let i = 0; i < 20; i++) {
-      yield* counter.increment({ by: L.none })
+      yield* counter.Increment.new({ by: L.none }).run()
     }
   })
   .sign(sender)
