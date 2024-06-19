@@ -1,53 +1,66 @@
+import { unimplemented } from "../util/unimplemented.ts"
 import { Call, GenCall, Result, ValueCall, Yield } from "./Call.ts"
 import { Effect } from "./Effect.ts"
 import { Union } from "./Union.ts"
-import { Type, Value, ValueSource } from "./Value.ts"
+import { Type, Value } from "./Value.ts"
+import { Vk } from "./Vk.ts"
 
 export type Params = Record<any, Type>
 export type ParamsResolved<A extends Params> = { [K in keyof A]: Union.Members<InstanceType<A[K]>> }
 
-export class FInternal<A extends Params, Y extends Yield, R extends Result>
-  extends Value.make("F")<never, Uint8Array>
-{
-  constructor(
-    source: ValueSource,
-    readonly argTypes: A,
-    readonly call: Call<Y, R, [args: ParamsResolved<A>]>,
-  ) {
-    super(source)
-    const call_ = (..._args: any) => {} // TODO
-    Object.setPrototypeOf(call_, FInternal.prototype)
-    Object.assign(call_, this)
+export interface F<
+  Y extends Yield,
+  R extends Result,
+  A extends Params,
+> extends InstanceType<FCtor<Y, R, A>> {}
+export type FCtor<
+  Y extends Yield,
+  R extends Result,
+  A extends Params,
+> = ReturnType<typeof f<Y, R, A>>
+
+export function f<
+  Y extends Yield,
+  R extends Result,
+  A extends Params,
+>(
+  argTypes: A,
+  call: Call<Y, R, [args: ParamsResolved<A>]>,
+) {
+  return class extends Value.make("F")<never, never, FFrom<A>> {
+    argTypes = argTypes
+    call = call
+    vk = new Vk(this)
+
+    run(): [Y] extends [never] ? R : Effect<Y, R> {
+      return unimplemented()
+    }
   }
 }
-export interface F<A extends Params, Y extends Yield, R extends Result> extends FInternal<A, Y, R> {
-  (_args: ParamsResolved<A>): Effect<Y, R>
-}
 
-export function f<R extends Result>(call: ValueCall<R, []>): F<{}, never, R>
-export function f<R extends Result, A extends Params>(
+export function F<R extends Result>(call: ValueCall<R, []>): FCtor<never, R, {}>
+export function F<R extends Result, A extends Params>(
   argTypes: A,
   call: ValueCall<R, [args: ParamsResolved<A>]>,
-): F<A, never, R>
-export function f<Y extends Yield, R extends Result>(f: GenCall<Y, R, []>): F<{}, Y, R>
-export function f<
+): FCtor<never, R, A>
+export function F<Y extends Yield, R extends Result>(call: GenCall<Y, R, []>): FCtor<Y, R, {}>
+export function F<
   Y extends Yield,
   R extends Result,
   A extends Params,
 >(
   argTypes: A,
   call: GenCall<Y, R, [args: ParamsResolved<A>]>,
-): F<A, Y, R>
-export function f<
+): FCtor<Y, R, A>
+export function F<
   Y extends Yield,
   R extends Result,
   A extends Params,
 >(
-  argTypesOrF: A | Call<Y, R, []>,
+  argTypes: A | Call<Y, R, []>,
   call?: Call<Y, R, [args: ParamsResolved<A>]>,
-): F<A, Y, R> {
-  if (typeof argTypesOrF === "function") {
-    return new FInternal(null!, {} as never, argTypesOrF) as never
-  }
-  return new FInternal(null!, argTypesOrF as never, call) as never
+): FCtor<Y, R, A> {
+  return (typeof argTypes === "function" ? f({}, argTypes) : f(argTypes as never, call)) as never
 }
+
+export type FFrom<F extends Params> = { [K in keyof F]: Value.Args<[InstanceType<F[K]>]>[0] }

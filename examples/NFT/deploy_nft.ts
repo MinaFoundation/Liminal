@@ -11,13 +11,8 @@ const contractId = L.id.fromHex(Deno.env.get("CONTRACT_ID")!)
 await L
   .tx(function*() {
     const contract = yield* contractId.signer("contract").deploy(NFT)
-    const tokenId = yield* contract.create({
-      metadata: NFT.Token.new(new Uint8Array()),
-    })
-    yield* contract.transfer({
-      tokenId,
-      to: L.nullId,
-    })
+    const tokenId = yield* contract.Create.new({ metadata: new Uint8Array() }).run()
+    yield* contract.Transfer.new({ tokenId, to: L.nullId }).run()
   })
   .sign(senderSigner, { contract: contractSigner })
   .run()
