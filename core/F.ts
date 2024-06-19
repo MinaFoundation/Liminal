@@ -3,7 +3,6 @@ import { Call, GenCall, Result, ValueCall, Yield } from "./Call.ts"
 import { Effect } from "./Effect.ts"
 import { Union } from "./Union.ts"
 import { Type, Value } from "./Value.ts"
-import { Vk } from "./Vk.ts"
 
 export type Params = Record<any, Type>
 export type ParamsResolved<A extends Params> = { [K in keyof A]: Union.Members<InstanceType<A[K]>> }
@@ -11,22 +10,16 @@ export type ParamsResolved<A extends Params> = { [K in keyof A]: Union.Members<I
 export interface F<Y extends Yield, R extends Result, A extends Params>
   extends InstanceType<FCtor<Y, R, A>>
 {}
-export type FCtor<Y extends Yield, R extends Result, A extends Params> = ReturnType<
-  typeof FInternal<Y, R, A>
->
+export type FCtor<Y extends Yield = any, R extends Result = any, A extends Params = any> =
+  ReturnType<typeof FInternal<Y, R, A>>
 
-function FInternal<
-  Y extends Yield,
-  R extends Result,
-  A extends Params,
->(
+function FInternal<Y extends Yield, R extends Result, A extends Params>(
   argTypes: A,
   call: Call<Y, R, [args: ParamsResolved<A>]>,
 ) {
   return class extends Value.make("F")<never, never, FFrom<A>> {
     argTypes = argTypes
     call = call
-    vk = new Vk(this)
 
     run(): [Y] extends [never] ? R : Effect<Y, R> {
       return unimplemented()

@@ -1,14 +1,13 @@
 import * as L from "liminal"
 import { U256Counter } from "liminal/std"
 
+export class Call extends L.Bytes(64) {}
+
 export class Members extends L.LSet(L.id) {}
 
-export class ProposalId extends L.u256 {}
 // TODO: how to actually represent the multisig id + signer + allow signing on behalf of the multisig?
-export class Proposal extends L.Struct({
-  callVk: L.Vk,
-  approvals: L.u8,
-}) {}
+export class ProposalId extends L.u256 {}
+export class Proposal extends L.Struct({ call: Call, approvals: L.u8 }) {}
 export class Proposals extends L.Mapping(ProposalId, Proposal) {}
 
 export class MultisigId extends L.u256 {}
@@ -45,11 +44,11 @@ export class Destroy extends L.F({ multisigId: MultisigId }, function*({ multisi
 }) {}
 
 export class Propose
-  extends L.F({ multisigId: MultisigId, callVk: L.Vk }, function*({ multisigId, callVk }) {
+  extends L.F({ multisigId: MultisigId, call: Call }, function*({ multisigId, call }) {
     const multisig = yield* multisigs.get(multisigId)
       ["?"](L.None, MultisigDneError.new())
     const proposalId = yield* proposalsCount.next()
-    const proposals = multisig.fields.proposals.set(proposalId, { callVk, approvals: 0 })
+    const proposals = multisig.fields.proposals.set(proposalId, { call, approvals: 0 })
     yield* multisigs.assign(multisigs.set(multisigId, { ...multisig.fields, proposals }))
   })
 {}
@@ -63,16 +62,13 @@ export class Approve extends L.F({
   const proposal = yield* multisig.fields.proposals.get(proposalId)
     ["?"](L.None, ProposalDneError.new())
   yield* multisigs.assign(
-    multisigs.set(
-      multisigId,
-      Multisig.new({
-        ...multisig.fields,
-        proposals: multisig.fields.proposals.set(proposalId, {
-          ...proposal.fields,
-          approvals: proposal.fields.approvals.add(1),
-        }),
+    multisigs.set(multisigId, {
+      ...multisig.fields,
+      proposals: multisig.fields.proposals.set(proposalId, {
+        ...proposal.fields,
+        approvals: proposal.fields.approvals.add(1),
       }),
-    ),
+    }),
   )
 }) {}
 

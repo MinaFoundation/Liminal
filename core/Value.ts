@@ -5,7 +5,7 @@ import { Call, GenCall, Result, ValueCall, Yield } from "./Call.ts"
 import { Effect } from "./Effect.ts"
 import { Union, UnionCtor } from "./Union.ts"
 
-export type Type<V extends Value = any> = new(source: any) => V
+export type Type<V extends Value | void = any> = new(source: any) => V
 
 export class Value<
   Name extends string = any,
