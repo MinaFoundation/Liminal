@@ -15,7 +15,12 @@ export class Multisig extends L.Struct({
   members: Members,
   proposals: Proposals,
   threshold: L.u8,
-}) {}
+  account: L.anonymousId,
+}) {
+  *fund(...[from, amount]: L.Value.Args<[L.id, L.u256]>) {
+    // this.fields.account.send({})
+  }
+}
 export class Multisigs extends L.Mapping(MultisigId, Multisig) {}
 
 export class MultisigDneError extends L.Struct({ tag: "MultisigDneError" }) {}
@@ -29,13 +34,14 @@ export const proposalsCount = U256Counter.new()
 export class Create
   extends L.F({ members: Members, threshold: L.u8 }, function*({ members, threshold }) {
     yield* threshold.gte(2).assert(SoleSignatoryError.new())
-    yield* multisigs.assign(
-      multisigs.set(yield* multisigsCount.next(), {
-        members,
-        threshold,
-        proposals: Proposals.new(),
-      }),
-    )
+    const multisig = Multisig.new({
+      members,
+      threshold,
+      proposals: Proposals.new(),
+      account: L.anonymousId.new(),
+    })
+    yield* multisigs.assign(multisigs.set(yield* multisigsCount.next(), multisig))
+    return multisig
   })
 {}
 
@@ -72,14 +78,23 @@ export class Approve extends L.F({
   )
 }) {}
 
-export function Execute<Y extends L.Yield, R extends L.Result>(_f: L.F<Y, R, {}>) {
+export function Execute<R extends L.Result>(f: L.FCtor<L.SignerRequirement<"multisig">, R, {}>) {
   return L.F({
     multisigId: MultisigId,
     proposalId: ProposalId,
   }, function*({ multisigId, proposalId }) {
     const multisig = yield* multisigs.get(multisigId)["?"](L.None)
     const proposal = yield* multisig.fields.proposals.get(proposalId)["?"](L.None)
-    proposal
-    // TODO... how to actually execute `f` on behalf of the multisig?
+    // also make sure that the `Call` is equal to `_f`
+    yield* proposal.fields.approvals
+      .gte(multisig.fields.threshold)
+      .if(
+        f
+          .new()
+          .sign({ multisig: multisig.fields.account })
+          .run() as never,
+      )
   })
 }
+
+// Execute(blah).new({multisigId, proposalId}).run()
