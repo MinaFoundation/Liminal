@@ -1,57 +1,68 @@
 import { unimplemented } from "../util/unimplemented.ts"
-import { Call, GenCall, Result, ValueCall, Yield } from "./Call.ts"
+import { Result } from "./Call.ts"
 import { Effect } from "./Effect.ts"
-import { Union } from "./Union.ts"
-import { Type, Value } from "./Value.ts"
+import { Value } from "./Value.ts"
+import { Vk, VkSource } from "./Vk.ts"
 
-export type Params = Record<any, Type>
-export type ParamsResolved<A extends Params> = { [K in keyof A]: Union.Members<InstanceType<A[K]>> }
+export function effect<P extends Value.PropTypes, T, Y extends Value, R extends Result>(
+  propTypes: P,
+  statements: EffectStatements<T, [props: Value.PropsResolved<P>], Y, R>,
+): EffectType<P, T, Y, R>
+export function effect<T, Y extends Value, R extends Result>(
+  statements: EffectStatements<T, [props: {}], Y, R>,
+): EffectType<{}, T, Y, R>
+export function effect<T, Y extends Value, R extends Result>(
+  statements: EffectStatements<T, [props: {}], Y, R>,
+): EffectType<{}, T, Y, R>
+export function effect<P extends Value.PropTypes, T, Y extends Value, R extends Result>(
+  propTypesOrStatements: P | EffectStatements<T, [props: {}], Y, R>,
+  maybeStatements?: EffectStatements<T, [props: Value.PropsResolved<P>], Y, R>,
+): EffectType<P, T, Y, R> {
+  return (typeof propTypesOrStatements === "function"
+    ? effectInternal({}, propTypesOrStatements)
+    : effectInternal(
+      propTypesOrStatements as never,
+      maybeStatements as never,
+    )) as never
+}
 
-export interface F<Y extends Yield, R extends Result, A extends Params>
-  extends InstanceType<FCtor<Y, R, A>>
-{}
-export type FCtor<Y extends Yield = any, R extends Result = any, A extends Params = any> =
-  ReturnType<typeof FInternal<Y, R, A>>
+export type EffectStatements<
+  T,
+  A extends unknown[],
+  Y extends Value,
+  R extends Result,
+> = Generator<Y, R> | ((this: T, ...args: A) => Generator<Y, R>)
 
-function FInternal<Y extends Yield, R extends Result, A extends Params>(
-  argTypes: A,
-  call: Call<Y, R, [args: ParamsResolved<A>]>,
+export interface EffectType<
+  P extends Value.PropTypes = any,
+  T = any,
+  Y extends Value = any,
+  R extends Result = any,
+> extends ReturnType<typeof effectInternal<P, T, Y, R>> {}
+
+export function effectInternal<
+  P extends Value.PropTypes,
+  T,
+  Y extends Value,
+  R extends Result,
+>(
+  propTypes: P,
+  statements: EffectStatements<T, [props: Value.PropsResolved<P>], Y, R>,
 ) {
-  return class extends Value.make("F")<never, never, FFrom<A>> {
-    argTypes = argTypes
-    call = call
+  return class extends Value.make("Pure")<never, string, EffectFrom<P>> {
+    propTypes = propTypes
+    statements = statements
+    vk = new Vk(new VkSource(this))
 
-    run(): [Y] extends [never] ? R : Effect<Y, R> {
-      return unimplemented()
+    run(): Effect<Y, R> {
+      unimplemented()
     }
   }
 }
 
-export function F<R extends Result>(call: ValueCall<R, []>): FCtor<never, R, {}>
-export function F<R extends Result, A extends Params>(
-  argTypes: A,
-  call: ValueCall<R, [args: ParamsResolved<A>]>,
-): FCtor<never, R, A>
-export function F<Y extends Yield, R extends Result>(call: GenCall<Y, R, []>): FCtor<Y, R, {}>
-export function F<
-  Y extends Yield,
-  R extends Result,
-  A extends Params,
->(
-  argTypes: A,
-  call: GenCall<Y, R, [args: ParamsResolved<A>]>,
-): FCtor<Y, R, A>
-export function F<
-  Y extends Yield,
-  R extends Result,
-  A extends Params,
->(
-  argTypes: A | Call<Y, R, []>,
-  call?: Call<Y, R, [args: ParamsResolved<A>]>,
-): FCtor<Y, R, A> {
-  return (typeof argTypes === "function"
-    ? FInternal({}, argTypes)
-    : FInternal(argTypes as never, call)) as never
+export type EffectFrom<P extends Value.PropTypes = any> = {
+  [K in keyof P]:
+    | InstanceType<P[K]>
+    | Value.From<InstanceType<P[K]>>
+    | Value.Native<InstanceType<P[K]>>
 }
-
-export type FFrom<F extends Params> = { [K in keyof F]: Value.Args<[InstanceType<F[K]>]>[0] }

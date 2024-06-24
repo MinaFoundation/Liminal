@@ -1,8 +1,10 @@
 import { unimplemented } from "../util/unimplemented.ts"
-import { Call, GenCall, Result, ValueCall, Yield } from "./Call.ts"
+import { Result, Statements } from "./Call.ts"
+import { EffectStatements } from "./F.ts"
+import { PureStatements } from "./Pure.ts"
 import { Type, Value } from "./Value.ts"
 
-export abstract class Effect<Y extends Yield, R extends Result> implements Generator<Y, R> {
+export abstract class Effect<Y extends Value, R extends Result> implements Generator<Y, R> {
   declare yields?: Y[]
   declare result?: R
 
@@ -30,17 +32,17 @@ export abstract class Effect<Y extends Yield, R extends Result> implements Gener
 
   match<T extends Type<R>, R2 extends Result>(
     match: T,
-    f: ValueCall<R2, [InstanceType<T>]>,
+    statements: PureStatements<{}, [InstanceType<T>], R2>,
   ): Effect<Y, Exclude<R, InstanceType<T>> | R2>
-  match<T extends Type<R>, Y2 extends Yield, R2 extends Result>(
+  match<T extends Type<R>, Y2 extends Value, R2 extends Result>(
     this: Effect<Y, R>,
     match: T,
-    f: GenCall<Y2, R2, [InstanceType<T>]>,
+    statements: EffectStatements<{}, [InstanceType<T>], Y2, R2>,
   ): Effect<Y | Y2, Exclude<R, InstanceType<T>> | R2>
-  match<T extends Type<R>, Y2 extends Yield, R2 extends Result>(
+  match<T extends Type<R>, Y2 extends Value, R2 extends Result>(
     this: Effect<Y, R>,
     _match: T,
-    _f: Call<Y2, R2, [InstanceType<T>]>,
+    _statements: Statements<{}, [InstanceType<T>], Y2, R2>,
   ): Effect<Y | Y2, Exclude<R, InstanceType<T>> | R2> {
     unimplemented()
   }
@@ -64,23 +66,23 @@ export abstract class Effect<Y extends Yield, R extends Result> implements Gener
     R2 extends Result,
   >(
     match: M,
-    f: ValueCall<R2, [InstanceType<M>]>,
+    statements: PureStatements<{}, [InstanceType<M>], R2>,
   ): Effect<Exclude<Y, InstanceType<M>>, R | R2>
   catch<
     M extends Type<Y>,
-    Y2 extends Yield,
+    Y2 extends Value,
     R2 extends Result,
   >(
     match: M,
-    f: GenCall<Y, R2, [InstanceType<M>]>,
+    statements: EffectStatements<{}, [InstanceType<M>], Y, R2>,
   ): Effect<Exclude<Y, InstanceType<M>> | Y2, R | R2>
   catch<
     M extends Type<Y>,
-    Y2 extends Yield,
+    Y2 extends Value,
     R2 extends Result,
   >(
     _match: M,
-    _f: Call<Y, R2, [InstanceType<M>]>,
+    _statements: Statements<{}, [InstanceType<M>], Y, R2>,
   ): Effect<Exclude<Y, InstanceType<M>> | Y2, R | R2> {
     unimplemented()
   }

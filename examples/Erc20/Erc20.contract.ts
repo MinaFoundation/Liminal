@@ -31,13 +31,13 @@ export class CannotTargetNullAddress extends L.Struct({ tag: "CannotTargetNullAd
 export class InsufficientAllowance extends L.Struct({ tag: "InsufficientAllowance" }) {}
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L32
-export class balanceOf extends L.F(
+export const balanceOf = L.pure(
   { account: L.id },
   ({ account }) => balances.get(account).match(L.None, L.u256.new(0)),
-) {}
+)
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L41
-export class Transfer extends L.F({
+export const Transfer = L.effect({
   to: L.id,
   value: L.u256,
 }, function*({ to, value }) {
@@ -52,10 +52,10 @@ export class Transfer extends L.F({
   yield* balances.assign(newBalances)
   yield* to.equals(L.nullId).if(totalSupply.assign(totalSupply.subtract(value)))
   yield TransferEvent.new({ from: L.sender, to, value })
-}) {}
+})
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L50
-export class Allowance extends L.F({
+export const Allowance = L.pure({
   owner: L.id,
   spender: L.id,
 }, ({ owner, spender }) =>
@@ -63,10 +63,9 @@ export class Allowance extends L.F({
     .get(owner)
     .match(L.None, L.u256.new(0))
     .match(Balances, (balances) => balances.get(spender)))
-{}
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L67
-export class Approve extends L.F({
+export const Approve = L.effect({
   spender: L.id,
   value: L.u256,
 }, function*({ spender, value }) {
@@ -81,10 +80,10 @@ export class Approve extends L.F({
   const newOwnerApprovals = ownerApprovals.set(spender, newSpenderAllowance)
   const newAllowances = allowances.set(L.sender, newOwnerApprovals)
   yield* allowances.assign(newAllowances)
-}) {}
+})
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L78
-export class TransferFrom extends L.F({
+export const TransferFrom = L.effect({
   from: L.id,
   to: L.id,
   value: L.u256,
@@ -113,7 +112,7 @@ export class TransferFrom extends L.F({
     .match(L.None, value)
   const newBalances = balances.set(from, newFromBalance).set(to, toNewBalance)
   yield* balances.assign(newBalances)
-}) {}
+})
 
 function* assertHasBalanceGte(inQuestion: L.id, value: L.u256) {
   const inQuestionBalance = yield* balances.get(inQuestion)["?"](L.None, InsufficientBalance.new())

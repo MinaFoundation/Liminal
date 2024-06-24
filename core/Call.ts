@@ -1,39 +1,36 @@
 import * as G from "../util/generator/collect.ts"
+import { EffectStatements } from "./F.ts"
+import { PureStatements } from "./Pure.ts"
 import { Value } from "./Value.ts"
 
-export type Yield = Value
 export type Result = Value | void
 
-export type ValueCall<R, A extends unknown[]> = R | ((...args: A) => R)
-
-export type GenCall<
-  Y extends Yield = any,
-  R extends Result = any,
+export type Statements<
+  T,
   A extends unknown[] = any,
-> = Generator<Y, R> | ((...args: A) => Generator<Y, R>)
-
-export type Call<
-  Y extends Yield = any,
+  Y extends Value = any,
   R extends Result = any,
-  A extends unknown[] = any,
-> = ValueCall<R, A> | GenCall<Y, R, A>
+> = PureStatements<T, A, R> | EffectStatements<T, A, Y, R>
 
 export namespace Call {
-  export function collect<Y extends Yield, R extends Result, A extends unknown[]>(
-    call: Call<Y, R, A>,
+  export function collect<T, A extends unknown[], Y extends Value, R extends Result>(
+    this: T,
+    statements: Statements<T, A, Y, R>,
     ...args: A
   ): G.Collected<Y, R> {
-    if (typeof call === "function") {
-      const maybeGen = call(...args)
+    if (typeof statements === "function") {
+      // @ts-ignore .
+      const maybeGen = statements.apply(this, ...args)
       if (typeof maybeGen === "object" && Symbol.iterator in maybeGen) {
+        // @ts-ignore .
         return G.collect(maybeGen)
       } else {
         return [[], maybeGen]
       }
-    } else if (typeof call === "object" && Symbol.iterator in call) {
-      return G.collect(call)
+    } else if (typeof statements === "object" && Symbol.iterator in statements) {
+      return G.collect(statements)
     } else {
-      return [[], call]
+      return [[], statements]
     }
   }
 }

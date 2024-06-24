@@ -89,6 +89,7 @@ omnifunc
 opam
 peaceiris
 pendings
+permissioned
 permissionless
 pkgconfig
 posix
