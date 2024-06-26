@@ -38,6 +38,7 @@ dprint
 dxdy
 esbenp
 fieldvar
+funder
 globalslot
 goenv
 graphqlrc
