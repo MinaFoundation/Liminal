@@ -5,7 +5,7 @@ import { Result, Statements } from "./Call.ts"
 import { Effect } from "./Effect.ts"
 import { EffectStatements } from "./F.ts"
 import { PureStatements } from "./Pure.ts"
-import { Union, UnionCtor } from "./Union.ts"
+import { Union, UnionType } from "./Union.ts"
 
 export type Type<V extends Value | void = any> = new(source: any) => V
 
@@ -29,7 +29,7 @@ export class Value<
   static or<F extends Type, O extends Type>(
     this: F,
     or: O,
-  ): F extends UnionCtor<infer M> ? UnionCtor<M | O> : UnionCtor<F | O> {
+  ): F extends UnionType<infer M> ? UnionType<M | O> : UnionType<F | O> {
     return Union(this, or) as never
   }
 
@@ -130,7 +130,7 @@ export declare namespace Value {
   export type PropTypes = Record<any, Type>
   export type Props<F extends PropTypes> = { [K in keyof F]: Args<[InstanceType<F[K]>]>[0] }
   export type PropsResolved<A extends Value.PropTypes> = {
-    [K in keyof A]: Union.Members<InstanceType<A[K]>>
+    [K in keyof A]: A[K] extends UnionType<infer M> ? InstanceType<M> : InstanceType<A[K]>
   }
 }
 
