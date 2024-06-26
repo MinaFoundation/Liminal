@@ -77,7 +77,7 @@ export namespace MappingSource {
   export class Set extends Tagged("Set") {
     constructor(
       readonly map: Mapping,
-      readonly key: Value,
+      readonly key: unknown,
       readonly value: Value.Setter,
     ) {
       super()

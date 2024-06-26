@@ -18,21 +18,19 @@ export const idCounter = U256Counter.new()
 export class NotAuthorizedError extends L.Struct({ tag: "NotAuthorizedError" }) {}
 export class SpecifiedTokenDneError extends L.Struct({ tag: "SpecifiedTokenDneError" }) {}
 
-export class getOwner
-  extends L.F({ tokenId: TokenId }, ({ tokenId }) => tokenOwners.get(tokenId))
-{}
+export const getOwner = L.pure({ tokenId: TokenId }, ({ tokenId }) => tokenOwners.get(tokenId))
 
-export class GetToken extends L.F({ tokenId: TokenId }, ({ tokenId }) => tokens.get(tokenId)) {}
+export class GetToken extends L.pure({ tokenId: TokenId }, ({ tokenId }) => tokens.get(tokenId)) {}
 
-export class Create extends L.F({ metadata: Token }, function*({ metadata }) {
+export const Create = L.effect({ metadata: Token }, function*({ metadata }) {
   yield* L.sender.equals(admin).assert(NotAuthorizedError.new())
   const tokenId = TokenId.new(yield* idCounter.next())
   yield* tokens.assign(tokens.set(tokenId, metadata))
   yield* tokenOwners.assign(tokenOwners.set(tokenId, L.sender))
   return tokenId
-}) {}
+})
 
-export class Destroy extends L.F({ tokenId: TokenId }, function*({ tokenId }) {
+export const Destroy = L.effect({ tokenId: TokenId }, function*({ tokenId }) {
   yield* tokens.get(tokenId)["?"](L.None, SpecifiedTokenDneError.new())
   yield* tokenOwners
     .get(tokenId)
@@ -44,9 +42,9 @@ export class Destroy extends L.F({ tokenId: TokenId }, function*({ tokenId }) {
     ["?"](L.None, L.Never.new())
   yield* tokens.assign(tokens.delete(tokenId))
   yield* tokenOwners.assign(tokenOwners.delete(tokenId))
-}) {}
+})
 
-export class Transfer extends L.F({
+export const Transfer = L.effect({
   to: L.id,
   tokenId: TokenId,
 }, function*({ to, tokenId }) {
@@ -54,4 +52,4 @@ export class Transfer extends L.F({
   const tokenOwner = yield* tokenOwners.get(tokenId)["?"](L.None, L.Never.new())
   yield* tokenOwner.equals(L.sender).assert(NotAuthorizedError.new())
   yield* tokenOwners.assign(tokenOwners.set(tokenId, to))
-}) {}
+})

@@ -1,8 +1,10 @@
 import { Tagged } from "../util/Tagged.ts"
 import { unimplemented } from "../util/unimplemented.ts"
-import { Call, GenCall, Result, ValueCall, Yield } from "./Call.ts"
+import { Call, Result, Statements } from "./Call.ts"
 import { Effect } from "./Effect.ts"
+import { EffectStatements } from "./F.ts"
 import { None } from "./None.ts"
+import { PureStatements } from "./Pure.ts"
 import { Type, Value } from "./Value.ts"
 
 export type BoolSource =
@@ -26,7 +28,7 @@ export namespace BoolSource {
     }
   }
   export class Equals extends Tagged("Equals") {
-    constructor(readonly left: Value, readonly right: Value) {
+    constructor(readonly left: Value, readonly right: unknown) {
       super()
     }
   }
@@ -64,9 +66,9 @@ export class bool extends Value.make("bool")<BoolSource, boolean, boolean, never
     return new this(new BoolSource.Random())
   }
 
-  if<R extends Result>(call: ValueCall<R, []>): If<never, R>
-  if<Y extends Yield, R extends Result>(call: GenCall<Y, R, []>): If<Y, R>
-  if<Y extends Yield, R extends Result>(call: Call<Y, R, []>) {
+  if<R extends Result>(statements: PureStatements<{}, [], R>): If<never, R>
+  if<Y extends Value, R extends Result>(statements: EffectStatements<{}, [], Y, R>): If<Y, R>
+  if<Y extends Value, R extends Result>(call: Statements<{}, [], Y, R>) {
     return new If(this, call)
   }
 
@@ -79,17 +81,21 @@ export class bool extends Value.make("bool")<BoolSource, boolean, boolean, never
   }
 }
 
-export class If<Y extends Yield, R extends Result> extends Effect<Y, R | None> {
-  constructor(readonly self: bool, readonly call: Call<Y, R>) {
+export class If<Y extends Value, R extends Result> extends Effect<Y, R | None> {
+  constructor(readonly self: bool, readonly call: Statements<{}, [], Y, R>) {
     super()
     const [yields, result] = Call.collect(call)
     this.yields = yields
     this.result = result
   }
 
-  else<R2 extends Result>(call: ValueCall<R2, []>): [Y] extends [never] ? R | R2 : Effect<Y, R | R2>
-  else<Y2 extends Yield, R2 extends Result>(call: GenCall<Y2, R2>): Effect<Y | Y2, R | R2>
-  else<Y2 extends Yield, R2 extends Result>(_call: Call<Y2, R2>) {
+  else<R2 extends Result>(
+    statements: PureStatements<{}, [], R2>,
+  ): [Y] extends [never] ? R | R2 : Effect<Y, R | R2>
+  else<Y2 extends Value, R2 extends Result>(
+    statements: EffectStatements<{}, [], Y2, R2>,
+  ): Effect<Y | Y2, R | R2>
+  else<Y2 extends Value, R2 extends Result>(_statements: Statements<{}, [], Y2, R2>) {
     return unimplemented()
   }
 }

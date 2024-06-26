@@ -1,8 +1,10 @@
 import { Tagged } from "../util/Tagged.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { bool, BoolSource } from "./Bool.ts"
-import { Call, GenCall, Result, ValueCall, Yield } from "./Call.ts"
+import { Result, Statements } from "./Call.ts"
 import { Effect } from "./Effect.ts"
+import { EffectStatements } from "./F.ts"
+import { PureStatements } from "./Pure.ts"
 import { Union, UnionCtor } from "./Union.ts"
 
 export type Type<V extends Value | void = any> = new(source: any) => V
@@ -31,7 +33,7 @@ export class Value<
     return Union(this, or) as never
   }
 
-  static new<T extends Value>(this: Type<T>, value?: Value.Args<[T]>[0]): T {
+  static new<T extends Value>(this: Type<T>, value?: Value.Native<T> | Value.From<T>): T {
     return new this(new ValueSource.New(value))
   }
 
@@ -72,29 +74,29 @@ export class Value<
   >(
     this: T,
     match: M,
-    f: ValueCall<R, [InstanceType<M>]>,
+    statements: PureStatements<{}, [InstanceType<M>], R>,
   ): U
   match<
     T extends Value,
     M extends Type<T>,
-    Y extends Yield,
+    Y extends Value,
     R extends Result,
     U extends Exclude<T, InstanceType<M>> | R,
   >(
     this: T,
     match: M,
-    f: GenCall<Y, R, [InstanceType<M>]>,
+    statements: EffectStatements<{}, [InstanceType<M>], Y, R>,
   ): Effect<Y, U>
   match<
     T extends Value,
     M extends Type<T>,
-    Y extends Yield,
+    Y extends Value,
     R extends Result,
     U extends Exclude<T, InstanceType<M>> | R,
   >(
     this: T,
     _match: M,
-    _f: Call<Y, R, [InstanceType<M>]>,
+    _statements: Statements<{}, [InstanceType<M>], Y, R>,
   ): U | Effect<Y, U> {
     unimplemented()
   }
@@ -121,8 +123,15 @@ export declare namespace Value {
   export type From<T> = T extends Value<any, any, any, infer From> ? From : never
   export type Native<T extends Value | void> = T extends Value<any, any, infer N> ? N : undefined
   export type Source<T extends Value> = T extends Value<any, infer S> ? S : never
-  export type Args<A extends Value[]> = { [K in keyof A]: A[K] | From<A[K]> | Native<A[K]> }
+  export type Args<A extends (Value | undefined)[]> = {
+    [K in keyof A]: A[K] extends undefined ? undefined : A[K] | From<A[K]> | Native<A[K]>
+  }
   export type Setter<V extends Value = any> = V | From<V> | Native<V> | ((value: V) => V)
+  export type PropTypes = Record<any, Type>
+  export type Props<F extends PropTypes> = { [K in keyof F]: Args<[InstanceType<F[K]>]>[0] }
+  export type PropsResolved<A extends Value.PropTypes> = {
+    [K in keyof A]: Union.Members<InstanceType<A[K]>>
+  }
 }
 
 export type ValueSource =

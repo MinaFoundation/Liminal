@@ -32,3 +32,4 @@
 - should `Struct` instead be `Event`? We'll never opt to use a `Struct` if we don't have to / would
   prefer TS interfaces / JS objects
 - If you don't yield, it's effectively meta-programming
+- Decouple circuit-writing from program writing.

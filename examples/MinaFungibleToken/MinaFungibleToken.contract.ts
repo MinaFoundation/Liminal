@@ -44,7 +44,7 @@ export class InsufficientAllowanceError extends L.Struct({ tag: "InsufficientAll
 export const balances = Balances.new()
 export const allocations = Allocations.new()
 
-export class Transfer extends L.F({
+export const Transfer = L.effect({
   to: L.id,
   amount: L.u256,
 }, function*({ to, amount }) {
@@ -67,9 +67,9 @@ export class Transfer extends L.F({
       .set(to, updatedToBalance),
   )
   yield TransferEvent.new({ to, amount })
-}) {}
+})
 
-export class Allocate extends L.F({
+export const Allocate = L.effect({
   for_: Allocatee,
   amount: L.u256,
 }, function*({ for_, amount }) {
@@ -95,9 +95,9 @@ export class Allocate extends L.F({
     .match(L.None, Allocated.new().set(for_, amount))
   yield* allocations.assign(allocations.set(L.sender, allocatorAllocated))
   yield AllocateEvent.new({ from: L.sender, for: for_, amount })
-}) {}
+})
 
-export class withdraw extends L.F({
+export const withdraw = L.effect({
   from: L.id,
   amount: L.u256,
 }, function*({ from, amount }) {
@@ -115,9 +115,9 @@ export class withdraw extends L.F({
   )
   yield* balances.assign(balances.set(L.sender, senderBalance.add(amount)))
   yield WithdrawEvent.new({ from, to: L.sender, amount })
-}) {}
+})
 
-export class Deallocate extends L.F({
+export const Deallocate = L.effect({
   for_: Allocatee,
   amount: L.u256,
 }, function*({ for_, amount }) {
@@ -127,7 +127,8 @@ export class Deallocate extends L.F({
       const newAllocation = allocated
         .get(for_)
         .match(L.u256, (v) =>
-          v.gte(amount)
+          v
+            .gte(amount)
             .if(allocated.set(for_, v.subtract(amount)))
             .else(InsufficientAllowanceError.new()))
         .match(L.None, InsufficientAllowanceError.new())
@@ -142,4 +143,4 @@ export class Deallocate extends L.F({
     .match(L.None, amount)
   yield* balances.assign(balances.set(L.sender, newSenderBalance))
   yield DeallocateEvent.new({ from: L.sender, for: for_, amount })
-}) {}
+})
