@@ -37,7 +37,7 @@ export const balanceOf = L.pure(
 )
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L41
-export const Transfer = L.effect({
+export const Transfer = L.f({
   to: L.id,
   value: L.u256,
 }, function*({ to, value }) {
@@ -65,7 +65,7 @@ export const Allowance = L.pure({
     .match(Balances, (balances) => balances.get(spender)))
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L67
-export const Approve = L.effect({
+export const Approve = L.f({
   spender: L.id,
   value: L.u256,
 }, function*({ spender, value }) {
@@ -83,7 +83,7 @@ export const Approve = L.effect({
 })
 
 // https://github.com/OpenZeppelin/openzeppelin-contracts/blob/52c36d412e8681053975396223d0ea39687fe33b/contracts/token/ERC20/IERC20.sol#L78
-export const TransferFrom = L.effect({
+export const TransferFrom = L.f({
   from: L.id,
   to: L.id,
   value: L.u256,

@@ -7,7 +7,7 @@ const [sender, recipient, ...signatories] = signer(4)
 
 const contract = L.id.fromHex(Deno.env.get("MULTISIG_ID")!).bind(Multisig)
 
-class Proposal extends L.effect({
+class Proposal extends L.f({
   amount: L.u256,
   to: L.id,
 }, function*({ amount, to }) {
@@ -32,18 +32,24 @@ const { result: multisigId } = await L
     yield* contract.Propose.new({ multisigId, vk: proposal.vk }).run()
     return multisigId
   })
-  .sign(sender)
+  .sign(sender, { funder: sender })
   .run()
   .commit(client)
   .finalized()
 
 await L
   .tx(function*() {
-    yield* contract.Approve.new({ multisigId, proposalId: proposal.vk }).run()
-    yield* contract.Approve.new({ multisigId, proposalId: proposal.vk }).run()
+    yield* contract.Approve
+      .new({ multisigId, proposalId: proposal.vk })
+      .sign("A")
+      .run()
+    yield* contract.Approve
+      .new({ multisigId, proposalId: proposal.vk })
+      .sign("B")
+      .run()
     yield* proposal.authorize("Multisig", multisigId).run()
   })
-  .sign(signatories[0])
+  .sign(sender, { A: signatories[0], B: signatories[1] })
   .run()
   .commit(client)
   .finalized()

@@ -1,6 +1,6 @@
 import * as L from "liminal"
 
-export class MultisigId extends L.Authority({ proposal: L.Vk }, function*({ proposal }) {
+export class MultisigId extends L.PureProxy({ proposal: L.Vk }, function*({ proposal }) {
   const multisig = yield* multisigs.get(this)
     ["?"](L.None)
   const approvals = yield* multisig.fields.approvals.get(proposal)
@@ -27,7 +27,7 @@ export class ProposalDneError extends L.Struct({ tag: "ProposalDneError" }) {}
 export class SoleSignatoryError extends L.Struct({ tag: "SoleSignatoryError" }) {}
 export class InsufficientApprovals extends L.Struct({ tag: "InsufficientApprovals" }) {}
 
-export const Create = L.effect({
+export const Create = L.f({
   members: Members,
   threshold: L.u8,
 }, function*({ members, threshold }) {
@@ -43,17 +43,22 @@ export const Create = L.effect({
   return id
 })
 
-export const Fund = L.effect({
+export const Fund = L.f({
   multisigId: L.id,
   amount: L.u256,
-}, ({ multisigId, amount }) => L.sender.send(amount, multisigId))
+}, function*({ multisigId, amount }) {
+  const funder = yield* L.sender.signer("funder")
+  yield* funder.send(amount, multisigId)
+})
 
-export const Destroy = L.effect(
+export const Destroy = L.f(
   { multisigId: L.id },
-  ({ multisigId }) => multisigs.assign(multisigs.delete(multisigId)),
+  function*({ multisigId }) {
+    yield* multisigs.assign(multisigs.delete(multisigId)).map(L.Never.new())
+  },
 )
 
-export const Propose = L.effect({
+export const Propose = L.f({
   multisigId: L.id,
   vk: L.Vk,
 }, function*({ multisigId, vk }) {
@@ -63,7 +68,7 @@ export const Propose = L.effect({
   yield* approvalSet.assign(approvalSet.add(L.sender))
 })
 
-export const Approve = L.effect({
+export const Approve = L.f({
   multisigId: L.id,
   proposalId: L.Vk,
 }, function*({ multisigId, proposalId }) {

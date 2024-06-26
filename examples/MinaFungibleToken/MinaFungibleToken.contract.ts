@@ -44,7 +44,7 @@ export class InsufficientAllowanceError extends L.Struct({ tag: "InsufficientAll
 export const balances = Balances.new()
 export const allocations = Allocations.new()
 
-export const Transfer = L.effect({
+export const Transfer = L.f({
   to: L.id,
   amount: L.u256,
 }, function*({ to, amount }) {
@@ -69,7 +69,7 @@ export const Transfer = L.effect({
   yield TransferEvent.new({ to, amount })
 })
 
-export const Allocate = L.effect({
+export const Allocate = L.f({
   for_: Allocatee,
   amount: L.u256,
 }, function*({ for_, amount }) {
@@ -97,7 +97,7 @@ export const Allocate = L.effect({
   yield AllocateEvent.new({ from: L.sender, for: for_, amount })
 })
 
-export const withdraw = L.effect({
+export const withdraw = L.f({
   from: L.id,
   amount: L.u256,
 }, function*({ from, amount }) {
@@ -117,7 +117,7 @@ export const withdraw = L.effect({
   yield WithdrawEvent.new({ from, to: L.sender, amount })
 })
 
-export const Deallocate = L.effect({
+export const Deallocate = L.f({
   for_: Allocatee,
   amount: L.u256,
 }, function*({ for_, amount }) {

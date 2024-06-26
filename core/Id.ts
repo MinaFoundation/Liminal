@@ -2,8 +2,10 @@ import { Store } from "../client/mod.ts"
 import { Tagged } from "../util/Tagged.ts"
 import { unimplemented } from "../util/unimplemented.ts"
 import { Effect } from "./Effect.ts"
+import { EffectStatements } from "./F.ts"
 import { u256, U256Source } from "./Int.ts"
 import { Value } from "./Value.ts"
+import { Vk } from "./Vk.ts"
 
 export type IdSource =
   | IdSource.Sender
@@ -23,6 +25,10 @@ export namespace IdSource {
 
 export class id extends Value.make("id")<IdSource, Uint8Array, Uint8Array, id> {
   static fromHex(_hex: string): id {
+    unimplemented()
+  }
+
+  static deferred<K extends string>(_key: K): Effect<SignerRequirement<K>, signer<K>> {
     unimplemented()
   }
 
@@ -57,7 +63,7 @@ export function signer<K extends keyof any>(key: K) {
   return class extends id {
     readonly key = key
 
-    deploy<N>(_namespace: N, _deployOptions?: DeployOptions): Generator<never, Contract<N>> {
+    deploy<N>(_namespace: N, _deployOptions?: DeployOptions): Effect<never, Contract<N>> {
       unimplemented()
     }
 
@@ -67,23 +73,31 @@ export function signer<K extends keyof any>(key: K) {
   }
 }
 
+export interface PureProxy<P extends Value.PropTypes = any, Y extends Value = any>
+  extends InstanceType<ReturnType<typeof PureProxy<P, Y>>>
+{}
+
+export function PureProxy<P extends Value.PropTypes, Y extends Value>(
+  propsTypes: Value.Props<P>,
+  statements: EffectStatements<id, [resolved: Value.PropsResolved<P>], Y, Vk>,
+) {
+  return class extends id {
+    readonly brand = "Authority"
+    propsTypes = propsTypes
+    statements = statements
+  }
+}
+
 export const nullId = new id(new IdSource.Null())
 export const caller = new id(new IdSource.Caller())
 export const self = new id(new IdSource.Self())
-
-const senderSignerKey = Symbol()
-export interface sender extends signer<typeof senderSignerKey> {}
-export const sender: sender = new (signer(senderSignerKey))(new IdSource.Sender())
+export const sender = new id(new IdSource.Sender())
 
 export interface DeployOptions {
   deployer?: signer
 }
 
-export type Contract<N> =
-  & id
-  & { da(_store: Store): void }
-  & { [K in keyof N]: N[K] }
-
+export type Contract<N> = id & { da(_store: Store): void } & { [K in keyof N]: N[K] }
 export function Contract<N>(id: id, ns: N): Contract<N> {
   return Object.assign(id, ns, {
     da(_store: Store) {

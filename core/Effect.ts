@@ -86,4 +86,14 @@ export abstract class Effect<Y extends Value, R extends Result> implements Gener
   ): Effect<Exclude<Y, InstanceType<M>> | Y2, R | R2> {
     unimplemented()
   }
+
+  map<R2 extends Result>(statements: PureStatements<{}, [R], R2>): Effect<Y, R2>
+  map<Y2 extends Value, R2 extends Result>(
+    statements: EffectStatements<{}, [R], Y, R2>,
+  ): Effect<Y | Y2, R2>
+  map<Y2 extends Value, R2 extends Result>(
+    _statements: Statements<{}, [R], Y, R2>,
+  ): Effect<Y | Y2, R2> {
+    unimplemented()
+  }
 }

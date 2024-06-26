@@ -22,7 +22,7 @@ export const getOwner = L.pure({ tokenId: TokenId }, ({ tokenId }) => tokenOwner
 
 export class GetToken extends L.pure({ tokenId: TokenId }, ({ tokenId }) => tokens.get(tokenId)) {}
 
-export const Create = L.effect({ metadata: Token }, function*({ metadata }) {
+export const Create = L.f({ metadata: Token }, function*({ metadata }) {
   yield* L.sender.equals(admin).assert(NotAuthorizedError.new())
   const tokenId = TokenId.new(yield* idCounter.next())
   yield* tokens.assign(tokens.set(tokenId, metadata))
@@ -30,7 +30,7 @@ export const Create = L.effect({ metadata: Token }, function*({ metadata }) {
   return tokenId
 })
 
-export const Destroy = L.effect({ tokenId: TokenId }, function*({ tokenId }) {
+export const Destroy = L.f({ tokenId: TokenId }, function*({ tokenId }) {
   yield* tokens.get(tokenId)["?"](L.None, SpecifiedTokenDneError.new())
   yield* tokenOwners
     .get(tokenId)
@@ -44,7 +44,7 @@ export const Destroy = L.effect({ tokenId: TokenId }, function*({ tokenId }) {
   yield* tokenOwners.assign(tokenOwners.delete(tokenId))
 })
 
-export const Transfer = L.effect({
+export const Transfer = L.f({
   to: L.id,
   tokenId: TokenId,
 }, function*({ to, tokenId }) {

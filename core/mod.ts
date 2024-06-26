@@ -1,6 +1,5 @@
 // moderate
 
-export * from "./Authority.ts"
 export * from "./Bool.ts"
 export * from "./Bytes.ts"
 export * from "./Call.ts"
