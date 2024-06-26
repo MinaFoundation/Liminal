@@ -1,6 +1,8 @@
 import { unimplemented } from "../util/unimplemented.ts"
+import { Authority } from "./Authority.ts"
 import { Result } from "./Call.ts"
 import { Effect } from "./Effect.ts"
+import { SignerRequirement } from "./Id.ts"
 import { Value } from "./Value.ts"
 import { Vk, VkSource } from "./Vk.ts"
 
@@ -8,9 +10,6 @@ export function effect<P extends Value.PropTypes, T, Y extends Value, R extends 
   propTypes: P,
   statements: EffectStatements<T, [props: Value.PropsResolved<P>], Y, R>,
 ): EffectType<P, T, Y, R>
-export function effect<T, Y extends Value, R extends Result>(
-  statements: EffectStatements<T, [props: {}], Y, R>,
-): EffectType<{}, T, Y, R>
 export function effect<T, Y extends Value, R extends Result>(
   statements: EffectStatements<T, [props: {}], Y, R>,
 ): EffectType<{}, T, Y, R>
@@ -49,12 +48,19 @@ export function effectInternal<
   propTypes: P,
   statements: EffectStatements<T, [props: Value.PropsResolved<P>], Y, R>,
 ) {
-  return class extends Value.make("Pure")<never, string, EffectFrom<P>> {
+  return class extends Value.make("Effect")<never, string, EffectFrom<P>> {
     propTypes = propTypes
     statements = statements
     vk = new Vk(new VkSource(this))
 
     run(): Effect<Y, R> {
+      unimplemented()
+    }
+
+    authorize<K extends Extract<Y, SignerRequirement>["key"]>(
+      _key: K,
+      _authority: Value.Args<[Authority]>[0],
+    ): InstanceType<EffectType<P, T, Exclude<Y, SignerRequirement<K>>, R>> {
       unimplemented()
     }
   }

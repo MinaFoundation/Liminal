@@ -5,6 +5,11 @@ import { id } from "./Id.ts"
 import { Value } from "./Value.ts"
 import { Vk } from "./Vk.ts"
 
+export interface Authority<
+  P extends Value.PropTypes = any,
+  Y extends Value = any,
+> extends InstanceType<ReturnType<typeof Authority<P, Y>>> {}
+
 export function Authority<
   P extends Value.PropTypes,
   Y extends Value,

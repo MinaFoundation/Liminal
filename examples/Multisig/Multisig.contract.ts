@@ -40,7 +40,7 @@ export const Create = L.effect({
     approvals: Approvals.new(),
   })
   yield* multisigs.assign(multisigs.set(id, multisig))
-  return multisig
+  return id
 })
 
 export const Fund = L.effect({

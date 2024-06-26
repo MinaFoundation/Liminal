@@ -20,35 +20,30 @@ const proposal = Proposal.new({
   to: recipient.publicKey,
 })
 
-const { result: { id } } = await L
+const { result: multisigId } = await L
   .tx(function*() {
-    const multisig = yield* contract.Create
+    const multisigId = yield* contract.Create
       .new({
         members: new Set(signatories.map((x) => x.publicKey)),
         threshold: 2,
       })
       .run()
-    yield* contract.Fund
-      .new({
-        amount: 1e9,
-        multisigId: multisig.fields.id,
-      })
-      .run()
-    yield* contract.Propose
-      .new({
-        multisigId: multisig.fields.id,
-        vk: proposal.vk,
-      })
-      .run()
-    return multisig
+    yield* contract.Fund.new({ multisigId, amount: 1e9 }).run()
+    yield* contract.Propose.new({ multisigId, vk: proposal.vk }).run()
+    return multisigId
   })
   .sign(sender)
   .run()
   .commit(client)
   .finalized()
 
-// declare const f: L.FCtor<L.SignerRequirement<"multisig">, void, {}>
-// function* x() {
-//   const multisig = yield* multisigs.get(null!)["?"](L.None)
-//   yield* f.permit(multisig.fields.account).run()
-// }
+await L
+  .tx(function*() {
+    yield* contract.Approve.new({ multisigId, proposalId: proposal.vk }).run()
+    yield* contract.Approve.new({ multisigId, proposalId: proposal.vk }).run()
+    yield* proposal.authorize("Multisig", multisigId).run()
+  })
+  .sign(signatories[0])
+  .run()
+  .commit(client)
+  .finalized()
