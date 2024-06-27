@@ -65,7 +65,7 @@ export function fInternal<
 
     authorize<K extends Extract<Y, SignerRequirement>["key"]>(
       _key: K,
-      _authority: Value.Args<[PureProxy]>[0],
+      _pureProxy: Value.Args<[PureProxy]>[0],
     ): f<P, T, Exclude<Y, SignerRequirement<K>>, R> {
       unimplemented()
     }

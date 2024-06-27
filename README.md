@@ -1,13 +1,10 @@
 # Liminal
 
 Liminal is a WIP TypeScript library for authoring and interacting with programs that integrate with
-zero-knowledge proofs (and more specifically, [Mina](https://minaprotocol.com/)). Liminal is
-currently a type-only mock of what we may ultimately want to implement. It still needs much
-feedback, including that from key stakeholders, such as [o1labs](https://www.o1labs.org/). In the
-long term, Liminal may serve as a specification of capabilities supported in a given Mina program.
-In this case, the Liminal AST would be a common representation against which builders could support
-a wide range of targets, such as block explorers, wallet transaction insights, persistent storage
-layers and even non-JS Liminal runtimes.
+zero-knowledge proofs. In the long term, Liminal may also serve as a specification of capabilities
+supported in a given "zkApp." In this case, the Liminal AST would be a common representation against
+which builders could support a wide range of targets, such as block explorers, wallet transaction
+insights, persistent storage layers and even non-JS Liminal runtimes.
 
 ## 1. Author a Contract
 
@@ -105,7 +102,7 @@ result satisfies number
 // Fetch the count from the off-chain store.
 const count = await counter.count.fetch()
 
-// (Optional) Supply the Mina client to ensure fetched data is proven.
+// (Optional) Supply the client to ensure fetched data is proven.
 const count = await counter.count.fetch(client)
 ```
 

@@ -67,11 +67,6 @@ mdbook
 mergeable
 merkle
 michaelfbryan
-mina
-minaboros
-minaexplorer
-minafoundation
-minaserve
 mrmr1993
 multiaddress
 multiaddresses
@@ -114,6 +109,7 @@ snarked
 snarkers
 softfork
 softwork
+solovay
 sourcemapping
 steckler
 struct
