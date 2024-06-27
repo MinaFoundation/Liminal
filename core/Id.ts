@@ -82,7 +82,7 @@ export function PureProxy<P extends Value.PropTypes, Y extends Value>(
   statements: EffectStatements<id, [resolved: Value.PropsResolved<P>], Y, Vk>,
 ) {
   return class extends id {
-    readonly brand = "Authority"
+    readonly brand = "PureProxy"
     propsTypes = propsTypes
     statements = statements
   }
