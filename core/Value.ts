@@ -117,6 +117,14 @@ export class Value<
   ) {
     return unimplemented()
   }
+
+  encode(): Uint8Array {
+    unimplemented()
+  }
+
+  static decode<T extends Type>(this: T, _bytes: Uint8Array): InstanceType<T> {
+    unimplemented()
+  }
 }
 
 export declare namespace Value {
@@ -137,7 +145,7 @@ export declare namespace Value {
 export type ValueSource =
   | ValueSource.New
   | ValueSource.Into
-  | ValueSource.StructField
+  | ValueSource.Field
   | ValueSource.Apply
   | ValueSource.Default
 export namespace ValueSource {
@@ -151,7 +159,7 @@ export namespace ValueSource {
       super()
     }
   }
-  export class StructField extends Tagged("StructField") {
+  export class Field extends Tagged("Field") {
     constructor(readonly self: Value, readonly key: keyof any) {
       super()
     }
